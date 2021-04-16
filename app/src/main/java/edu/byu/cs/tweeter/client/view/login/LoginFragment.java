@@ -53,9 +53,7 @@ public class LoginFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
         alias = view.findViewById(R.id.loginUsername);
-        alias.setText("@a");
         password = view.findViewById(R.id.loginPassword);
-        password.setText("a");
         errorView = view.findViewById(R.id.loginError);
         Button loginButton = view.findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
