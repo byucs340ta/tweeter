@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Tweeter</string>
+
+    <string name="logoutMenuTitle">Logout</string>
+
+    <string name="homePageTitle">Home</string>
+    <string name="userImageContentDescription">The user\'s image</string>
+
+    <string name="usernameHint">\@username</string>
+    <string name="password">password</string>
+    <string name="loginButton">login</string>
+
+    <string name="firstName">first name</string>
+    <string name="lastName">last name</string>
+    <string name="uploadPicture">Take Profile Picture</string>
+    <string name="afterUploadPicture">Retake Profile Picture</string>
+    <string name="registerButton">Register</string>
+
+    <string name="follow">Follow</string>
+    <string name="following">Following</string>
+
+    <string name="dialogStatusHint">What is on your mind?</string>
+
+    <string name="statusDash"> - </string>
+
+    <string name="title_activity_main">Tweeter</string>
+    <string name="loadingData">Loading More Data…</string>
+    <string name="feedTabTitle">Feed</string>
+    <string name="storyTabTitle">Story</string>
+    <string name="followingTabTitle">Following</string>
+    <string name="followersTabTitle">Followers</string>
+
+    <string name="loginTabTitle">login</string>
+    <string name="registerTabTitle">register</string>
+
+    <string name="sampleAlias">"@UserAlias"</string>
+    <string name="sampleUserName">The User</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="followeeCount">Following: %s</string>
+    <string name="followerCount">Followers: %s</string>
+</resources>
