@@ -39,6 +39,10 @@ public class GetStoryTask implements Runnable {
      * Maximum number of statuses to return (i.e., page size).
      */
     private int limit;
+    /**
+     * The last status returned in the previous page of results (can be null).
+     * This allows the new page to begin where the previous page ended.
+     */
     private Status lastStatus;
     /**
      * Message handler that will receive task results.
