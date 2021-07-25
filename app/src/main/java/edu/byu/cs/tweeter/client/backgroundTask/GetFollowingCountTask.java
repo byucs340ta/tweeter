@@ -5,8 +5,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Background task that queries how many other users a specified user is following.

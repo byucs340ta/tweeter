@@ -5,13 +5,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.util.FakeData;
-import edu.byu.cs.tweeter.client.util.Pair;
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.util.FakeData;
+import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that retrieves a page of other users being followed by a specified user.
@@ -60,19 +61,32 @@ public class GetFollowingTask implements Runnable {
     @Override
     public void run() {
         try {
-            Pair<List<User>, Boolean> pageOfUsers = FakeData.getPageOfUsers(lastFollowee, limit, targetUser);
-            List<User> followers = pageOfUsers.getFirst();
+            Pair<List<User>, Boolean> pageOfUsers = getFollowees();
+
+            List<User> followees = pageOfUsers.getFirst();
             boolean hasMorePages = pageOfUsers.getSecond();
 
-            for (User u : followers) {
-                TaskUtils.loadImage(u);
-            }
+            loadImages(followees);
 
-            sendSuccessMessage(followers, hasMorePages);
+            sendSuccessMessage(followees, hasMorePages);
 
         } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
+            Log.e(LOG_TAG, "Failed to get followees", ex);
             sendExceptionMessage(ex);
+        }
+    }
+
+    private FakeData getFakeData() {
+        return new FakeData();
+    }
+
+    private Pair<List<User>, Boolean> getFollowees() {
+        return getFakeData().getPageOfUsers((User) lastFollowee, limit, targetUser);
+    }
+
+    private void loadImages(List<User> followees) throws IOException {
+        for (User u : followees) {
+            BackgroundTaskUtils.loadImage(u);
         }
     }
 

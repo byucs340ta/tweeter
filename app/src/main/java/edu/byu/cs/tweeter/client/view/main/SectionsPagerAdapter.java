@@ -14,7 +14,7 @@ import edu.byu.cs.tweeter.client.view.main.feed.FeedFragment;
 import edu.byu.cs.tweeter.client.view.main.followers.FollowersFragment;
 import edu.byu.cs.tweeter.client.view.main.following.FollowingFragment;
 import edu.byu.cs.tweeter.client.view.main.story.StoryFragment;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Used by MainActivity to implement the "Feed", "Story", "Following", "Followers" tabs.

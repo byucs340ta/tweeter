@@ -22,8 +22,8 @@ import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the login screen.
@@ -106,10 +106,11 @@ public class LoginFragment extends Fragment {
                 User loggedInUser = (User) msg.getData().getSerializable(LoginTask.USER_KEY);
                 AuthToken authToken = (AuthToken) msg.getData().getSerializable(LoginTask.AUTH_TOKEN_KEY);
 
-                Intent intent = new Intent(getContext(), MainActivity.class);
+                // Cache user session information
                 Cache.getInstance().setCurrUser(loggedInUser);
                 Cache.getInstance().setCurrUserAuthToken(authToken);
 
+                Intent intent = new Intent(getContext(), MainActivity.class);
                 intent.putExtra(MainActivity.CURRENT_USER_KEY, loggedInUser);
 
                 loginInToast.cancel();

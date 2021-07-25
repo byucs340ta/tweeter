@@ -38,8 +38,8 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
-import edu.byu.cs.tweeter.shared.domain.Status;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the "Feed" tab.

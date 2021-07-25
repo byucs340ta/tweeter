@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 
 /**
  * Background task that logs out a user (i.e., ends a session).

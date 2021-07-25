@@ -5,9 +5,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import edu.byu.cs.tweeter.client.util.FakeData;
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.util.FakeData;
 
 /**
  * Background task that returns the profile for a specified user.
@@ -42,8 +42,7 @@ public class GetUserTask implements Runnable {
     @Override
     public void run() {
         try {
-
-            User user = FakeData.findUserByAlias(alias);
+            User user = getUser();
 
             sendSuccessMessage(user);
 
@@ -51,6 +50,15 @@ public class GetUserTask implements Runnable {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             sendExceptionMessage(ex);
         }
+    }
+
+    private FakeData getFakeData() {
+        return new FakeData();
+    }
+
+    private User getUser() {
+        User user = getFakeData().findUserByAlias(alias);
+        return user;
     }
 
     private void sendSuccessMessage(User user) {

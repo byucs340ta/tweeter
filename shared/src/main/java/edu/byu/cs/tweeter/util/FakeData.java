@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.util;
+package edu.byu.cs.tweeter.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,9 +6,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.Status;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Generates fake (or "dummy") data for Milestone 2.
@@ -68,15 +68,35 @@ public class FakeData {
      */
     private static final List<Status> allStatus = new ArrayList<>();
 
-    static {
+    // Used to force statuses to be re-generated if test cases use
+    // different sets of fake users (by mocking the getFakeUsers method).
+    private static List<User> fakeUsersUsedToGenerateStatuses = null;
+
+    public FakeData() {
+        if (getFakeUsers() != getFakeUsers()) {
+            // Verify that getFakeUsers always returns the same list of users.
+            // (This could be violated by mock implementations of getFakeUsers.)
+            throw new AssertionError("getFakeUsers should return the same list of users" +
+                    "each time it is called");
+        }
+        if (getFakeUsers() != fakeUsersUsedToGenerateStatuses) {
+            generateFakeStatuses();
+            fakeUsersUsedToGenerateStatuses = getFakeUsers();
+        }
+    }
+
+    private void generateFakeStatuses() {
         // Generate fake statuses
 
+        allStatus.clear();
+
         Calendar calendar = new GregorianCalendar();
+        List<User> fakeUsers = getFakeUsers();
 
         for (int i = 0; i < 2; ++i) {
-            for (int j = 0; j < allUsers.size(); ++j) {
-                User sender = allUsers.get(j);
-                User mention = ((j < allUsers.size() - 1) ? allUsers.get(j + 1) : allUsers.get(0));
+            for (int j = 0; j < fakeUsers.size(); ++j) {
+                User sender = fakeUsers.get(j);
+                User mention = ((j < fakeUsers.size() - 1) ? fakeUsers.get(j + 1) : fakeUsers.get(0));
                 List<String> mentions = Arrays.asList(mention.getAlias());
                 String url = "https://byu.edu";
                 List<String> urls = Arrays.asList(url);
@@ -91,16 +111,23 @@ public class FakeData {
         }
     }
 
-    public static User getFirstUser() {
-        return user1;
+    public User getFirstUser() {
+        List<User> fakeUsers = getFakeUsers();
+        if (fakeUsers.size() > 0) {
+            return getFakeUsers().get(0);
+        }
+        else {
+            return null;
+        }
     }
 
-    public static AuthToken getAuthToken() {
+    public AuthToken getAuthToken() {
         return authToken;
     }
 
-    public static User findUserByAlias(String alias) {
-        for (User u : allUsers) {
+    public User findUserByAlias(String alias) {
+        List<User> fakeUsers = getFakeUsers();
+        for (User u : fakeUsers) {
             if (u.getAlias().equals(alias)) {
                 return u;
             }
@@ -116,15 +143,16 @@ public class FakeData {
      * @param omit     if not null, specifies a user that should not be returned.
      * @return a Pair containing a page of users and a "hasMorePages" flag.
      */
-    public static Pair<List<User>, Boolean> getPageOfUsers(User lastUser, int limit, User omit) {
+    public Pair<List<User>, Boolean> getPageOfUsers(User lastUser, int limit, User omit) {
 
         Pair<List<User>, Boolean> result = new Pair<>(new ArrayList<User>(), false);
 
         int index = 0;
+        List<User> fakeUsers = getFakeUsers();
 
         if (lastUser != null) {
-            for (int i = 0; i < allUsers.size(); ++i) {
-                User curUser = allUsers.get(i);
+            for (int i = 0; i < fakeUsers.size(); ++i) {
+                User curUser = fakeUsers.get(i);
                 if (curUser.getAlias().equals(lastUser.getAlias())) {
                     index = i + 1;
                     break;
@@ -132,14 +160,14 @@ public class FakeData {
             }
         }
 
-        for (int count = 0; index < allUsers.size() && count < limit; ++count, ++index) {
-            User curUser = allUsers.get(index);
+        for (int count = 0; index < fakeUsers.size() && count < limit; ++count, ++index) {
+            User curUser = fakeUsers.get(index);
             if (omit == null || !curUser.getAlias().equals(omit.getAlias())) {
                 result.getFirst().add(curUser);
             }
         }
 
-        result.setSecond(index < allUsers.size());
+        result.setSecond(index < fakeUsers.size());
 
         return result;
     }
@@ -152,7 +180,7 @@ public class FakeData {
      * @param limit      maximum number of statuses to return (i.e., page size).
      * @return a Pair containing a page of statuses and a "hasMorePages" flag.
      */
-    public static Pair<List<Status>, Boolean> getPageOfStatus(Status lastStatus, int limit) {
+    public Pair<List<Status>, Boolean> getPageOfStatus(Status lastStatus, int limit) {
 
         Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<Status>(), false);
 
@@ -177,6 +205,10 @@ public class FakeData {
         result.setSecond(index < allStatus.size());
 
         return result;
+    }
+
+    public List<User> getFakeUsers() {
+        return allUsers;
     }
 
 }

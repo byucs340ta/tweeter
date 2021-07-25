@@ -7,8 +7,8 @@ import android.util.Log;
 
 import java.util.Random;
 
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Background task that determines if one user is following another.

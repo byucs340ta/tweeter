@@ -1,7 +1,7 @@
 package edu.byu.cs.tweeter.client.cache;
 
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * The Cache class stores globally accessible data.

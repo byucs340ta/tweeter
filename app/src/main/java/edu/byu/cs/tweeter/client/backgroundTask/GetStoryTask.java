@@ -8,11 +8,11 @@ import android.util.Log;
 import java.io.Serializable;
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.util.FakeData;
-import edu.byu.cs.tweeter.client.util.Pair;
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.Status;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.util.FakeData;
+import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that retrieves a page of statuses from a user's story.
@@ -61,12 +61,13 @@ public class GetStoryTask implements Runnable {
     @Override
     public void run() {
         try {
-            Pair<List<Status>, Boolean> pageOfStatus = FakeData.getPageOfStatus(lastStatus, limit);
+            Pair<List<Status>, Boolean> pageOfStatus = getStory();
+
             List<Status> statuses = pageOfStatus.getFirst();
             boolean hasMorePages = pageOfStatus.getSecond();
 
             for (Status s : statuses) {
-                TaskUtils.loadImage(s.getUser());
+                BackgroundTaskUtils.loadImage(s.getUser());
             }
 
             sendSuccessMessage(statuses, hasMorePages);
@@ -75,6 +76,15 @@ public class GetStoryTask implements Runnable {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             sendExceptionMessage(ex);
         }
+    }
+
+    private FakeData getFakeData() {
+        return new FakeData();
+    }
+
+    private Pair<List<Status>, Boolean> getStory() {
+        Pair<List<Status>, Boolean> pageOfStatus = getFakeData().getPageOfStatus(lastStatus, limit);
+        return pageOfStatus;
     }
 
     private void sendSuccessMessage(List<Status> statuses, boolean hasMorePages) {

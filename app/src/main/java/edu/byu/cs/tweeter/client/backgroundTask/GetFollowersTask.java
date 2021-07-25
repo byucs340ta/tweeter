@@ -8,10 +8,10 @@ import android.util.Log;
 import java.io.Serializable;
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.util.FakeData;
-import edu.byu.cs.tweeter.client.util.Pair;
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.util.FakeData;
+import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that retrieves a page of followers.
@@ -60,12 +60,13 @@ public class GetFollowersTask implements Runnable {
     @Override
     public void run() {
         try {
-            Pair<List<User>, Boolean> pageOfUsers = FakeData.getPageOfUsers(lastFollower, limit, targetUser);
+            Pair<List<User>, Boolean> pageOfUsers = getFollowers();
+
             List<User> followers = pageOfUsers.getFirst();
             boolean hasMorePages = pageOfUsers.getSecond();
 
             for (User u : followers) {
-                TaskUtils.loadImage(u);
+                BackgroundTaskUtils.loadImage(u);
             }
 
             sendSuccessMessage(followers, hasMorePages);
@@ -74,6 +75,15 @@ public class GetFollowersTask implements Runnable {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             sendExceptionMessage(ex);
         }
+    }
+
+    private FakeData getFakeData() {
+        return new FakeData();
+    }
+
+    private Pair<List<User>, Boolean> getFollowers() {
+        Pair<List<User>, Boolean> pageOfUsers = getFakeData().getPageOfUsers(lastFollower, limit, targetUser);
+        return pageOfUsers;
     }
 
     private void sendSuccessMessage(List<User> followers, boolean hasMorePages) {

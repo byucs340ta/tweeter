@@ -5,9 +5,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import edu.byu.cs.tweeter.client.util.FakeData;
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.util.FakeData;
+import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that logs in a user (i.e., starts a session).
@@ -44,10 +45,12 @@ public class LoginTask implements Runnable {
     @Override
     public void run() {
         try {
-            User loggedInUser = FakeData.getFirstUser();
-            AuthToken authToken = FakeData.getAuthToken();
+            Pair<User, AuthToken> loginResult = doLogin();
 
-            TaskUtils.loadImage(loggedInUser);
+            User loggedInUser = loginResult.getFirst();
+            AuthToken authToken = loginResult.getSecond();
+
+            BackgroundTaskUtils.loadImage(loggedInUser);
 
             sendSuccessMessage(loggedInUser, authToken);
 
@@ -55,6 +58,16 @@ public class LoginTask implements Runnable {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             sendExceptionMessage(ex);
         }
+    }
+
+    private FakeData getFakeData() {
+        return new FakeData();
+    }
+
+    private Pair<User, AuthToken> doLogin() {
+        User loggedInUser = getFakeData().getFirstUser();
+        AuthToken authToken = getFakeData().getAuthToken();
+        return new Pair<>(loggedInUser, authToken);
     }
 
     private void sendSuccessMessage(User loggedInUser, AuthToken authToken) {

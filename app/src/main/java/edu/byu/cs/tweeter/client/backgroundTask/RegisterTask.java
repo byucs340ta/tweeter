@@ -5,9 +5,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import edu.byu.cs.tweeter.client.util.FakeData;
-import edu.byu.cs.tweeter.shared.domain.AuthToken;
-import edu.byu.cs.tweeter.shared.domain.User;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.util.FakeData;
+import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that creates a new user account and logs in the new user (i.e., starts a session).
@@ -59,10 +60,12 @@ public class RegisterTask implements Runnable {
     @Override
     public void run() {
         try {
-            User registeredUser = FakeData.getFirstUser();
-            AuthToken authToken = FakeData.getAuthToken();
+            Pair<User, AuthToken> registerResult = doRegister();
 
-            TaskUtils.loadImage(registeredUser);
+            User registeredUser = registerResult.getFirst();
+            AuthToken authToken = registerResult.getSecond();
+
+            BackgroundTaskUtils.loadImage(registeredUser);
 
             sendSuccessMessage(registeredUser, authToken);
 
@@ -70,6 +73,16 @@ public class RegisterTask implements Runnable {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             sendExceptionMessage(ex);
         }
+    }
+
+    private FakeData getFakeData() {
+        return new FakeData();
+    }
+
+    private Pair<User, AuthToken> doRegister() {
+        User registeredUser = getFakeData().getFirstUser();
+        AuthToken authToken = getFakeData().getAuthToken();
+        return new Pair<>(registeredUser, authToken);
     }
 
     private void sendSuccessMessage(User registeredUser, AuthToken authToken) {
