@@ -11,7 +11,7 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
- * Generates fake (or "dummy") data for Milestone 2.
+ * Generates fake (or "dummy") data for Milestone 2 and Milestone 3.
  * Since the client is not yet integrated with a server, we need to generate some fake
  * data to demonstrate the app's functionality.
  */
