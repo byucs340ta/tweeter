@@ -66,7 +66,7 @@ public class FakeData {
      * List of generated statuses.
      * Used to return lists of story and feed statuses.
      */
-    private static final List<Status> allStatus = new ArrayList<>();
+    private static final List<Status> allStatuses = new ArrayList<>();
 
     // Used to force statuses to be re-generated if test cases use
     // different sets of fake users (by mocking the getFakeUsers method).
@@ -79,16 +79,22 @@ public class FakeData {
             throw new AssertionError("getFakeUsers should return the same list of users" +
                     "each time it is called");
         }
+
         if (getFakeUsers() != fakeUsersUsedToGenerateStatuses) {
             generateFakeStatuses();
             fakeUsersUsedToGenerateStatuses = getFakeUsers();
         }
+
+        if (getFakeStatuses() != getFakeStatuses()) {
+            // Verify that getFakeStatuses always returns the same list of statuses.
+            // (This could be violated by mock implementations of getFakeStatuses.)
+            throw new AssertionError("getFakeStatuses should return the same list of statuses" +
+                    "each time it is called");
+        }
     }
 
     private void generateFakeStatuses() {
-        // Generate fake statuses
-
-        allStatus.clear();
+        allStatuses.clear();
 
         Calendar calendar = new GregorianCalendar();
         List<User> fakeUsers = getFakeUsers();
@@ -106,7 +112,7 @@ public class FakeData {
                 calendar.add(Calendar.MINUTE, 1);
                 String datetime = calendar.getTime().toString();
                 Status status = new Status(post, sender, datetime, urls, mentions);
-                allStatus.add(status);
+                allStatuses.add(status);
             }
         }
     }
@@ -185,10 +191,11 @@ public class FakeData {
         Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<Status>(), false);
 
         int index = 0;
+        List<Status> fakeStatuses = getFakeStatuses();
 
         if (lastStatus != null) {
-            for (int i = 0; i < allStatus.size(); ++i) {
-                Status curStatus = allStatus.get(i);
+            for (int i = 0; i < fakeStatuses.size(); ++i) {
+                Status curStatus = fakeStatuses.get(i);
                 if (curStatus.getUser().getAlias().equals(lastStatus.getUser().getAlias()) &&
                         curStatus.getDate().equals(lastStatus.getDate())) {
                     index = i + 1;
@@ -197,18 +204,24 @@ public class FakeData {
             }
         }
 
-        for (int count = 0; index < allStatus.size() && count < limit; ++count, ++index) {
-            Status curStatus = allStatus.get(index);
+        for (int count = 0; index < fakeStatuses.size() && count < limit; ++count, ++index) {
+            Status curStatus = fakeStatuses.get(index);
             result.getFirst().add(curStatus);
         }
 
-        result.setSecond(index < allStatus.size());
+        result.setSecond(index < fakeStatuses.size());
 
         return result;
     }
 
+    // Allows mocking of fake users
     public List<User> getFakeUsers() {
         return allUsers;
+    }
+
+    // Allows mocking of fake statuses
+    public List<Status> getFakeStatuses() {
+        return allStatuses;
     }
 
 }

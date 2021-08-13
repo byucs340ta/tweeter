@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     public List<String> parseURLs(String post) throws MalformedURLException {
         List<String> containedUrls = new ArrayList<>();
-        for (String word : post.split(" ")) {
+        for (String word : post.split("\\s")) {
             if (word.startsWith("http://") || word.startsWith("https://")) {
 
                 int index = findUrlEndIndex(word);
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     public List<String> parseMentions(String post) {
         List<String> containedMentions = new ArrayList<>();
 
-        for (String word : post.split(" ")) {
+        for (String word : post.split("\\s")) {
             if (word.startsWith("@")) {
                 word = word.replaceAll("[^a-zA-Z0-9]", "");
                 word = "@".concat(word);
@@ -425,8 +425,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
                 Exception ex = (Exception) msg.getData().getSerializable(PostStatusTask.EXCEPTION_KEY);
                 Toast.makeText(MainActivity.this, "Failed to post status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
             }
-
-            followButton.setEnabled(true);
         }
     }
 
