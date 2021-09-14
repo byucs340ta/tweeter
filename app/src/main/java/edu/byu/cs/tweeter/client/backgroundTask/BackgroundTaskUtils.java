@@ -23,8 +23,9 @@ public class BackgroundTaskUtils {
         try {
             byte[] bytes = ByteArrayUtils.bytesFromUrl(user.getImageUrl());
             user.setImageBytes(bytes);
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.e(LOG_TAG, e.toString(), e);
+            throw e;
         }
     }
 
