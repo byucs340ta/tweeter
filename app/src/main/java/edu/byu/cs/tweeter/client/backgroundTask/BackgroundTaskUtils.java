@@ -1,5 +1,5 @@
 package edu.byu.cs.tweeter.client.backgroundTask;
-// todo: change
+// Changed! -Surface
 import android.util.Log;
 
 import java.io.IOException;
@@ -30,4 +30,4 @@ public class BackgroundTaskUtils {
     }
 
 }
-// todo: change
+// Changed! -Surface
