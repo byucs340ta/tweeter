@@ -193,7 +193,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
          * @param user the user.
          */
         void bindUser(User user) {
-            //fixme: does this belong here?
             if (user == null)
                 Log.e(LOG_TAG, "user is null!");
             if (user != null && user.getImageBytes() == null)

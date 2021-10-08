@@ -202,7 +202,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
          * @param user the user.
          */
         void bindUser(User user) {
-            //fixme: does this belong here?
             if (user == null)
                 Log.e(LOG_TAG, "user is null!");
             if (user != null && user.getImageBytes() == null)
@@ -327,22 +326,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
         public int getItemViewType(int position) {
             return (position == users.size() - 1 && isLoading) ? LOADING_DATA_VIEW : ITEM_VIEW;
         }
-
-//        /** fixme: I removed this in following and it works... was that correct?
-//         * Causes the Adapter to display a loading footer and make a request to get more following
-//         * data.
-//         */
-//        void loadMoreItems() {
-//            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-//                isLoading = true;
-//                addLoadingFooter();
-//
-//                GetFollowersTask getFollowersTask = new GetFollowersTask(Cache.getInstance().getCurrUserAuthToken(),
-//                        user, PAGE_SIZE, lastFollower, new GetFollowersHandler());
-//                ExecutorService executor = Executors.newSingleThreadExecutor();
-//                executor.execute(getFollowersTask);
-//            }
-//        }
 
         /**
          * Adds a dummy user to the list of users so the RecyclerView will display a view (the

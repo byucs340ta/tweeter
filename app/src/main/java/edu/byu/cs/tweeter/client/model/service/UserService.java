@@ -20,9 +20,6 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService {
 
-    //todo: Add logout
-    // todo: Add register
-
     //*********************************** Login **************************************
 
     /**

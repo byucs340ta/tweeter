@@ -41,7 +41,6 @@ public class FollowersPresenter implements FollowService.getFollowersObserver, U
         this.targetUser = targetUser;
     }
 
-    // todo: Any input the user can give needs a corresponding method here to handle it. Logic!
 
 
     //******************************** Get Followers *********************************/
@@ -56,10 +55,6 @@ public class FollowersPresenter implements FollowService.getFollowersObserver, U
             new FollowService().getFollowers(authToken, targetUser, PAGE_SIZE, lastFollower, this);
         }
     }
-
-    // todo: nearly identical to the followers presenter! Get more from list
-
-    //  todo: Be able to select them.
 
     /**
      * From FollowersService.getFollowersObserver
