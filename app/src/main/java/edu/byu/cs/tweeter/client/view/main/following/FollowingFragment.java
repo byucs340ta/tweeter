@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,12 +90,18 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
 
     /**
      * From FollowingPresenter.View
+     * Displays error message as toast on screen
      */
     @Override
     public void displayErrorMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * From FollowingPresenter.View
+     * Displays a message as a toast on screen
+     * @param message
+     */
     @Override
     public void displayInfoMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
@@ -175,7 +182,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                presenter.goToUser(userAlias.getText().toString());
+                    presenter.goToUser(userAlias.getText().toString());
                 }
             });
         }
@@ -186,6 +193,11 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
          * @param user the user.
          */
         void bindUser(User user) {
+            //fixme: does this belong here?
+            if (user == null)
+                Log.e(LOG_TAG, "user is null!");
+            if (user != null && user.getImageBytes() == null)
+                Log.e(LOG_TAG, "image bytes are null");
             userImage.setImageDrawable(ImageUtils.drawableFromByteArray(user.getImageBytes()));
             userAlias.setText(user.getAlias());
             userName.setText(user.getName());
@@ -320,6 +332,8 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
         }
     }
 
+
+
     /**
      * A scroll listener that detects when the user has scrolled to the bottom of the currently
      * available data.
@@ -356,13 +370,10 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-//            presenter.loadMoreItems();
-//            if (!followingRecyclerViewAdapter.isLoading && followingRecyclerViewAdapter.hasMorePages) {
-                if ((visibleItemCount + firstVisibleItemPosition) >=
-                        totalItemCount && firstVisibleItemPosition >= 0) {
-                    loadMoreItems(); // call this class's function which will commune with presenter
-                }
-//            }
+            if ((visibleItemCount + firstVisibleItemPosition) >=
+                    totalItemCount && firstVisibleItemPosition >= 0) {
+                loadMoreItems(); // call this class's function which will commune with presenter
+            }
         }
     }
 }

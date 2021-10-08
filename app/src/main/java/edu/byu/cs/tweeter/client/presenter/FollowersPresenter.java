@@ -1,36 +1,31 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.util.Log;
-
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.view.main.following.FollowingFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements FollowService.getFollowingObserver, UserService.GetUserObserver {
+public class FollowersPresenter implements FollowService.getFollowersObserver, UserService.GetUserObserver {
 
     /**
      * Way for this presenter to call the view back and give it responses to methods it called
      * An observer interface version of View for the presenter to reference
      */
     public interface View {
-        void addItems(List<User> followees);
+        void addItems(List<User> followers);
         void setLoading(boolean isLoading);
         void navigateToUser(User user); // the presenter gives the view user info to display
         void displayErrorMessage(String message);
         void displayInfoMessage(String message);
     }
 
-    private static final String LOG_TAG = "FollowingPresenter";
     private static final int PAGE_SIZE = 10;
-
-    private View view;
+    private FollowersPresenter.View view;
     private AuthToken authToken;
     private User targetUser;
-    private User lastFollowee;
+    private User lastFollower;
     private boolean hasMorePages = true;
     private boolean isLoading = false;
 
@@ -40,13 +35,16 @@ public class FollowingPresenter implements FollowService.getFollowingObserver, U
      * @param authToken
      * @param targetUser
      */
-    public FollowingPresenter(View view, AuthToken authToken, User targetUser) {
+    public FollowersPresenter(FollowersPresenter.View view, AuthToken authToken, User targetUser) {
         this.view = view;
         this.authToken = authToken;
         this.targetUser = targetUser;
     }
 
-    //******************************** Get Followees *********************************/
+    // todo: Any input the user can give needs a corresponding method here to handle it. Logic!
+
+
+    //******************************** Get Followers *********************************/
 
     /**
      * Attempts to get more items when the view asks for them.
@@ -55,44 +53,48 @@ public class FollowingPresenter implements FollowService.getFollowingObserver, U
         if (!isLoading && hasMorePages) {
             isLoading = true; // don't want to load again during this async method call
             view.setLoading(true); // to add message to view
-            new FollowService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
+            new FollowService().getFollowers(authToken, targetUser, PAGE_SIZE, lastFollower, this);
         }
     }
 
+    // todo: nearly identical to the followers presenter! Get more from list
+
+    //  todo: Be able to select them.
+
     /**
-     * From FollowService.getFollowingObserver
-     * @param followees User to navigate view to
+     * From FollowersService.getFollowersObserver
+     * @param followers User to navigate view to
      * @param hasMorePages Are there more pages to share?
      */
     @Override
-    public void getFollowingSucceeded(List<User> followees, boolean hasMorePages) {
-        lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
+    public void getFollowersSucceeded(List<User> followers, boolean hasMorePages) {
+        lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
         this.hasMorePages = hasMorePages;
 
         view.setLoading(false);
         isLoading = false;
-        view.addItems(followees);
+        view.addItems(followers);
     }
 
     /**
-     * From FollowService.getFollowingObserver
+     * From FollowersService.getFollowersObserver
      * @param message Message to display after error
      */
     @Override
-    public void getFollowingFailed(String message) {
-        view.displayErrorMessage("Getting follows failed: " + message); // Consider Dr. Wilkerson's approach in his code
+    public void getFollowersFailed(String message) {
+        view.displayErrorMessage("Getting followers failed: " + message);
 
         isLoading = false;
         view.setLoading(false);
     }
 
     /**
-     * From FollowService.getFollowingObserver
+     * From FollowersService.getFollowersObserver
      * @param ex Exception message to display
      */
     @Override
-    public void getFollowingThrewException(Exception ex) {
-        view.displayErrorMessage("Getting follows failed: " + ex.getMessage()); // Consider Dr. Wilkerson's approach in his code
+    public void getFollowersThrewException(Exception ex) {
+        view.displayErrorMessage("Getting followers failed: " + ex.getMessage()); // Consider Dr. Wilkerson's approach in his code
 
         isLoading = false;
         view.setLoading(false);
