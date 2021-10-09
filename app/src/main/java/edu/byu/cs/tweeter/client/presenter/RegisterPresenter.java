@@ -12,7 +12,6 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class RegisterPresenter implements UserService.RegisterObserver {
-    // todo: put all the presenter logic from register fragment in here.
 
     public RegisterPresenter(View view) { this.view = view; }
 
@@ -41,7 +40,6 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         if (message == null) {
 
             // Convert image to byte array.
-            // fixme: if this doesn't work I probably messed it up.
             Bitmap image = ((BitmapDrawable) profileDrawableImage).getBitmap();
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             image.compress(Bitmap.CompressFormat.JPEG, 100, bos);
@@ -88,7 +86,6 @@ public class RegisterPresenter implements UserService.RegisterObserver {
 
     @Override
     public void registerSucceeded(AuthToken authToken, User user) {
-        // todo: Impelment successful registration. Incluidng logging in I think...
         view.navigateToUser(user);
         view.clearErrorMessage();
         view.displayInfoMessage("Hello " + user.getName());

@@ -23,7 +23,6 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class UserService {
 
     //*********************************** Register **************************************
-    // todo: Register functionality
 
     /**
      * Observer will be instantiated in the RegisterPresenter where logic for how to handle
