@@ -410,7 +410,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
             if ((visibleItemCount + firstVisibleItemPosition) >=
                     totalItemCount && firstVisibleItemPosition >= 0) {
                 loadMoreItems();
-
             }
         }
     }

@@ -89,7 +89,7 @@ public class FollowersPresenter implements FollowService.getFollowersObserver, U
      */
     @Override
     public void getFollowersThrewException(Exception ex) {
-        view.displayErrorMessage("Getting followers failed: " + ex.getMessage()); // Consider Dr. Wilkerson's approach in his code
+        view.displayErrorMessage("Getting followers failed because of exception: " + ex.getMessage()); // Consider Dr. Wilkerson's approach in his code
 
         isLoading = false;
         view.setLoading(false);
