@@ -94,6 +94,19 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
     }
 
     @Override
+    public void navigateToUser(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
+    }
+
+    @Override
+    public void navigateToWebsite(String clickable) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickable));
+        startActivity(intent);
+    }
+
+    @Override
     public void displayErrorMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
@@ -105,6 +118,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
 
     /**
      * Sets up all the visuals and the listeners
+     *
      * @param inflater
      * @param container
      * @param savedInstanceState
@@ -115,7 +129,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
-        //noinspection ConstantConditions
         User user = (User) getArguments().getSerializable(USER_KEY);
         presenter = new FeedPresenter(this, Cache.getInstance().getCurrUserAuthToken(),
                 user);
@@ -125,13 +138,8 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
         feedRecyclerView.setLayoutManager(layoutManager);
 
-//        try {
         feedRecyclerViewAdapter = new FeedRecyclerViewAdapter();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
         feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
-
         feedRecyclerView.addOnScrollListener(new FeedRecyclerViewPaginationScrollListener(layoutManager));
 
         return view;
@@ -171,7 +179,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
         }
 
         /**
-         * Binds the status's data to the view.
+         * Binds the status's data to the view. Format for a status
          *
          * @param status the status.
          */
@@ -183,7 +191,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
 
             // @mentions and urls clickable
             SpannableString spannableString = new SpannableString(status.getPost());
- // todo: There's tons of stuff that needs to go to presenter from here.
             for (String mention : status.getMentions()) {
                 int startIndex = status.getPost().indexOf(mention);
                 spannableString.setSpan(new ClickableSpan() {
@@ -196,16 +203,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
 
                         String clickable = s.subSequence(start, end).toString();
 
-                        if (clickable.contains("http")) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickable));
-                            startActivity(intent);
-                        } else {
-                            GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                                    clickable, new GetUserHandler());
-                            ExecutorService executor = Executors.newSingleThreadExecutor();
-                            executor.execute(getUserTask);
-                            Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
-                        }
+                        presenter.evaluateClickedItem(clickable);
                     }
 
                     @Override
@@ -226,42 +224,17 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
             post.setClickable(true);
             post.setMovementMethod(LinkMovementMethod.getInstance());
         }
-
-        /**
-         * Message handler (i.e., observer) for GetUserTask.
-         */
-        private class GetUserHandler extends Handler {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-                if (success) {
-                    User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-                    startActivity(intent);
-                } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
     }
 
     /**
      * The adapter for the RecyclerView that displays the feed data.
+     * Adapters are all view data I believe!
      */
     private class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedHolder> {
 
         private final List<Status> feed = new ArrayList<>();
-        private Status lastStatus;
-
+        private Status lastStatus; // todo: remove if this is only used in presenter!
         private boolean hasMorePages;
-        private boolean isLoading = false;
 
         /**
          * Creates an instance and loads the first page of feed data.
@@ -367,27 +340,10 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
         }
 
         /**
-         * Causes the Adapter to display a loading footer and make a request to get more feed
-         * data.
-         */
-//        void loadMoreItems() /*throws MalformedURLException todo: maybe keep?*/ {
-//            FeedFragment.this.loadMoreItems();
-////            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-////                isLoading = true;
-////                addLoadingFooter();
-////
-////                GetFeedTask getFeedTask = new GetFeedTask(Cache.getInstance().getCurrUserAuthToken(),
-////                        user, PAGE_SIZE, lastStatus, new GetFeedHandler());
-////                ExecutorService executor = Executors.newSingleThreadExecutor();
-////                executor.execute(getFeedTask);
-////            }
-//        }
-
-        /**
          * Adds a dummy status to the list of statuses so the RecyclerView will display a view (the
          * loading footer view) at the bottom of the list.
          */
-        private void addLoadingFooter() /* throws MalformedURLException todo: maybe keep?*/ {
+        private void addLoadingFooter() /* throws MalformedURLException*/ {
             addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<String>() {{
                 add("https://youtube.com");
             }}, new ArrayList<String>() {{
@@ -403,53 +359,15 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
             removeItem(feed.get(feed.size() - 1));
         }
 
-
-//        /**
-//         * Message handler (i.e., observer) for GetFeedTask.
-//         */
-//        private class GetFeedHandler extends Handler {
-//            @Override
-//            public void handleMessage(@NonNull Message msg) {
-//                isLoading = false;
-//                removeLoadingFooter();
-//
-//                boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
-//                if (success) {
-//                    List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.STATUSES_KEY);
-//                    hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-//
-//                    lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-//
-//                    feedRecyclerViewAdapter.addItems(statuses);
-//                } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
-//                    String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
-//                    Toast.makeText(getContext(), "Failed to get feed: " + message, Toast.LENGTH_LONG).show();
-//                } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
-//                    Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
-//                    Toast.makeText(getContext(), "Failed to get feed because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        }
     }
 
     /**
      * Calls presenter to load more items when first starting up and when reaching the bottom of the page.
      */
     private void loadMoreItems() {
-        // Run this code on the UI thread
-//        final Handler handler = new Handler(Looper.getMainLooper());
-//        handler.postDelayed(() -> {
-//            presenter.loadMoreItems();
-//        }, 0);
-
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(() -> {
             presenter.loadMoreItems();
-//            try {
-//                feedRecyclerViewAdapter.loadMoreItems();
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            }
         }, 0);
     }
 
@@ -487,24 +405,10 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            // todo: in followers we mostly make it just do "loadMoreItems" and we also handle
-            // some of this logic in the presenter
-//            if (!feedRecyclerViewAdapter.isLoading && feedRecyclerViewAdapter.hasMorePages) {
-                if ((visibleItemCount + firstVisibleItemPosition) >=
-                        totalItemCount && firstVisibleItemPosition >= 0) {
-                    loadMoreItems();
-                    // Run this code later on the UI thread
-//                    final Handler handler = new Handler(Looper.getMainLooper());
-//                    handler.postDelayed(() -> {
-//                        try {
-//                            feedRecyclerViewAdapter.loadMoreItems();
-//                        } catch (MalformedURLException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }, 0);
-//                }
+            if ((visibleItemCount + firstVisibleItemPosition) >=
+                    totalItemCount && firstVisibleItemPosition >= 0) {
+                loadMoreItems();
             }
         }
     }
-
 }
