@@ -233,7 +233,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
     private class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedHolder> {
 
         private final List<Status> feed = new ArrayList<>();
-        private Status lastStatus; // todo: remove if this is only used in presenter!
+        private Status lastStatus; // todo: Ensure that this is actually getting correct num of statuses at the right time.
         private boolean hasMorePages;
 
         /**
