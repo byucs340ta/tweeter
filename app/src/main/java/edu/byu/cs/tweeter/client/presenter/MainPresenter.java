@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.widget.TextView;
+
 import edu.byu.cs.tweeter.client.model.service.CountService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
@@ -23,9 +25,12 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
         void logout();
 
         // todo: all of the other features in main, etc...
-        void updateSelectedUserPage();
+        void updateFollowingandFollowersCount();
         void updateFollowingButton(boolean isFollowing);
         void setFollowButtonClickable(boolean canClick);
+
+        void setFollowerCount(String count);
+        void setFollowingCount(String count);
 
         void displayErrorMessage(String message);
         void clearErrorMessage();
@@ -47,7 +52,7 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
 
     @Override
     public void AddFollowersSucceeded() {
-        view.updateSelectedUserPage();
+        view.updateFollowingandFollowersCount();
         view.updateFollowingButton(true);
         view.setFollowButtonClickable(true);
     }
@@ -81,7 +86,7 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
 
     @Override
     public void RemoveFollowersSucceeded() {
-        view.updateSelectedUserPage();
+        view.updateFollowingandFollowersCount();
         view.updateFollowingButton(false);
         view.setFollowButtonClickable(true);
     }
@@ -103,42 +108,50 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
     //******************************* Followers Count *********************************//
     public void countFollowers() {
         // todo
+        new CountService().countFollowers(authToken, targetUser, this);
+//        new CountService.GetFollowersObserver(authToken, targetUser, this);
     }
 
     @Override
-    public void getFollowerCountSucceeded(AuthToken authToken, User user) {
+    public void getFollowerCountSucceeded(int countNum) {
         // add something?
+        String countString = Integer.toString(countNum);
+        view.setFollowerCount(countString);
+        view.updateFollowingandFollowersCount();
     }
 
     @Override
     public void getFollowerCountFailed(String message) {
-        view.displayErrorMessage("Failed to logout: " + message);
+        view.displayErrorMessage("Failed to get followers count: " + message);
     }
 
     @Override
     public void getFollowerCountThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to logout due to exception: " + ex.getMessage());
+        view.displayErrorMessage("Failed to get followers count because of exception: " + ex.getMessage());
     }
 
     //***************************** Following Count  **********************************//
 
     public void countFollowing() {
         // todo
+        new CountService().countFollowing(authToken, targetUser, this);
     }
 
     @Override
-    public void getFollowingCountSucceeded(AuthToken authToken, User user) {
-
+    public void getFollowingCountSucceeded(int countNum) {
+        String countString = Integer.toString(countNum);
+        view.setFollowingCount(countString);
+        view.updateFollowingandFollowersCount();
     }
 
     @Override
     public void getFollowingCountFailed(String message) {
-        view.displayErrorMessage("Failed to unfollow: " + message);
+        view.displayErrorMessage("Failed to get following count: " + message);
     }
 
     @Override
     public void getFollowingCountThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to unfollow because of exception: " + ex.getMessage());
+        view.displayErrorMessage("Failed to get following count because of exception: " + ex.getMessage());
     }
 
 
