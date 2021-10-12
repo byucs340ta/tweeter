@@ -218,29 +218,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
             post.setClickable(true);
             post.setMovementMethod(LinkMovementMethod.getInstance());
         }
-
-//        /**
-//         * Message handler (i.e., observer) for GetUserTask.
-//         */
-//        private class GetUserHandler extends Handler {
-//            @Override
-//            public void handleMessage(@NonNull Message msg) {
-//                boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-//                if (success) {
-//                    User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-//
-//                    Intent intent = new Intent(getContext(), MainActivity.class);
-//                    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-//                    startActivity(intent);
-//                } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-//                    String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-//                    Toast.makeText(getContext(), "Failed to get user's profile: " + message, Toast.LENGTH_LONG).show();
-//                } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-//                    Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-//                    Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        }
     }
 
     /**
@@ -356,22 +333,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
         public int getItemViewType(int position) {
             return (position == story.size() - 1 && isLoading) ? LOADING_DATA_VIEW : ITEM_VIEW;
         }
-
-        /**
-         * Causes the Adapter to display a loading footer and make a request to get more story
-         * data.
-         */
-//        void loadMoreItems() throws MalformedURLException {
-//            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-//                isLoading = true;
-//                addLoadingFooter();
-//
-//                GetStoryTask getStoryTask = new GetStoryTask(Cache.getInstance().getCurrUserAuthToken(),
-//                        user, PAGE_SIZE, lastStatus, new GetStoryHandler());
-//                ExecutorService executor = Executors.newSingleThreadExecutor();
-//                executor.execute(getStoryTask);
-//            }
-//        }
 
         /**
          * Adds a dummy status to the list of statuses so the RecyclerView will display a view (the
