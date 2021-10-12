@@ -117,7 +117,7 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
         // add something?
         String countString = Integer.toString(countNum);
         view.setFollowerCount(countString);
-        view.updateFollowingandFollowersCount();
+//        view.updateFollowingandFollowersCount();
     }
 
     @Override
@@ -141,7 +141,7 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
     public void getFollowingCountSucceeded(int countNum) {
         String countString = Integer.toString(countNum);
         view.setFollowingCount(countString);
-        view.updateFollowingandFollowersCount();
+//        view.updateFollowingandFollowersCount();
     }
 
     @Override
