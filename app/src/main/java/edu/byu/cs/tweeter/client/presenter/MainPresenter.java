@@ -1,23 +1,149 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import edu.byu.cs.tweeter.client.model.service.CountService;
+import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver {
+public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersObserver,
+CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowService.removeFollowerObserver{
 
-    public MainPresenter(View view) { this.view = view; }
+    public MainPresenter(View view, AuthToken authToken, User targetUser) {
+        this.view = view;
+        this.authToken = authToken;
+        this.targetUser = targetUser;
+    }
 
-    private View view;
+    private MainPresenter.View view;
+    private AuthToken authToken;
+    private User targetUser;
 
     public interface View {
         void logout();
+
         // todo: all of the other features in main, etc...
+        void updateSelectedUserPage();
+        void updateFollowingButton(boolean isFollowing);
+        void setFollowButtonClickable(boolean canClick);
+
         void displayErrorMessage(String message);
         void clearErrorMessage();
         void displayInfoMessage(String message);
         void clearInfoMessage();
     }
 
-    //******************************* Logout *********************************
+    //******************************* Add Following ***************************//
+
+    public void follow() {
+        new FollowService().addFollower(authToken, targetUser, this);
+//            UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
+//                    selectedUser, new MainActivity.UnfollowHandler());
+//            ExecutorService executor = Executors.newSingleThreadExecutor();
+//            executor.execute(unfollowTask);
+//            view.displayInfoMessage("Removing " + selectedUser.getName() + "...");
+//            Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void AddFollowersSucceeded() {
+        view.updateSelectedUserPage();
+        view.updateFollowingButton(true);
+        view.setFollowButtonClickable(true);
+    }
+
+    @Override
+    public void AddFollowersFailed(String message) {
+        view.displayErrorMessage("Failed to follow: " + message);
+        view.setFollowButtonClickable(true);
+    }
+
+    @Override
+    public void AddFollowersThrewException(Exception ex) {
+        view.displayErrorMessage("Failed to follow because of exception: " + ex.getMessage());
+        view.setFollowButtonClickable(true);
+    }
+
+
+
+    //******************************* Remove Following ***************************//
+
+    public void unfollow() {
+        new FollowService().removeFollower(authToken, targetUser, this);
+
+//        FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
+//                    selectedUser, new MainActivity.FollowHandler());
+//            ExecutorService executor = Executors.newSingleThreadExecutor();
+//            executor.execute(followTask);
+//            view.displayInfoMessage("Adding " + selectedUser.getName() + "...");
+//            Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void RemoveFollowersSucceeded() {
+        view.updateSelectedUserPage();
+        view.updateFollowingButton(false);
+        view.setFollowButtonClickable(true);
+    }
+
+    @Override
+    public void RemoveFollowersFailed(String message) {
+        view.displayErrorMessage("Failed to un-follow: " + message);
+        view.setFollowButtonClickable(true);
+    }
+
+    @Override
+    public void RemoveFollowersThrewException(Exception ex) {
+        view.displayErrorMessage("Failed to un-follow because of exception: " + ex.getMessage());
+        view.setFollowButtonClickable(true);
+    }
+
+
+
+    //******************************* Followers Count *********************************//
+    public void countFollowers() {
+        // todo
+    }
+
+    @Override
+    public void getFollowerCountSucceeded(AuthToken authToken, User user) {
+        // add something?
+    }
+
+    @Override
+    public void getFollowerCountFailed(String message) {
+        view.displayErrorMessage("Failed to logout: " + message);
+    }
+
+    @Override
+    public void getFollowerCountThrewException(Exception ex) {
+        view.displayErrorMessage("Failed to logout due to exception: " + ex.getMessage());
+    }
+
+    //***************************** Following Count  **********************************//
+
+    public void countFollowing() {
+        // todo
+    }
+
+    @Override
+    public void getFollowingCountSucceeded(AuthToken authToken, User user) {
+
+    }
+
+    @Override
+    public void getFollowingCountFailed(String message) {
+        view.displayErrorMessage("Failed to unfollow: " + message);
+    }
+
+    @Override
+    public void getFollowingCountThrewException(Exception ex) {
+        view.displayErrorMessage("Failed to unfollow because of exception: " + ex.getMessage());
+    }
+
+
+
+    //******************************* Logout *********************************//
 
     public void logout() {
         view.clearErrorMessage();

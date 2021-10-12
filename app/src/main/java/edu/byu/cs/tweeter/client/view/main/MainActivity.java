@@ -40,6 +40,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter;
 import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.client.view.login.StatusDialogFragment;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     private TextView followerCount;
     private Button followButton;
 
-    private MainPresenter presenter = new MainPresenter(this);
+    private MainPresenter presenter;
 
     @Override
     public void logout() {
@@ -75,6 +76,25 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         //Clear user data (cached data).
         Cache.getInstance().clearCache();
         startActivity(intent);
+    }
+
+    @Override
+    public void updateSelectedUserPage() {
+        updateSelectedUserFollowingAndFollowers();
+    }
+
+    /**
+     * Updates to removed or added!
+     * @param removed
+     */
+    @Override
+    public void updateFollowingButton(boolean removed) {
+        updateFollowButton(removed);
+    }
+
+    @Override
+    public void setFollowButtonClickable(boolean canClick) {
+        followButton.setEnabled(canClick);
     }
 
     @Override
@@ -117,6 +137,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         if (selectedUser == null) {
             throw new RuntimeException("User not passed to activity");
         }
+
+        presenter = new MainPresenter(this, Cache.getInstance().getCurrUserAuthToken(), selectedUser); // now following view has a presenter to work with
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), selectedUser);
         ViewPager viewPager = findViewById(R.id.view_pager);
@@ -168,21 +190,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             @Override
             public void onClick(View v) {
                 followButton.setEnabled(false);
-
-                if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-                    UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
-                            selectedUser, new UnfollowHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(unfollowTask);
-
-                    Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
-                } else {
-                    FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
-                            selectedUser, new FollowHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(followTask);
-
-                    Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
+                boolean isNotAlreadyFollowing = followButton.getText().toString().equals(v.getContext().getString(R.string.following));
+                if (isNotAlreadyFollowing) {
+                    presenter.follow();
+                }
+                else {
+                    presenter.unfollow();
                 }
             }
         });
@@ -201,25 +214,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
             logOutToast.show();
             presenter.logout();
-//            LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler());
-//            ExecutorService executor = Executors.newSingleThreadExecutor();
-//            executor.execute(logoutTask);
 
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
-
-//    public void logoutUser() {
-//        //Revert to login screen.
-//        Intent intent = new Intent(this, LoginActivity.class);
-//        //Clear everything so that the main activity is recreated with the login page.
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        //Clear user data (cached data).
-//        Cache.getInstance().clearCache();
-//        startActivity(intent);
-//    }
 
     @Override
     public void onStatusPosted(String post) {
@@ -328,25 +328,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-    // LogoutHandler
-
-//    private class LogoutHandler extends Handler {
-//        @Override
-//        public void handleMessage(@NonNull Message msg) {
-//            boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
-//            if (success) {
-//                logOutToast.cancel();
-//                logoutUser();
-//            } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
-//                String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
-//                Toast.makeText(MainActivity.this, "Failed to logout: " + message, Toast.LENGTH_LONG).show();
-//            } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
-//                Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
-//                Toast.makeText(MainActivity.this, "Failed to logout because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//        }
-//    }
-
     // GetFollowersCountHandler
 
     private class GetFollowersCountHandler extends Handler {
@@ -436,24 +417,24 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     // UnfollowHandler
 
-    private class UnfollowHandler extends Handler {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
-            if (success) {
-                updateSelectedUserFollowingAndFollowers();
-                updateFollowButton(true);
-            } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to unfollow: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to unfollow because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-
-            followButton.setEnabled(true);
-        }
-    }
+//    private class UnfollowHandler extends Handler {
+//        @Override
+//        public void handleMessage(@NonNull Message msg) {
+//            boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
+//            if (success) {
+//                updateSelectedUserFollowingAndFollowers();
+//                updateFollowButton(true);
+//            } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
+//                String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
+//                Toast.makeText(MainActivity.this, "Failed to unfollow: " + message, Toast.LENGTH_LONG).show();
+//            } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
+//                Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);
+//                Toast.makeText(MainActivity.this, "Failed to unfollow because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+//            }
+//
+//            followButton.setEnabled(true);
+//        }
+//    }
 
     // PostStatusHandler
 
