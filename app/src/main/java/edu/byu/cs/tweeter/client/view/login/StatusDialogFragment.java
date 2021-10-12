@@ -15,6 +15,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.Locale;
 
 import edu.byu.cs.client.R;
@@ -49,7 +51,13 @@ public class StatusDialogFragment extends AppCompatDialogFragment {
                 .setPositiveButton("POST STATUS", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        observer.onStatusPosted(post.getText().toString());
+                        try {
+                            observer.onStatusPosted(post.getText().toString());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
 
@@ -98,7 +106,7 @@ public class StatusDialogFragment extends AppCompatDialogFragment {
     }
 
     public interface Observer {
-        void onStatusPosted(String post);
+        void onStatusPosted(String post) throws ParseException, MalformedURLException;
     }
 
 }

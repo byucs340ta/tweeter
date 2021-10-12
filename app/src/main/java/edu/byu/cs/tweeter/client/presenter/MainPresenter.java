@@ -1,15 +1,29 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.view.View;
 import android.widget.TextView;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.CountService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.PostService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Follow;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersObserver,
-CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowService.removeFollowerObserver{
+CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowService.removeFollowerObserver,
+FollowService.isFollowerObserver, PostService.PostObserver {
 
     public MainPresenter(View view, AuthToken authToken, User targetUser) {
         this.view = view;
@@ -24,13 +38,15 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
     public interface View {
         void logout();
 
-        // todo: all of the other features in main, etc...
         void updateFollowingandFollowersCount();
         void updateFollowingButton(boolean isFollowing);
         void setFollowButtonClickable(boolean canClick);
 
         void setFollowerCount(String count);
         void setFollowingCount(String count);
+
+        void setFollowButtonVisibility(boolean isVisible);
+        void setIsFollowerButton(boolean isFollower);
 
         void displayErrorMessage(String message);
         void clearErrorMessage();
@@ -42,12 +58,6 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
 
     public void follow() {
         new FollowService().addFollower(authToken, targetUser, this);
-//            UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
-//                    selectedUser, new MainActivity.UnfollowHandler());
-//            ExecutorService executor = Executors.newSingleThreadExecutor();
-//            executor.execute(unfollowTask);
-//            view.displayInfoMessage("Removing " + selectedUser.getName() + "...");
-//            Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -75,13 +85,6 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
 
     public void unfollow() {
         new FollowService().removeFollower(authToken, targetUser, this);
-
-//        FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
-//                    selectedUser, new MainActivity.FollowHandler());
-//            ExecutorService executor = Executors.newSingleThreadExecutor();
-//            executor.execute(followTask);
-//            view.displayInfoMessage("Adding " + selectedUser.getName() + "...");
-//            Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -107,17 +110,13 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
 
     //******************************* Followers Count *********************************//
     public void countFollowers() {
-        // todo
         new CountService().countFollowers(authToken, targetUser, this);
-//        new CountService.GetFollowersObserver(authToken, targetUser, this);
     }
 
     @Override
     public void getFollowerCountSucceeded(int countNum) {
-        // add something?
         String countString = Integer.toString(countNum);
         view.setFollowerCount(countString);
-//        view.updateFollowingandFollowersCount();
     }
 
     @Override
@@ -133,7 +132,6 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
     //***************************** Following Count  **********************************//
 
     public void countFollowing() {
-        // todo
         new CountService().countFollowing(authToken, targetUser, this);
     }
 
@@ -141,7 +139,6 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
     public void getFollowingCountSucceeded(int countNum) {
         String countString = Integer.toString(countNum);
         view.setFollowingCount(countString);
-//        view.updateFollowingandFollowersCount();
     }
 
     @Override
@@ -180,4 +177,120 @@ CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowServ
     public void logoutThrewException(Exception ex) {
         view.displayErrorMessage("Failed to logout because of exception: " + ex.getMessage());
     }
+
+
+
+    //***************************** is follower *************************//
+
+    public void verifyIsFollower() {
+        if (targetUser.compareTo(Cache.getInstance().getCurrUser()) == 0) {
+            view.setFollowButtonVisibility(false);
+        }
+        else {
+            view.setFollowButtonVisibility(true);
+            new FollowService().isFollower(authToken, targetUser, this); // THIS IS AN OBSERVER WTF?!
+        }
+    }
+
+    @Override
+    public void IsFollowerSucceeded(boolean isFollower) {
+        view.setIsFollowerButton(isFollower);
+    }
+
+    @Override
+    public void IsFollowerFailed(String message) {
+        view.displayErrorMessage("Failed to determine following relationship: " + message);
+    }
+
+    @Override
+    public void IsFollowerThrewException(Exception ex) {
+        view.displayErrorMessage("Failed to determine following relationship because of exception: " + ex.getMessage());
+    }
+
+
+
+    //********************************** Post *********************************//
+
+    public void postStatus(String post, User user, String formattedDateTime, List<String> URLs, List<String> mentions) {
+        Status newStatus = new Status(post, targetUser, formattedDateTime, URLs, mentions);
+        new PostService().post(newStatus, this);
+    }
+
+    @Override
+    public void PostSucceeded() {
+        view.displayInfoMessage("Successfully Posted!");
+    }
+
+    @Override
+    public void PostFailed(String message) {
+        view.displayErrorMessage("Failed to post status: " + message);
+    }
+
+    @Override
+    public void PostThrewException(Exception ex) {
+        view.displayErrorMessage("Failed to post status because of exception: " + ex.getMessage());
+
+    }
+
+
+
+    //******************************** OTHER METHODS ********************************//
+
+    public List<String> parseURLs(String post) throws MalformedURLException {
+        List<String> containedUrls = new ArrayList<>();
+        for (String word : post.split("\\s")) {
+            if (word.startsWith("http://") || word.startsWith("https://")) {
+
+                int index = findUrlEndIndex(word);
+
+                word = word.substring(0, index);
+
+                containedUrls.add(word);
+            }
+        }
+
+        return containedUrls;
+    }
+
+    public List<String> parseMentions(String post) {
+        List<String> containedMentions = new ArrayList<>();
+
+        for (String word : post.split("\\s")) {
+            if (word.startsWith("@")) {
+                word = word.replaceAll("[^a-zA-Z0-9]", "");
+                word = "@".concat(word);
+
+                containedMentions.add(word);
+            }
+        }
+
+        return containedMentions;
+    }
+
+    public int findUrlEndIndex(String word) {
+        if (word.contains(".com")) {
+            int index = word.indexOf(".com");
+            index += 4;
+            return index;
+        } else if (word.contains(".org")) {
+            int index = word.indexOf(".org");
+            index += 4;
+            return index;
+        } else if (word.contains(".edu")) {
+            int index = word.indexOf(".edu");
+            index += 4;
+            return index;
+        } else if (word.contains(".net")) {
+            int index = word.indexOf(".net");
+            index += 4;
+            return index;
+        } else if (word.contains(".mil")) {
+            int index = word.indexOf(".mil");
+            index += 4;
+            return index;
+        } else {
+            return word.length();
+        }
+    }
+
 }

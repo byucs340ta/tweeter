@@ -205,4 +205,45 @@ public class FollowService {
         }
     }
 
+
+
+    //************************** is Follower *******************************/
+
+    public interface isFollowerObserver {
+        void IsFollowerSucceeded(boolean isFollower); // are there more users?
+        void IsFollowerFailed(String message);
+        void IsFollowerThrewException(Exception ex);
+    }
+
+    public void isFollower(AuthToken authToken, User selectedUser, isFollowerObserver observer) {
+        IsFollowerTask isFollowerTask = new IsFollowerTask(Cache.getInstance().getCurrUserAuthToken(),
+                Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(isFollowerTask);
+    }
+
+    private class IsFollowerHandler extends Handler {
+        IsFollowerHandler(isFollowerObserver observer) { this.observer = observer; }
+        isFollowerObserver observer;
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(IsFollowerTask.SUCCESS_KEY);
+            if (success) {
+                boolean isFollower = msg.getData().getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
+                observer.IsFollowerSucceeded(isFollower);
+                // If logged in user if a follower of the selected user, display the follow button as "following"
+            } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
+                observer.IsFollowerFailed(message);
+//                Toast.makeText(MainActivity.this, "Failed to determine following relationship: " + message, Toast.LENGTH_LONG).show();
+            } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);
+                observer.IsFollowerThrewException(ex);
+//                Toast.makeText(MainActivity.this, "Failed to determine following relationship because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
 }
