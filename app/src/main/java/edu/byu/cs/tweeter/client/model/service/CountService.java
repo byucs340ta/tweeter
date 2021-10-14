@@ -27,8 +27,8 @@ public class CountService {
     }
 
     public void countFollowers(AuthToken authToken, User targetUser, GetFollowersObserver observer) {
-        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
-                targetUser, new GetFollowersCountHandler(observer));
+        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(new GetFollowersCountHandler(observer),
+                Cache.getInstance().getCurrUserAuthToken(), targetUser);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(followersCountTask);
     }
@@ -66,8 +66,8 @@ public class CountService {
     }
 
     public void countFollowing(AuthToken authToken, User targetUser, GetFollowingObserver observer) {
-        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(),
-                targetUser, new GetFollowingCountHandler(observer));
+        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(new GetFollowingCountHandler(observer),
+                Cache.getInstance().getCurrUserAuthToken(), targetUser);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(followingCountTask);
     }

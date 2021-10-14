@@ -28,8 +28,8 @@ public class StoryService {
     public void getStory(AuthToken authToken, User targetUser, int numItemsToGet,
                         Status lastStatus, StoryService.getStoryObserver observer) {
 
-        GetStoryTask getStoryTask = new GetStoryTask(authToken, targetUser, numItemsToGet, lastStatus,
-                new StoryService.GetStoryHandler(observer));
+        GetStoryTask getStoryTask = new GetStoryTask(new StoryService.GetStoryHandler(observer),
+                authToken, targetUser, numItemsToGet, lastStatus);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getStoryTask);
     }
@@ -50,7 +50,7 @@ public class StoryService {
 
             boolean success = msg.getData().getBoolean(GetStoryTask.SUCCESS_KEY);
             if (success) {
-                List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetStoryTask.STATUSES_KEY);
+                List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetStoryTask.ITEMS_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetStoryTask.MORE_PAGES_KEY);
                 observer.getStorySucceeded(statuses, hasMorePages);
 //                lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;

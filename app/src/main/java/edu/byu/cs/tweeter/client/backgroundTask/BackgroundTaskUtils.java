@@ -19,13 +19,13 @@ public class BackgroundTaskUtils {
      *
      * @param user the user whose profile image is to be loaded.
      */
-    public static void loadImage(User user) throws IOException {
+    public static void loadImage(User user) { // throws IOException
         try {
             byte[] bytes = ByteArrayUtils.bytesFromUrl(user.getImageUrl());
             user.setImageBytes(bytes);
         } catch (IOException e) {
             Log.e(LOG_TAG, e.toString(), e);
-            throw e;
+//            throw e;
         }
     }
 

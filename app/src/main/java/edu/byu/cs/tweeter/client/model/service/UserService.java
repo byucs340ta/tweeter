@@ -158,7 +158,7 @@ public class UserService {
      * @param alias How we know which user the current action wants to get
      */
     public void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
-        GetUserTask getUserTask = new GetUserTask(authToken, alias, new GetUserHandler(observer));
+        GetUserTask getUserTask = new GetUserTask(new GetUserHandler(observer), authToken, alias);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getUserTask);
     }
@@ -205,7 +205,7 @@ public class UserService {
 
     public void logout(LogoutObserver observer) {
         // Run a LoginTask to login the user
-        LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new UserService.LogoutHandler(observer));
+        LogoutTask logoutTask = new LogoutTask(new UserService.LogoutHandler(observer), Cache.getInstance().getCurrUserAuthToken());
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(logoutTask);
     }

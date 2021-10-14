@@ -50,8 +50,8 @@ public class FollowService {
     public void getFollowing(AuthToken authToken, User targetUser, int numItemsToGet,
                              User lastFollowee, getFollowingObserver observer) {
 
-        GetFollowingTask getFollowingTask = new GetFollowingTask(authToken,
-                targetUser, numItemsToGet, lastFollowee, new GetFollowingHandler(observer));
+        GetFollowingTask getFollowingTask = new GetFollowingTask(new GetFollowingHandler(observer),
+                authToken, targetUser, numItemsToGet, lastFollowee);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFollowingTask);
     }
@@ -72,7 +72,7 @@ public class FollowService {
 
             boolean success = msg.getData().getBoolean(GetFollowingTask.SUCCESS_KEY);
             if (success) {
-                List<User> followees = (List<User>) msg.getData().getSerializable(GetFollowingTask.FOLLOWEES_KEY);
+                List<User> followees = (List<User>) msg.getData().getSerializable(GetFollowingTask.ITEMS_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
                 observer.getFollowingSucceeded(followees, hasMorePages);
             } else if (msg.getData().containsKey(GetFollowingTask.MESSAGE_KEY)) {
@@ -100,8 +100,8 @@ public class FollowService {
     public void getFollowers(AuthToken authToken, User targetUser, int numItemsToGet,
                              User lastFollower, getFollowersObserver observer) {
 
-        GetFollowersTask getFollowersTask = new GetFollowersTask(authToken,
-                targetUser, numItemsToGet, lastFollower, new GetFollowersHandler(observer));
+        GetFollowersTask getFollowersTask = new GetFollowersTask(new GetFollowersHandler(observer),
+                authToken, targetUser, numItemsToGet, lastFollower);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFollowersTask);
     }
@@ -120,7 +120,7 @@ public class FollowService {
 
             boolean success = msg.getData().getBoolean(GetFollowersTask.SUCCESS_KEY);
             if (success) {
-                List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.FOLLOWERS_KEY);
+                List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.ITEMS_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
                 observer.getFollowersSucceeded(followers, hasMorePages);
             } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {
@@ -144,8 +144,8 @@ public class FollowService {
     }
 
     public void addFollower(AuthToken authToken, User selectedUser, FollowService.addFollowerObserver observer) {
-        FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
-                selectedUser, new FollowService.FollowHandler(observer));
+        FollowTask followTask = new FollowTask(new FollowService.FollowHandler(observer), Cache.getInstance().getCurrUserAuthToken(),
+                selectedUser);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(followTask);
     }
@@ -179,7 +179,7 @@ public class FollowService {
     }
 
     public void removeFollower(AuthToken authToken, User selectedUser, FollowService.removeFollowerObserver observer) {
-        FollowTask followTask = new FollowTask(authToken, selectedUser, new FollowService.UnfollowHandler(observer));
+        FollowTask followTask = new FollowTask(new FollowService.UnfollowHandler(observer), authToken, selectedUser);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(followTask);
     }
@@ -216,8 +216,10 @@ public class FollowService {
     }
 
     public void isFollower(AuthToken authToken, User selectedUser, isFollowerObserver observer) {
-        IsFollowerTask isFollowerTask = new IsFollowerTask(Cache.getInstance().getCurrUserAuthToken(),
-                Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerHandler(observer));
+        IsFollowerTask isFollowerTask = new IsFollowerTask(new IsFollowerHandler(observer),
+                Cache.getInstance().getCurrUserAuthToken(),
+                Cache.getInstance().getCurrUser(),
+                selectedUser);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(isFollowerTask);
     }

@@ -25,8 +25,9 @@ public class PostService {
     }
 
     public void post(Status newStatus, PostObserver observer) {
-        PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-                newStatus, new PostStatusHandler(observer));
+        PostStatusTask statusTask = new PostStatusTask(new PostStatusHandler(observer),
+                Cache.getInstance().getCurrUserAuthToken(),
+                newStatus);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(statusTask);
     }

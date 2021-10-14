@@ -32,8 +32,8 @@ public class FeedService {
     public void getFeed(AuthToken authToken, User targetUser, int numItemsToGet,
                         Status lastStatus, FeedService.getFeedObserver observer) {
 
-        GetFeedTask getFeedTask = new GetFeedTask(authToken, targetUser, numItemsToGet, lastStatus,
-                new GetFeedHandler(observer));
+        GetFeedTask getFeedTask = new GetFeedTask(new GetFeedHandler(observer), authToken, targetUser,
+                numItemsToGet, lastStatus);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFeedTask);
     }
@@ -54,7 +54,7 @@ public class FeedService {
 
             boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
             if (success) {
-                List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.STATUSES_KEY);
+                List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.ITEMS_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
                 observer.getFeedSucceeded(statuses, hasMorePages);
             } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
