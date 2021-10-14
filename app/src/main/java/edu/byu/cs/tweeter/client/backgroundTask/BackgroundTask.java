@@ -56,14 +56,15 @@ public abstract class BackgroundTask implements Runnable {
     protected void sendFailedMessage() {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putString(MESSAGE_KEY, this.errorMessage);
+        msgBundle.putString(MESSAGE_KEY, (LOG_TAG + " failed: " + this.errorMessage));
         sendMessage(msgBundle);
     }
 
-    protected void sendExceptionMessage(Exception ex) { // todo: return message or exception?
+    protected void sendExceptionMessage(Exception ex) {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putSerializable(EXCEPTION_KEY, ex);
+        msgBundle.putString(MESSAGE_KEY, (LOG_TAG + " failed due to exception: " + ex.getMessage())); // fixme: Should this return exception or message? I think it's up to me.
+        msgBundle.putSerializable(EXCEPTION_KEY, ex); // currently passing this through, but it is only used for verification.
         sendMessage(msgBundle);
     }
 
@@ -91,6 +92,5 @@ public abstract class BackgroundTask implements Runnable {
     protected void loadSuccessBundle(Bundle msgBundle) {
         return;
     }
-
 
 }

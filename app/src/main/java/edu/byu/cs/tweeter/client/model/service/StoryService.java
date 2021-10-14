@@ -45,24 +45,18 @@ public class StoryService {
 
         @Override
         public void handleMessage(@NonNull Message msg) {
-//            isLoading = false;
-//            removeLoadingFooter();
 
             boolean success = msg.getData().getBoolean(GetStoryTask.SUCCESS_KEY);
             if (success) {
                 List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetStoryTask.ITEMS_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetStoryTask.MORE_PAGES_KEY);
                 observer.getStorySucceeded(statuses, hasMorePages);
-//                lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-//                storyRecyclerViewAdapter.addItems(statuses);
             } else if (msg.getData().containsKey(GetStoryTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetStoryTask.MESSAGE_KEY);
                 observer.getStoryFailed(message);
-//                Toast.makeText(getContext(), "Failed to get story: " + message, Toast.LENGTH_LONG).show();
             } else if (msg.getData().containsKey(GetStoryTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetStoryTask.EXCEPTION_KEY);
                 observer.getStoryThrewException(ex);
-//                Toast.makeText(getContext(), "Failed to get story because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }

@@ -10,14 +10,37 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.handler.BackgroundTaskHandler;
+import edu.byu.cs.tweeter.client.model.service.handler.PostTaskHandler;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class PostService {
+public class PostService extends BaseService {
 
+//    protected PostService(Status newStatus, ServiceObserver observer) {
+//        super(new PostStatusTask(new PostTaskHandler(observer),
+//                Cache.getInstance().getCurrUserAuthToken(),
+//                newStatus),
+//                new PostTaskHandler(observer));
+//    }
+
+    public interface PostObserver extends ServiceObserver {
+        void PostSucceeded();
+    }
+
+    public void run(Status newStatus, ServiceObserver observer) {
+        PostStatusTask taskToExecute = new PostStatusTask(new PostTaskHandler(observer),
+                Cache.getInstance().getCurrUserAuthToken(),
+                newStatus);
+        super.executeService(taskToExecute);
+    }
+
+
+    /*
     public interface PostObserver {
         void PostSucceeded();
         void PostFailed(String message);
@@ -52,5 +75,6 @@ public class PostService {
             }
         }
     }
+     */
 
 }

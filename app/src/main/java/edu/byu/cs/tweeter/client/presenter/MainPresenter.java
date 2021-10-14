@@ -15,6 +15,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.CountService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.PostService;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Follow;
@@ -211,25 +212,43 @@ FollowService.isFollowerObserver, PostService.PostObserver {
 
     //********************************** Post *********************************//
 
+
+
     public void postStatus(String post, User user, String formattedDateTime, List<String> URLs, List<String> mentions) {
         Status newStatus = new Status(post, targetUser, formattedDateTime, URLs, mentions);
-        new PostService().post(newStatus, this);
+        new PostService().run(newStatus, this);
     }
+
+//    @Override
+//    public void PostSucceeded() {
+//        view.displayInfoMessage("Successfully Posted!");
+//    }
+//
+//    @Override
+//    public void PostFailed(String message) {
+//        view.displayErrorMessage("Failed to post status: " + message);
+//    }
+//
+//    @Override
+//    public void PostThrewException(Exception ex) {
+//        view.displayErrorMessage("Failed to post status because of exception: " + ex.getMessage());
+//
+//    }
+
 
     @Override
     public void PostSucceeded() {
         view.displayInfoMessage("Successfully Posted!");
     }
 
-    @Override
-    public void PostFailed(String message) {
-        view.displayErrorMessage("Failed to post status: " + message);
-    }
+//    @Override
+//    public void serviceSuccess() {
+//
+//    }
 
     @Override
-    public void PostThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to post status because of exception: " + ex.getMessage());
-
+    public void serviceFailure(String message) {
+        view.displayErrorMessage(message);
     }
 
 
