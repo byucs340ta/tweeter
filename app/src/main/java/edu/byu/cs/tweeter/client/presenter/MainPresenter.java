@@ -217,23 +217,8 @@ FollowService.isFollowerObserver, PostService.PostObserver {
     public void postStatus(String post, User user, String formattedDateTime, List<String> URLs, List<String> mentions) {
         Status newStatus = new Status(post, targetUser, formattedDateTime, URLs, mentions);
         new PostService().run(newStatus, this);
+        // todo implement observer from postTaskHandler here!!!
     }
-
-//    @Override
-//    public void PostSucceeded() {
-//        view.displayInfoMessage("Successfully Posted!");
-//    }
-//
-//    @Override
-//    public void PostFailed(String message) {
-//        view.displayErrorMessage("Failed to post status: " + message);
-//    }
-//
-//    @Override
-//    public void PostThrewException(Exception ex) {
-//        view.displayErrorMessage("Failed to post status because of exception: " + ex.getMessage());
-//
-//    }
 
 
     @Override
@@ -241,10 +226,6 @@ FollowService.isFollowerObserver, PostService.PostObserver {
         view.displayInfoMessage("Successfully Posted!");
     }
 
-//    @Override
-//    public void serviceSuccess() {
-//
-//    }
 
     @Override
     public void serviceFailure(String message) {

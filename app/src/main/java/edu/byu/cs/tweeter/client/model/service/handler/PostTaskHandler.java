@@ -7,6 +7,10 @@ import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 
 public class PostTaskHandler extends BackgroundTaskHandler {
 
+//    PostObserver extends service {
+//        // todo this (serviceObserver + success)
+//    }
+
     public PostTaskHandler(ServiceObserver observer) {
         super(observer);
     }
