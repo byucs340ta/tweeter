@@ -4,10 +4,11 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.observer.PagedObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowersPresenter implements FollowService.getFollowersObserver, UserService.GetUserObserver {
+public class FollowersPresenter implements PagedObserver<User>, UserService.GetUserObserver {
 
     /**
      * Way for this presenter to call the view back and give it responses to methods it called
@@ -56,13 +57,8 @@ public class FollowersPresenter implements FollowService.getFollowersObserver, U
         }
     }
 
-    /**
-     * From FollowersService.getFollowersObserver
-     * @param followers User to navigate view to
-     * @param hasMorePages Are there more pages to share?
-     */
     @Override
-    public void getFollowersSucceeded(List<User> followers, boolean hasMorePages) {
+    public void pagedSuccess(List<User> followers, boolean hasMorePages) {
         lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
         this.hasMorePages = hasMorePages;
 
@@ -71,29 +67,52 @@ public class FollowersPresenter implements FollowService.getFollowersObserver, U
         view.addItems(followers);
     }
 
-    /**
-     * From FollowersService.getFollowersObserver
-     * @param message Message to display after error
-     */
     @Override
-    public void getFollowersFailed(String message) {
-        view.displayErrorMessage("Getting followers failed: " + message);
+    public void serviceFailure(String message) {
+        view.displayErrorMessage(message);
 
         isLoading = false;
         view.setLoading(false);
     }
 
-    /**
-     * From FollowersService.getFollowersObserver
-     * @param ex Exception message to display
-     */
-    @Override
-    public void getFollowersThrewException(Exception ex) {
-        view.displayErrorMessage("Getting followers failed because of exception: " + ex.getMessage()); // Consider Dr. Wilkerson's approach in his code
-
-        isLoading = false;
-        view.setLoading(false);
-    }
+//    /**
+//     * From FollowersService.getFollowersObserver
+//     * @param followers User to navigate view to
+//     * @param hasMorePages Are there more pages to share?
+//     */
+//    @Override
+//    public void getFollowersSucceeded(List<User> followers, boolean hasMorePages) {
+//        lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
+//        this.hasMorePages = hasMorePages;
+//
+//        view.setLoading(false);
+//        isLoading = false;
+//        view.addItems(followers);
+//    }
+//
+//    /**
+//     * From FollowersService.getFollowersObserver
+//     * @param message Message to display after error
+//     */
+//    @Override
+//    public void getFollowersFailed(String message) {
+//        view.displayErrorMessage("Getting followers failed: " + message);
+//
+//        isLoading = false;
+//        view.setLoading(false);
+//    }
+//
+//    /**
+//     * From FollowersService.getFollowersObserver
+//     * @param ex Exception message to display
+//     */
+//    @Override
+//    public void getFollowersThrewException(Exception ex) {
+//        view.displayErrorMessage("Getting followers failed because of exception: " + ex.getMessage()); // Consider Dr. Wilkerson's approach in his code
+//
+//        isLoading = false;
+//        view.setLoading(false);
+//    }
 
 
 

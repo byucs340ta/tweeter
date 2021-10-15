@@ -33,7 +33,6 @@ public class GetFollowingTask extends PagedTask<User> {
         for (User u : this.items) {
             BackgroundTaskUtils.loadImage(u);
         }
-
         return true;
     }
 }

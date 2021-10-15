@@ -34,7 +34,6 @@ public class GetFeedTask extends PagedTask<Status> {
         for (Status s : this.items) {
             BackgroundTaskUtils.loadImage(s.getUser());
         }
-
         return true;
     }
 }

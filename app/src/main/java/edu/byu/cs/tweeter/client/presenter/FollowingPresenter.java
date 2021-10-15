@@ -6,11 +6,12 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.observer.PagedObserver;
 import edu.byu.cs.tweeter.client.view.main.following.FollowingFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements FollowService.getFollowingObserver, UserService.GetUserObserver {
+public class FollowingPresenter implements PagedObserver<User>, UserService.GetUserObserver {
 
     /**
      * Way for this presenter to call the view back and give it responses to methods it called
@@ -59,13 +60,8 @@ public class FollowingPresenter implements FollowService.getFollowingObserver, U
         }
     }
 
-    /**
-     * From FollowService.getFollowingObserver
-     * @param followees User to navigate view to
-     * @param hasMorePages Are there more pages to share?
-     */
     @Override
-    public void getFollowingSucceeded(List<User> followees, boolean hasMorePages) {
+    public void pagedSuccess(List<User> followees, boolean hasMorePages) {
         lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
         this.hasMorePages = hasMorePages;
 
@@ -74,26 +70,9 @@ public class FollowingPresenter implements FollowService.getFollowingObserver, U
         view.addItems(followees);
     }
 
-    /**
-     * From FollowService.getFollowingObserver
-     * @param message Message to display after error
-     */
     @Override
-    public void getFollowingFailed(String message) {
-        view.displayErrorMessage("Getting follows failed: " + message); // Consider Dr. Wilkerson's approach in his code
-
-        isLoading = false;
-        view.setLoading(false);
-    }
-
-    /**
-     * From FollowService.getFollowingObserver
-     * @param ex Exception message to display
-     */
-    @Override
-    public void getFollowingThrewException(Exception ex) {
-        view.displayErrorMessage("Getting follows failed: " + ex.getMessage()); // Consider Dr. Wilkerson's approach in his code
-
+    public void serviceFailure(String message) {
+        view.displayErrorMessage(message);
         isLoading = false;
         view.setLoading(false);
     }

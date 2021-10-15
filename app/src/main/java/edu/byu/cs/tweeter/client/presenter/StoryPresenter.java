@@ -13,11 +13,12 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.observer.PagedObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class StoryPresenter implements StoryService.getStoryObserver, UserService.GetUserObserver {
+public class StoryPresenter implements PagedObserver<Status>, UserService.GetUserObserver {
 
     private StoryPresenter.View view;
     private static final int PAGE_SIZE = 10;
@@ -34,10 +35,15 @@ public class StoryPresenter implements StoryService.getStoryObserver, UserServic
      */
     public interface View {
         void addItems(List<Status> statuses);
+
         void setLoading(boolean isLoading);
+
         void navigateToUser(User user); // the presenter gives the view status info to display
+
         void navigateToWebsite(String clickable);
+
         void displayErrorMessage(String message);
+
         void displayInfoMessage(String message);
     }
 
@@ -104,7 +110,7 @@ public class StoryPresenter implements StoryService.getStoryObserver, UserServic
     }
 
     @Override
-    public void getStorySucceeded(List<Status> statuses, boolean hasMorePages) {
+    public void pagedSuccess(List<Status> statuses, boolean hasMorePages) {
         lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
         this.hasMorePages = hasMorePages;
 
@@ -114,18 +120,34 @@ public class StoryPresenter implements StoryService.getStoryObserver, UserServic
     }
 
     @Override
-    public void getStoryFailed(String message) {
-        view.displayErrorMessage("Failed to get story: " + message);
+    public void serviceFailure(String message) {
+        view.displayErrorMessage(message);
 
         isLoading = false;
         view.setLoading(false);
     }
+    //    @Override
+//    public void getStorySucceeded(List<Status> statuses, boolean hasMorePages) {
+//        lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
+//        this.hasMorePages = hasMorePages;
+//
+//        view.setLoading(false);
+//        isLoading = false;
+//        view.addItems(statuses);
+//    }
 
-    @Override
-    public void getStoryThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get story because of exception: " + ex.getMessage());
-
-        isLoading = false;
-        view.setLoading(false);
-    }
+//    @Override
+//    public void getStoryFailed(String message) {
+//        view.displayErrorMessage("Failed to get story: " + message);
+//
+//        isLoading = false;
+//        view.setLoading(false);
+//    }
+//
+//    @Override
+//    public void getStoryThrewException(Exception ex) {
+//        view.displayErrorMessage("Failed to get story because of exception: " + ex.getMessage());
+//
+//        isLoading = false;
+//        view.setLoading(false);
 }

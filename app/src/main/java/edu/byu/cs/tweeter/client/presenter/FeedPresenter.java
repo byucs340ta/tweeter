@@ -15,12 +15,13 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.observer.PagedObserver;
 import edu.byu.cs.tweeter.client.view.main.feed.FeedFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FeedPresenter implements FeedService.getFeedObserver, UserService.GetUserObserver {
+public class FeedPresenter implements PagedObserver<Status>, UserService.GetUserObserver {
 
     private FeedPresenter.View view;
     private static final int PAGE_SIZE = 10;
@@ -65,7 +66,7 @@ public class FeedPresenter implements FeedService.getFeedObserver, UserService.G
     }
 
     @Override
-    public void getFeedSucceeded(List<Status>statuses, boolean hasMorePages) {
+    public void pagedSuccess(List<Status> statuses, boolean hasMorePages) {
         lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
         this.hasMorePages = hasMorePages;
 
@@ -75,20 +76,35 @@ public class FeedPresenter implements FeedService.getFeedObserver, UserService.G
     }
 
     @Override
-    public void getFeedFailed(String message) {
-        view.displayErrorMessage("Failed to get feed: " + message);
+    public void serviceFailure(String message) {
 
-        isLoading = false;
-        view.setLoading(false);
     }
 
-    @Override
-    public void getFeedThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get feed because of exception: " + ex.getMessage());
+//    @Override
+//    public void getFeedSucceeded(List<Status>statuses, boolean hasMorePages) {
+//        lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
+//        this.hasMorePages = hasMorePages;
+//
+//        view.setLoading(false);
+//        isLoading = false;
+//        view.addItems(statuses);
+//    }
 
-        isLoading = false;
-        view.setLoading(false);
-    }
+//    @Override
+//    public void getFeedFailed(String message) {
+//        view.displayErrorMessage("Failed to get feed: " + message);
+//
+//        isLoading = false;
+//        view.setLoading(false);
+//    }
+//
+//    @Override
+//    public void getFeedThrewException(Exception ex) {
+//        view.displayErrorMessage("Failed to get feed because of exception: " + ex.getMessage());
+//
+//        isLoading = false;
+//        view.setLoading(false);
+//    }
 
 
 //********************************** Get Users *********************************/
