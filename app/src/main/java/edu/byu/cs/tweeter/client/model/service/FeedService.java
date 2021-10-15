@@ -19,6 +19,7 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FeedService {
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     /**
      * Feed Observer

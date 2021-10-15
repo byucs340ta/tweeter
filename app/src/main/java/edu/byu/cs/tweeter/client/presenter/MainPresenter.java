@@ -1,30 +1,23 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.view.View;
-import android.widget.TextView;
-
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.CountService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.PostService;
-import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.handler.PostTaskHandler;
+import edu.byu.cs.tweeter.client.model.service.observer.PostObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersObserver,
 CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowService.removeFollowerObserver,
-FollowService.isFollowerObserver, PostService.PostObserver {
+FollowService.isFollowerObserver, PostObserver {
 
     public MainPresenter(View view, AuthToken authToken, User targetUser) {
         this.view = view;
@@ -56,7 +49,6 @@ FollowService.isFollowerObserver, PostService.PostObserver {
     }
 
     //******************************* Add Following ***************************//
-
     public void follow() {
         new FollowService().addFollower(authToken, targetUser, this);
     }
@@ -83,7 +75,6 @@ FollowService.isFollowerObserver, PostService.PostObserver {
 
 
     //******************************* Remove Following ***************************//
-
     public void unfollow() {
         new FollowService().removeFollower(authToken, targetUser, this);
     }
@@ -131,7 +122,6 @@ FollowService.isFollowerObserver, PostService.PostObserver {
     }
 
     //***************************** Following Count  **********************************//
-
     public void countFollowing() {
         new CountService().countFollowing(authToken, targetUser, this);
     }
@@ -155,7 +145,6 @@ FollowService.isFollowerObserver, PostService.PostObserver {
 
 
     //******************************* Logout *********************************//
-
     public void logout() {
         view.clearErrorMessage();
         view.clearInfoMessage();
@@ -182,7 +171,6 @@ FollowService.isFollowerObserver, PostService.PostObserver {
 
 
     //***************************** is follower *************************//
-
     public void verifyIsFollower() {
         if (targetUser.compareTo(Cache.getInstance().getCurrUser()) == 0) {
             view.setFollowButtonVisibility(false);
@@ -211,21 +199,15 @@ FollowService.isFollowerObserver, PostService.PostObserver {
 
 
     //********************************** Post *********************************//
-
-
-
     public void postStatus(String post, User user, String formattedDateTime, List<String> URLs, List<String> mentions) {
         Status newStatus = new Status(post, targetUser, formattedDateTime, URLs, mentions);
         new PostService().run(newStatus, this);
-        // todo implement observer from postTaskHandler here!!!
     }
-
 
     @Override
-    public void PostSucceeded() {
+    public void postSuccess()  {
         view.displayInfoMessage("Successfully Posted!");
     }
-
 
     @Override
     public void serviceFailure(String message) {

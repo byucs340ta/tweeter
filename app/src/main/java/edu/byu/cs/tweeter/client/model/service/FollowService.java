@@ -25,6 +25,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class FollowService {
 
     //******************************** Get Following *************************************
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     /**
      * Observer used by the class above this one in the presenter so that we can communicate if
@@ -86,6 +87,7 @@ public class FollowService {
     }
 
     //************************* Get Followers *****************************//
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     /**
      * Observer used by the class above this one in the presenter so that we can communicate if
@@ -136,6 +138,7 @@ public class FollowService {
 
 
     //******************************** Add Following *************************************
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     public interface addFollowerObserver {
         void AddFollowersSucceeded(); // are there more users?
@@ -171,6 +174,7 @@ public class FollowService {
 
 
     //******************************** Remove Following *************************************//
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     public interface removeFollowerObserver {
         void RemoveFollowersSucceeded(); // are there more users?
@@ -208,6 +212,7 @@ public class FollowService {
 
 
     //************************** is Follower *******************************/
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     public interface isFollowerObserver {
         void IsFollowerSucceeded(boolean isFollower); // are there more users?

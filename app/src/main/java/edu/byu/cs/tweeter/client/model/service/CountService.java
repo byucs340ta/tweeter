@@ -20,6 +20,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class CountService {
 
     //******************************** Followers *********************************//
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
     public interface GetFollowersObserver {
         void getFollowerCountSucceeded(int count);
         void getFollowerCountFailed(String message);
@@ -59,6 +60,7 @@ public class CountService {
     }
 
     //******************************** Following ********************************//
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
     public interface GetFollowingObserver {
         void getFollowingCountSucceeded(int count);
         void getFollowingCountFailed(String message);

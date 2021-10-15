@@ -2,21 +2,17 @@ package edu.byu.cs.tweeter.client.model.service.handler;
 
 import android.os.Message;
 
-import edu.byu.cs.tweeter.client.model.service.PostService;
-import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.PostObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.ServiceObserver;
 
-public class PostTaskHandler extends BackgroundTaskHandler {
+public class PostTaskHandler extends BackgroundTaskHandler<PostObserver> {
 
-//    PostObserver extends service {
-//        // todo this (serviceObserver + success)
-//    }
-
-    public PostTaskHandler(ServiceObserver observer) {
+    public PostTaskHandler(PostObserver observer) {
         super(observer);
     }
 
     @Override
-    protected  <T extends PostService.PostObserver> void handleSuccessMessage(T observer, Message msg) {
-        // todo: I don't understand how to get this thing to call a PostService.PostObserver().PostSucceeded()
+    protected void handleSuccessMessage(PostObserver observer, Message msg) {
+        observer.postSuccess();
     }
 }

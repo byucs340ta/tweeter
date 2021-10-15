@@ -63,7 +63,7 @@ public abstract class BackgroundTask implements Runnable {
     protected void sendExceptionMessage(Exception ex) {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putString(MESSAGE_KEY, (LOG_TAG + " failed due to exception: " + ex.getMessage())); // fixme: Should this return exception or message? I think it's up to me.
+        msgBundle.putString(MESSAGE_KEY, (LOG_TAG + " failed due to exception: " + ex.getMessage()));
         msgBundle.putSerializable(EXCEPTION_KEY, ex); // currently passing this through, but it is only used for verification.
         sendMessage(msgBundle);
     }

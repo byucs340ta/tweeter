@@ -24,6 +24,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class UserService {
 
     //*********************************** Register **************************************
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     /**
      * Observer will be instantiated in the RegisterPresenter where logic for how to handle
@@ -75,6 +76,7 @@ public class UserService {
     }
 
     //*********************************** Login **************************************
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     /**
      * The Login function is void, but sets an asynchronous task at work, so we need some way to
@@ -141,6 +143,7 @@ public class UserService {
 
 
     //*********************************** GetUser **************************************
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     /**
      * Interface observer which is used to send back information when "getUser()" is called from
@@ -196,6 +199,7 @@ public class UserService {
 
 
     //*********************************** Logout **************************************
+    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
     public interface LogoutObserver {
         void logoutSucceeded();
