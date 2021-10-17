@@ -61,8 +61,7 @@ public class FollowService extends BaseService {
     public void addFollower(AuthToken authToken, User selectedUser, SetFollowingObserver observer) {
         FollowTask followTask = new FollowTask(new FollowTaskHandler(observer), authToken,
                 selectedUser);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(followTask);
+        super.executeService(followTask);
     }
 
 
@@ -72,8 +71,7 @@ public class FollowService extends BaseService {
 
     public void removeFollower(AuthToken authToken, User selectedUser, SetFollowingObserver observer) {
         UnfollowTask unfollowTask = new UnfollowTask(new UnfollowTaskHandler(observer), authToken, selectedUser);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(unfollowTask);
+        super.executeService(unfollowTask);
     }
 
 
@@ -84,8 +82,7 @@ public class FollowService extends BaseService {
     public void isFollower(AuthToken authToken, User beingFollowed, User follower, IsFollowerObserver observer) {
         IsFollowerTask isFollowerTask = new IsFollowerTask(new IsFollowerHandler(observer),
                 authToken, beingFollowed, follower);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(isFollowerTask);
+        super.executeService(isFollowerTask);
     }
 
 

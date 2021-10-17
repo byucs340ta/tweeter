@@ -25,7 +25,7 @@ import edu.byu.cs.tweeter.client.view.main.following.FollowingFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class UserService {
+public class UserService extends BaseService {
 
     //*********************************** Register **************************************
     //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
@@ -151,8 +151,7 @@ public class UserService {
 
     public void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
         GetUserTask getUserTask = new GetUserTask(new GetUserTaskHandler(observer), authToken, alias);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getUserTask);
+        super.executeService(getUserTask);
     }
 
 
@@ -163,8 +162,7 @@ public class UserService {
     public void logout(AuthToken authToken, LogoutObserver observer) {
         // Run a LoginTask to login the user
         LogoutTask logoutTask = new LogoutTask(new LogoutHandler(observer), authToken);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(logoutTask);
+        super.executeService(logoutTask);
     }
 
 }

@@ -6,12 +6,12 @@ import edu.byu.cs.tweeter.client.model.service.observer.CountObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class CountService {
+public class CountService extends BaseService{
 
-//********************************* Count followers and following *****************//
 public void countFollowersAndFollowing(AuthToken authToken, User targetUser, CountObserver observer) {
     GetCountTask countTask = new GetCountTask(new CountTaskHandler(observer),
             authToken, targetUser);
-    countTask.run();
+    super.executeService(countTask);
     }
+
 }
