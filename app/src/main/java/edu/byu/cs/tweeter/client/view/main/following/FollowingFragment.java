@@ -30,6 +30,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
+import edu.byu.cs.tweeter.client.presenter.presenter.views.PagedView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -37,7 +38,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Following" tab.
  */
-public class FollowingFragment extends Fragment implements FollowingPresenter.View {
+public class FollowingFragment extends Fragment implements PagedView<User> {
 
     private static final String LOG_TAG = "FollowingFragment";
     private static final String USER_KEY = "UserKey";
@@ -97,6 +98,11 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void clearErrorMessage() {
+        // todo
+    }
+
     /**
      * From FollowingPresenter.View
      * Displays a message as a toast on screen
@@ -105,6 +111,11 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
     @Override
     public void displayInfoMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void clearInfoMessage() {
+        // todo
     }
 
     /**

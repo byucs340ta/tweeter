@@ -38,6 +38,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FeedPresenter;
 import edu.byu.cs.tweeter.client.presenter.StoryPresenter;
+import edu.byu.cs.tweeter.client.presenter.presenter.views.WebsiteView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -46,7 +47,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Story" tab.
  */
-public class StoryFragment extends Fragment implements StoryPresenter.View {
+public class StoryFragment extends Fragment implements WebsiteView {
     private static final String LOG_TAG = "StoryFragment";
     private static final String USER_KEY = "UserKey";
 
@@ -94,8 +95,18 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
     }
 
     @Override
+    public void clearErrorMessage() {
+        // todo
+    }
+
+    @Override
     public void displayInfoMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void clearInfoMessage() {
+        // todo
     }
 
     /**

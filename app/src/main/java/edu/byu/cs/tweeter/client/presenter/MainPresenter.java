@@ -14,24 +14,24 @@ import edu.byu.cs.tweeter.client.model.service.observer.IsFollowerObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.LogoutObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.PostObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.SetFollowingObserver;
+import edu.byu.cs.tweeter.client.presenter.presenter.views.BaseView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements LogoutObserver, SetFollowingObserver,
+public class MainPresenter extends BasePresenter implements LogoutObserver, SetFollowingObserver,
 PostObserver, CountObserver, IsFollowerObserver {
 
     public MainPresenter(View view, AuthToken authToken, User targetUser) {
+        super(authToken, targetUser);
         this.view = view;
-        this.authToken = authToken;
-        this.targetUser = targetUser;
     }
 
     private MainPresenter.View view;
-    private AuthToken authToken;
-    private User targetUser;
+//    private AuthToken authToken;
+//    private User targetUser;
 
-    public interface View {
+    public interface View extends BaseView {
         void logout();
 
         void updateFollowingandFollowersCount();
@@ -44,10 +44,10 @@ PostObserver, CountObserver, IsFollowerObserver {
         void setFollowButtonVisibility(boolean isVisible);
         void setIsFollowerButton(boolean isFollower);
 
-        void displayErrorMessage(String message);
-        void clearErrorMessage();
-        void displayInfoMessage(String message);
-        void clearInfoMessage();
+//        void displayErrorMessage(String message);
+//        void clearErrorMessage();
+//        void displayInfoMessage(String message);
+//        void clearInfoMessage();
     }
 
     // This responds to when ANY observer fails.
