@@ -33,8 +33,8 @@ import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
+//import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
+//import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
@@ -263,8 +263,9 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     public void updateSelectedUserFollowingAndFollowers() {
-        presenter.countFollowers();
-        presenter.countFollowing();
+        presenter.countFollowersAndFollowing();
+//        presenter.countFollowers();
+//        presenter.countFollowing();
     }
 
     public void updateFollowButton(boolean removed) {

@@ -9,15 +9,15 @@ import edu.byu.cs.tweeter.client.model.service.CountService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.PostService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.handler.PostTaskHandler;
+import edu.byu.cs.tweeter.client.model.service.observer.CountObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.PostObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersObserver,
-CountService.GetFollowingObserver, FollowService.addFollowerObserver, FollowService.removeFollowerObserver,
-FollowService.isFollowerObserver, PostObserver {
+public class MainPresenter implements UserService.LogoutObserver,
+FollowService.addFollowerObserver, FollowService.removeFollowerObserver,
+FollowService.isFollowerObserver, PostObserver, CountObserver {
 
     public MainPresenter(View view, AuthToken authToken, User targetUser) {
         this.view = view;
@@ -46,6 +46,11 @@ FollowService.isFollowerObserver, PostObserver {
         void clearErrorMessage();
         void displayInfoMessage(String message);
         void clearInfoMessage();
+    }
+
+    // This responds to when ANY observer fails.
+    @Override
+    public void serviceFailure(String message) {
     }
 
     //******************************* Add Following ***************************//
@@ -100,46 +105,17 @@ FollowService.isFollowerObserver, PostObserver {
 
 
 
-    //******************************* Followers Count *********************************//
-    public void countFollowers() {
-        new CountService().countFollowers(authToken, targetUser, this);
+    //******************************* Followers and Following Count *********************************//
+
+    public void countFollowersAndFollowing()
+    {
+        new CountService().countFollowersAndFollowing(authToken, targetUser, this);
     }
 
     @Override
-    public void getFollowerCountSucceeded(int countNum) {
-        String countString = Integer.toString(countNum);
-        view.setFollowerCount(countString);
-    }
-
-    @Override
-    public void getFollowerCountFailed(String message) {
-        view.displayErrorMessage("Failed to get followers count: " + message);
-    }
-
-    @Override
-    public void getFollowerCountThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get followers count because of exception: " + ex.getMessage());
-    }
-
-    //***************************** Following Count  **********************************//
-    public void countFollowing() {
-        new CountService().countFollowing(authToken, targetUser, this);
-    }
-
-    @Override
-    public void getFollowingCountSucceeded(int countNum) {
-        String countString = Integer.toString(countNum);
-        view.setFollowingCount(countString);
-    }
-
-    @Override
-    public void getFollowingCountFailed(String message) {
-        view.displayErrorMessage("Failed to get following count: " + message);
-    }
-
-    @Override
-    public void getFollowingCountThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get following count because of exception: " + ex.getMessage());
+    public void CountSucceeded(int followersCount, int followingCount) {
+        view.setFollowerCount(String.valueOf(followersCount));
+        view.setFollowingCount(String.valueOf(followingCount));
     }
 
 
@@ -207,11 +183,6 @@ FollowService.isFollowerObserver, PostObserver {
     @Override
     public void postSuccess()  {
         view.displayInfoMessage("Successfully Posted!");
-    }
-
-    @Override
-    public void serviceFailure(String message) {
-        view.displayErrorMessage(message);
     }
 
 

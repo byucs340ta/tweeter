@@ -25,8 +25,7 @@ public abstract class BackgroundTaskHandler<T extends ServiceObserver> extends H
             if (success) {
                 handleSuccessMessage(observer, msg);
             } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
-                observer.serviceFailure(message);
+                handleFailureMessage(observer, msg);
             } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
                 String exceptionMessage = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
 //                Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
@@ -40,5 +39,10 @@ public abstract class BackgroundTaskHandler<T extends ServiceObserver> extends H
      * @param msg
      */
     protected abstract void handleSuccessMessage(T observer, Message msg);
+
+    protected void handleFailureMessage(T observer, Message msg) {
+        String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
+        observer.serviceFailure(message);
+    }
 
 }
