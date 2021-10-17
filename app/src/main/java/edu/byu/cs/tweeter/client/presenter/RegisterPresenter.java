@@ -8,10 +8,11 @@ import android.util.Base64;
 import java.io.ByteArrayOutputStream;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.observer.SignInObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter implements UserService.RegisterObserver {
+public class RegisterPresenter implements SignInObserver {
 
     public RegisterPresenter(View view) { this.view = view; }
 
@@ -27,6 +28,11 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         void displayInfoMessage(String message);
         void clearInfoMessage();
     }
+
+
+
+    //************************ Implement Register Observer *************************//
+    /////////////////////////////////////////////////////////////////////////////////
 
     // The only method the VIEW can call on presenter
     public void register(String firstName, String lastName, String alias, String password,
@@ -55,8 +61,20 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         }
     }
 
+    @Override
+    public void SignInSucceeded(AuthToken authToken, User user) {
+        view.navigateToUser(user);
+        view.clearErrorMessage();
+        view.displayInfoMessage("Hello " + user.getName());
+    }
+
+    @Override
+    public void serviceFailure(String message) {
+        view.displayErrorMessage(message);
+    }
+
     public String validateRegistration(String firstName, String lastName, String alias,
-                                     String password, Drawable profileDrawableImage) {
+                                       String password, Drawable profileDrawableImage) {
         if (firstName.length() == 0) {
             return "First Name cannot be empty.";
         }
@@ -70,7 +88,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
             return "Alias must begin with @.";
         }
         if (alias.length() < 2) {
-           return "Alias must contain 1 or more characters after the @.";
+            return "Alias must contain 1 or more characters after the @.";
         }
         if (password.length() == 0) {
             return "Password cannot be empty.";
@@ -81,23 +99,5 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         return null;
     }
 
-    //************************ Implement Register Observer ***********************
 
-
-    @Override
-    public void registerSucceeded(AuthToken authToken, User user) {
-        view.navigateToUser(user);
-        view.clearErrorMessage();
-        view.displayInfoMessage("Hello " + user.getName());
-    }
-
-    @Override
-    public void registerFailed(String message) {
-        view.displayErrorMessage("Failed to register: " + message);
-    }
-
-    @Override
-    public void registerThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to register: " + ex.getMessage());
-    }
 }

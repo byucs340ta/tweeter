@@ -1,15 +1,5 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
-
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.model.service.handler.PagedTaskHandler;
 import edu.byu.cs.tweeter.client.model.service.observer.PagedObserver;

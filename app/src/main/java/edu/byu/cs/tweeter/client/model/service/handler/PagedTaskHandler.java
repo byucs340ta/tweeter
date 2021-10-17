@@ -6,7 +6,6 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.backgroundTask.PagedTask;
 import edu.byu.cs.tweeter.client.model.service.observer.PagedObserver;
-import edu.byu.cs.tweeter.client.model.service.observer.ServiceObserver;
 
 public abstract class PagedTaskHandler <T> extends BackgroundTaskHandler<PagedObserver<T>> {
     protected PagedTaskHandler(PagedObserver<T> observer) {

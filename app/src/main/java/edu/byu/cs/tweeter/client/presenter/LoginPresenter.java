@@ -1,12 +1,13 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.observer.SignInObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 // Class with all logic for the UI. This is our Presenter section baby.
 // The idea is for any input user can do in the view, we need a corresponding method here in the presenter
-public class LoginPresenter implements UserService.LoginObserver {
+public class LoginPresenter implements SignInObserver {
 
     public LoginPresenter(View view){
         this.view = view;
@@ -28,6 +29,9 @@ public class LoginPresenter implements UserService.LoginObserver {
         void clearInfoMessage();
     }
 
+    //************************** Implementing the LoginObserver ****************************//
+    /////////////////////////////////////////////////////////////////////////////////////////
+
     // The only method the VIEW can call on presenter
     public void login(String alias, String password) {
 
@@ -44,6 +48,18 @@ public class LoginPresenter implements UserService.LoginObserver {
         }
     }
 
+    @Override
+    public void SignInSucceeded(AuthToken authToken, User user) {
+        view.navigateToUser(user);
+        view.clearErrorMessage();
+        view.displayInfoMessage("Hello " + user.getName());
+    }
+
+    @Override
+    public void serviceFailure(String message) {
+        view.displayErrorMessage(message);
+    }
+
     private String validateLogin(String alias, String password) {
         if (alias.charAt(0) != '@') {
             return "Alias must begin with @.";
@@ -55,24 +71,6 @@ public class LoginPresenter implements UserService.LoginObserver {
             return "Password cannot be empty.";
         }
         return null;
-    }
-
-    //****** Implementing the LoginObserver *******
-    @Override
-    public void loginSucceeded(AuthToken authToken, User user) {
-        view.navigateToUser(user);
-        view.clearErrorMessage();
-        view.displayInfoMessage("Hello " + user.getName());
-    }
-
-    @Override
-    public void loginFailed(String message) {
-        view.displayErrorMessage("Login failed: " + message);
-    }
-
-    @Override
-    public void loginThrewException(Exception ex) {
-        view.displayErrorMessage("Login failed: " + ex.getMessage());
     }
 
 }
