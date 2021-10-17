@@ -10,6 +10,7 @@ import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.PostService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.observer.CountObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.IsFollowerObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.PostObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -17,7 +18,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter implements UserService.LogoutObserver,
 FollowService.addFollowerObserver, FollowService.removeFollowerObserver,
-FollowService.isFollowerObserver, PostObserver, CountObserver {
+PostObserver, CountObserver, IsFollowerObserver {
 
     public MainPresenter(View view, AuthToken authToken, User targetUser) {
         this.view = view;
@@ -146,14 +147,15 @@ FollowService.isFollowerObserver, PostObserver, CountObserver {
 
 
 
-    //***************************** is follower *************************//
+    //***************************** is follower *************************/
     public void verifyIsFollower() {
         if (targetUser.compareTo(Cache.getInstance().getCurrUser()) == 0) {
             view.setFollowButtonVisibility(false);
         }
         else {
             view.setFollowButtonVisibility(true);
-            new FollowService().isFollower(authToken, targetUser, this); // THIS IS AN OBSERVER WTF?!
+            User follower = new User();// fixme: This is a fake user, need to get a real one later.
+            new FollowService().isFollower(authToken, targetUser, follower,this);
         }
     }
 
@@ -162,15 +164,20 @@ FollowService.isFollowerObserver, PostObserver, CountObserver {
         view.setIsFollowerButton(isFollower);
     }
 
-    @Override
-    public void IsFollowerFailed(String message) {
-        view.displayErrorMessage("Failed to determine following relationship: " + message);
-    }
-
-    @Override
-    public void IsFollowerThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to determine following relationship because of exception: " + ex.getMessage());
-    }
+    //    @Override
+//    public void IsFollowerSucceeded(boolean isFollower) {
+//        view.setIsFollowerButton(isFollower);
+//    }
+//
+//    @Override
+//    public void IsFollowerFailed(String message) {
+//        view.displayErrorMessage("Failed to determine following relationship: " + message);
+//    }
+//
+//    @Override
+//    public void IsFollowerThrewException(Exception ex) {
+//        view.displayErrorMessage("Failed to determine following relationship because of exception: " + ex.getMessage());
+//    }
 
 
 

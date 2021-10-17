@@ -17,7 +17,9 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.handler.IsFollowerHandler;
 import edu.byu.cs.tweeter.client.model.service.handler.PagedTaskHandler;
+import edu.byu.cs.tweeter.client.model.service.observer.IsFollowerObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.PagedObserver;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.main.following.FollowingFragment;
@@ -123,45 +125,11 @@ public class FollowService extends BaseService {
 
 
     //************************** is Follower *******************************/
-    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
 
-    public interface isFollowerObserver {
-        void IsFollowerSucceeded(boolean isFollower); // are there more users?
-        void IsFollowerFailed(String message);
-        void IsFollowerThrewException(Exception ex);
-    }
-
-    public void isFollower(AuthToken authToken, User selectedUser, isFollowerObserver observer) {
+    public void isFollower(AuthToken authToken, User beingFollowed, User follower, IsFollowerObserver observer) {
         IsFollowerTask isFollowerTask = new IsFollowerTask(new IsFollowerHandler(observer),
-                Cache.getInstance().getCurrUserAuthToken(),
-                Cache.getInstance().getCurrUser(),
-                selectedUser);
+                authToken, beingFollowed, follower);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(isFollowerTask);
     }
-
-    private class IsFollowerHandler extends Handler {
-        IsFollowerHandler(isFollowerObserver observer) { this.observer = observer; }
-        isFollowerObserver observer;
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(IsFollowerTask.SUCCESS_KEY);
-            if (success) {
-                boolean isFollower = msg.getData().getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
-                observer.IsFollowerSucceeded(isFollower);
-                // If logged in user if a follower of the selected user, display the follow button as "following"
-            } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
-                observer.IsFollowerFailed(message);
-//                Toast.makeText(MainActivity.this, "Failed to determine following relationship: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);
-                observer.IsFollowerThrewException(ex);
-//                Toast.makeText(MainActivity.this, "Failed to determine following relationship because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-
 }
