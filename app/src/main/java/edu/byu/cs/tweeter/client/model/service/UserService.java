@@ -15,7 +15,9 @@ import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.handler.GetUserTaskHandler;
 import edu.byu.cs.tweeter.client.model.service.handler.LogoutHandler;
+import edu.byu.cs.tweeter.client.model.service.observer.GetUserObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.LogoutObserver;
 import edu.byu.cs.tweeter.client.view.login.RegisterFragment;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
@@ -144,63 +146,19 @@ public class UserService {
 
 
 
-    //*********************************** GetUser **************************************
-    //todo: M2B -- Eliminate duplicate code by adding classes and using more inheritance
+    //*********************************** GetUser **************************************//
+    /////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Interface observer which is used to send back information when "getUser()" is called from
-     * above.
-     */
-    public interface GetUserObserver {
-        void getUserSucceeded(User user);
-        void getUserFailed(String message);
-        void getUserThrewException(Exception ex);
-    }
-
-    /**
-     * Gets a user if permissions are valid
-     * @param authToken Current user needs to be authorized to access this information
-     * @param alias How we know which user the current action wants to get
-     */
     public void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
-        GetUserTask getUserTask = new GetUserTask(new GetUserHandler(observer), authToken, alias);
+        GetUserTask getUserTask = new GetUserTask(new GetUserTaskHandler(observer), authToken, alias);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getUserTask);
     }
 
-    /**
-     * Message handler (i.e., observer) for GetUserTask.
-     * Recieves message from the task that has data saying how the operation went: success/fail
-     * On success it contains a user. This is like the output of the background task. A map.
-     * Most of what this does is call observers above.
-     */
-    private class GetUserHandler extends Handler {
-
-        private GetUserObserver observer;
-
-        public GetUserHandler(GetUserObserver observer) {
-            this.observer = observer;
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-            if (success) {
-                User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-                observer.getUserSucceeded(user);
-            } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                observer.getUserFailed(message);
-            } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                observer.getUserThrewException(ex);
-            }
-        }
-    }
 
 
-
-    //*********************************** Logout **************************************
+    //*********************************** Logout **************************************//
+    ////////////////////////////////////////////////////////////////////////////////////
 
     public void logout(AuthToken authToken, LogoutObserver observer) {
         // Run a LoginTask to login the user

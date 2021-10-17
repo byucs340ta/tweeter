@@ -53,6 +53,7 @@ PostObserver, CountObserver, IsFollowerObserver {
     // This responds to when ANY observer fails.
     @Override
     public void serviceFailure(String message) {
+        view.displayErrorMessage(message);
     }
 
 

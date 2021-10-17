@@ -6,12 +6,13 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.observer.GetUserObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.PagedObserver;
 import edu.byu.cs.tweeter.client.view.main.following.FollowingFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements PagedObserver<User>, UserService.GetUserObserver {
+public class FollowingPresenter implements PagedObserver<User>, GetUserObserver {
 
     /**
      * Way for this presenter to call the view back and give it responses to methods it called
@@ -79,7 +80,8 @@ public class FollowingPresenter implements PagedObserver<User>, UserService.GetU
 
 
 
-    //********************************** Get Users *********************************/
+    //********************************** Get Users *********************************//
+    /////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Navigate to user
@@ -89,30 +91,9 @@ public class FollowingPresenter implements PagedObserver<User>, UserService.GetU
         new UserService().getUser(authToken, alias, this);
     }
 
-    /**
-     * From UserService.GetUserObserver interface
-     * @param user User to navigate view to
-     */
     @Override
-    public void getUserSucceeded(User user) {
+    public void GetUserSucceeded(User user) {
         view.navigateToUser(user);
     }
 
-    /**
-     * From UserService.GetUserObserver interface
-     * @param message Message to display after error
-     */
-    @Override
-    public void getUserFailed(String message) {
-        view.displayErrorMessage("Getting user failed: " + message);
-    }
-
-    /**
-     * From UserService.GetUserObserver interface
-     * @param ex Exception message to display
-     */
-    @Override
-    public void getUserThrewException(Exception ex) {
-        view.displayErrorMessage("Getting user failed: " + ex.getMessage());
-    }
 }
