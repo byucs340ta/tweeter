@@ -13,6 +13,6 @@ public class PostTaskHandler extends BackgroundTaskHandler<PostObserver> {
 
     @Override
     protected void handleSuccessMessage(PostObserver observer, Message msg) {
-        observer.postSuccess();
+        observer.PostSucceeded();
     }
 }
