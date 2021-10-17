@@ -28,8 +28,6 @@ PostObserver, CountObserver, IsFollowerObserver {
     }
 
     private MainPresenter.View view;
-//    private AuthToken authToken;
-//    private User targetUser;
 
     public interface View extends BaseView {
         void logout();
@@ -43,11 +41,6 @@ PostObserver, CountObserver, IsFollowerObserver {
 
         void setFollowButtonVisibility(boolean isVisible);
         void setIsFollowerButton(boolean isFollower);
-
-//        void displayErrorMessage(String message);
-//        void clearErrorMessage();
-//        void displayInfoMessage(String message);
-//        void clearInfoMessage();
     }
 
     // This responds to when ANY observer fails.
@@ -121,7 +114,7 @@ PostObserver, CountObserver, IsFollowerObserver {
         }
         else {
             view.setFollowButtonVisibility(true);
-            User follower = new User();// fixme: This is a fake user, need to get a real one later.
+            User follower = new User();
             new FollowService().isFollower(authToken, targetUser, follower,this);
         }
     }

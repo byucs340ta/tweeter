@@ -2,6 +2,7 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.observer.SignInObserver;
+import edu.byu.cs.tweeter.client.presenter.presenter.views.NavigateToUserView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -9,25 +10,25 @@ import edu.byu.cs.tweeter.model.domain.User;
 // The idea is for any input user can do in the view, we need a corresponding method here in the presenter
 public class LoginPresenter implements SignInObserver {
 
-    public LoginPresenter(View view){
+    public LoginPresenter(NavigateToUserView view){
         this.view = view;
     }
 
     // Pointer to the main view
-    private View view;
+    private NavigateToUserView view;
 
     // All the methods that the view needs to have so that the presenter can interact with it above.
     // This is the same way we're implementing the observer interface in Service. Names just differ. Interesting...
-    public interface View {
-        void navigateToUser(User user);
-
-        void displayErrorMessage(String message);
-        void clearErrorMessage();
-
-        // this may look less ominous than error messages. So we made 2
-        void displayInfoMessage(String message);
-        void clearInfoMessage();
-    }
+//    public interface View {
+//        void navigateToUser(User user);
+//
+//        void displayErrorMessage(String message);
+//        void clearErrorMessage();
+//
+//        // this may look less ominous than error messages. So we made 2
+//        void displayInfoMessage(String message);
+//        void clearInfoMessage();
+//    }
 
     //************************** Implementing the LoginObserver ****************************//
     /////////////////////////////////////////////////////////////////////////////////////////
