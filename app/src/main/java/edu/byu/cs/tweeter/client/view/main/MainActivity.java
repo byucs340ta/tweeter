@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void logout() {
+        displayInfoMessage("Successfully logged out.");
         //Revert to login screen.
         Intent intent = new Intent(this, LoginActivity.class);
         //Clear everything so that the main activity is recreated with the login page.
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     public void displayErrorMessage(String message) {
         // FOR NOW. Might want to copy Login's more elegant error messages
         clearInfoMessage();
+        clearErrorMessage();
         logOutToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
         logOutToast.show();
     }
@@ -148,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     @Override
     public void displayInfoMessage(String message) {
         clearInfoMessage();
+        clearErrorMessage();
         logOutToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
         logOutToast.show();
     }
@@ -237,10 +240,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.logoutMenu) {
-            logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
-            logOutToast.show();
             presenter.logout();
-
             return true;
         } else {
             return super.onOptionsItemSelected(item);

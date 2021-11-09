@@ -23,15 +23,20 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter extends BasePresenter implements LogoutObserver, SetFollowingObserver,
 PostObserver, CountObserver, IsFollowerObserver {
+    private final FollowService followService;
+    private UserService userService; // Testable!!
+    private PostService postService;
+    private final CountService countService;
+
+    private MainPresenter.View view;
 
     public MainPresenter(View view, AuthToken authToken, User targetUser) {
         super(authToken, targetUser);
         this.view = view;
 
-        // todo: in rodham's code this initializes lots of stuff!
+        this.followService = new FollowService();
+        this.countService = new CountService();
     }
-
-    private MainPresenter.View view;
 
     public interface View extends BaseView {
         void logout();
@@ -59,16 +64,33 @@ PostObserver, CountObserver, IsFollowerObserver {
     }
 
 
+    //******************** FOR TESTABILITY *********************//
+
+    public UserService getUserService() {
+        if (userService == null) {
+            userService = new UserService();
+        }
+        return userService;
+    }
+
+    public PostService getPostService() {
+        if (postService == null) {
+            postService = new PostService();
+        }
+        return postService;
+    }
+
+
 
     //******************************* Add and Remove Following ***************************//
     ///////////////////////////////////////////////////////////////////////////////////////
 
     public void follow() {
-        new FollowService().addFollower(authToken, targetUser, this);
+        followService.addFollower(authToken, targetUser, this);
     }
 
     public void unfollow() {
-        new FollowService().removeFollower(authToken, targetUser, this);
+        followService.removeFollower(authToken, targetUser, this);
     }
 
     @Override
@@ -85,7 +107,7 @@ PostObserver, CountObserver, IsFollowerObserver {
 
     public void countFollowersAndFollowing()
     {
-        new CountService().countFollowersAndFollowing(authToken, targetUser, this);
+        countService.countFollowersAndFollowing(authToken, targetUser, this);
     }
 
     @Override
@@ -100,16 +122,15 @@ PostObserver, CountObserver, IsFollowerObserver {
     ///////////////////////////////////////////////////////////////////////////
 
     public void logout() {
-        view.clearErrorMessage();
-        view.clearInfoMessage();
-        new UserService().logout(authToken, this); // THIS IS AN OBSERVER WTF?!
+        view.displayInfoMessage("Logging Out...");
+        getUserService().logout(authToken, this); // THIS IS AN OBSERVER WTF?! // fixme: How did wilkerson do this?!?! He specifies handleFailure for each of these individually???
     }
 
     @Override
     public void LogoutSucceeded() {
+        Cache.getInstance().clearCache();
+        view.clearInfoMessage();
         view.logout();
-        view.clearErrorMessage();
-        view.displayInfoMessage("Successfully logged out.");
     }
 
 
@@ -124,7 +145,7 @@ PostObserver, CountObserver, IsFollowerObserver {
         else {
             view.setFollowButtonVisibility(true);
             User follower = new User();
-            new FollowService().isFollower(authToken, targetUser, follower,this);
+            followService.isFollower(authToken, targetUser, follower,this);
         }
     }
 
@@ -139,10 +160,10 @@ PostObserver, CountObserver, IsFollowerObserver {
     ////////////////////////////////////////////////////////////////////////////
 
     public void postStatus(String post, User user, String formattedDateTime, List<String> URLs, List<String> mentions) {
-        view.displayInfoMessage("Posting Status...,");
+        view.displayInfoMessage("Posting Status...");
 
         Status newStatus = new Status(post, targetUser, formattedDateTime, URLs, mentions);
-        new PostService().run(newStatus, this);
+        getPostService().run(newStatus, this);
     }
 
     @Override
@@ -211,17 +232,4 @@ PostObserver, CountObserver, IsFollowerObserver {
             return word.length();
         }
     }
-
-
-
-    //***************************** FOR TESTING ***********************************//
-
-    /**
-     * This is probably very bad, I just chucked it in because Dr. Rodham did in the video
-     * @return
-     */
-    public UserService getUserService() {
-        return new UserService();
-    }
-
 }

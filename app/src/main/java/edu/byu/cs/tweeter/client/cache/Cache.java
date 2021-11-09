@@ -53,10 +53,10 @@ public class Cache {
 
     /**
      * Provides a way for tests to inject a mock cache instance. FOR TESTING
-     * @param cache
+     * @param instance
      */
-    public static void setInstance(Cache cache) {
-        Cache.instance = cache;
+    public static void setInstance(Cache instance) {
+        Cache.instance = instance;
     }
 
 }
