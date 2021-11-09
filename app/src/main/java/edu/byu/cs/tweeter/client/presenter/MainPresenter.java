@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.widget.Toast;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,8 @@ PostObserver, CountObserver, IsFollowerObserver {
     public MainPresenter(View view, AuthToken authToken, User targetUser) {
         super(authToken, targetUser);
         this.view = view;
+
+        // todo: in rodham's code this initializes lots of stuff!
     }
 
     private MainPresenter.View view;
@@ -46,7 +50,12 @@ PostObserver, CountObserver, IsFollowerObserver {
     // This responds to when ANY observer fails.
     @Override
     public void serviceFailure(String message) {
-        view.displayErrorMessage(message);
+        view.displayErrorMessage("Service failed: " + message); // todo: "Failed to post status: <ERROR MESSAGE> is that even possible to send? This was to eliminate duplicate code, but there's only one fail state...
+    }
+
+    @Override
+    public void serviceException(String message) {
+        view.displayErrorMessage("Service failed because of exception: " + message);
     }
 
 
@@ -130,6 +139,8 @@ PostObserver, CountObserver, IsFollowerObserver {
     ////////////////////////////////////////////////////////////////////////////
 
     public void postStatus(String post, User user, String formattedDateTime, List<String> URLs, List<String> mentions) {
+        view.displayInfoMessage("Posting Status...,");
+
         Status newStatus = new Status(post, targetUser, formattedDateTime, URLs, mentions);
         new PostService().run(newStatus, this);
     }
@@ -199,6 +210,18 @@ PostObserver, CountObserver, IsFollowerObserver {
         } else {
             return word.length();
         }
+    }
+
+
+
+    //***************************** FOR TESTING ***********************************//
+
+    /**
+     * This is probably very bad, I just chucked it in because Dr. Rodham did in the video
+     * @return
+     */
+    public UserService getUserService() {
+        return new UserService();
     }
 
 }

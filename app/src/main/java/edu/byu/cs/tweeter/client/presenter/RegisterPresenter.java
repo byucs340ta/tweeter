@@ -73,6 +73,9 @@ public class RegisterPresenter implements SignInObserver {
         view.displayErrorMessage(message);
     }
 
+    @Override
+    public void serviceException(String message) { view.displayErrorMessage(message); }
+
     public String validateRegistration(String firstName, String lastName, String alias,
                                        String password, Drawable profileDrawableImage) {
         if (firstName.length() == 0) {

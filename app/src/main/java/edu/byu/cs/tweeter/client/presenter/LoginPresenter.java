@@ -61,6 +61,9 @@ public class LoginPresenter implements SignInObserver {
         view.displayErrorMessage(message);
     }
 
+    @Override
+    public void serviceException(String message) { view.displayErrorMessage(message); }
+
     private String validateLogin(String alias, String password) {
         if (alias.charAt(0) != '@') {
             return "Alias must begin with @.";

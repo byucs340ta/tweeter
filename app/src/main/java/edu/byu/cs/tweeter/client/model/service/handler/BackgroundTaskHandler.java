@@ -1,6 +1,7 @@
 package edu.byu.cs.tweeter.client.model.service.handler;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
@@ -12,7 +13,9 @@ public abstract class BackgroundTaskHandler<T extends ServiceObserver> extends H
 
     protected final T observer;
 
-    protected BackgroundTaskHandler(T observer) { this.observer = observer; }
+    protected BackgroundTaskHandler(T observer) {
+        super(Looper.getMainLooper());
+        this.observer = observer; }
 
     /**
      * Takes data out of bundle and interprets it. However, data is always different. We need lots of
@@ -29,7 +32,7 @@ public abstract class BackgroundTaskHandler<T extends ServiceObserver> extends H
             } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
                 String exceptionMessage = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
 //                Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
-                observer.serviceFailure(exceptionMessage); // may want to make own function later? Wilkerson doesn't.
+                observer.serviceException(exceptionMessage); // may want to make own function later? Wilkerson doesn't.
             }
         }
 

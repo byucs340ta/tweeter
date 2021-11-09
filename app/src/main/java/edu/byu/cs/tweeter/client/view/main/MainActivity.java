@@ -249,8 +249,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void onStatusPosted(String post) throws ParseException, MalformedURLException {
-        postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
-        postingToast.show();
         presenter.postStatus(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(),
                 presenter.parseURLs(post), presenter.parseMentions(post));
     }

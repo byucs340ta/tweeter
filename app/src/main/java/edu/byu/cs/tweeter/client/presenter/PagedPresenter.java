@@ -56,9 +56,15 @@ public abstract class PagedPresenter<T> extends BasePresenter implements GetUser
 
     @Override
     public void serviceFailure(String message) {
-        view.displayErrorMessage(message);
+        view.displayErrorMessage("Service failed: " + message);
         isLoading = false;
         view.setLoading(false);
     }
 
+    @Override
+    public void serviceException(String message) {
+        view.displayErrorMessage("Service failed because of exception: " + message);
+        isLoading = false;
+        view.setLoading(false);
+    }
 }

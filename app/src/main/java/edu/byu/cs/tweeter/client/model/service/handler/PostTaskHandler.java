@@ -14,4 +14,5 @@ public class PostTaskHandler extends BackgroundTaskHandler<PostObserver> {
     protected void handleSuccessMessage(PostObserver observer, Message msg) {
         observer.PostSucceeded();
     }
+
 }
