@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.util.Base64;
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -98,7 +98,9 @@ public class RegisterFragment extends Fragment {
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     image.compress(Bitmap.CompressFormat.JPEG, 100, bos);
                     byte[] imageBytes = bos.toByteArray();
-                    String imageBytesBase64 = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+
+                    // Intentionally, Use the java Base64 encoder so it is compatible with M4.
+                    String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
                     // Send register request.
                     RegisterTask registerTask = new RegisterTask(firstName.getText().toString(), lastName.getText().toString(),
