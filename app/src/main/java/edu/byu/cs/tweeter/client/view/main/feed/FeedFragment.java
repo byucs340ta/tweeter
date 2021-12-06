@@ -127,7 +127,11 @@ public class FeedFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(getContext(), "You selected '" + userName.getText() + "'.", Toast.LENGTH_SHORT).show();
+                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
+                            userAlias.getText().toString(), new GetUserHandler());
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(getUserTask);
+                    Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                 }
             });
         }
