@@ -43,6 +43,6 @@ dependencies {
     // requires test/resources/mockito-extensions/org.mockito.plugins.MockMaker to have content "mock-maker-inline"
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.0.0'
 
-
+    androidTestImplementation group: 'org.mockito', name: 'mockito-android', version: '4.0.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
