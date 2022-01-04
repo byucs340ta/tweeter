@@ -20,6 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.squareup.picasso.Picasso;
 
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         userAlias.setText(selectedUser.getAlias());
 
         ImageView userImageView = findViewById(R.id.userImage);
-        userImageView.setImageDrawable(ImageUtils.drawableFromByteArray(selectedUser.getImageBytes()));
+        Picasso.get().load(selectedUser.getImageUrl()).into(userImageView);
 
         followeeCount = findViewById(R.id.followeeCount);
         followeeCount.setText(getString(R.string.followeeCount, "..."));

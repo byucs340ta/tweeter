@@ -66,8 +66,6 @@ public class GetFollowingTask implements Runnable {
             List<User> followees = pageOfUsers.getFirst();
             boolean hasMorePages = pageOfUsers.getSecond();
 
-            loadImages(followees);
-
             sendSuccessMessage(followees, hasMorePages);
 
         } catch (Exception ex) {
@@ -84,11 +82,6 @@ public class GetFollowingTask implements Runnable {
         return getFakeData().getPageOfUsers((User) lastFollowee, limit, targetUser);
     }
 
-    private void loadImages(List<User> followees) throws IOException {
-        for (User u : followees) {
-            BackgroundTaskUtils.loadImage(u);
-        }
-    }
 
     private void sendSuccessMessage(List<User> followees, boolean hasMorePages) {
         Bundle msgBundle = new Bundle();

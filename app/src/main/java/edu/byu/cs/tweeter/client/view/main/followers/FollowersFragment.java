@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -129,11 +131,11 @@ public class FollowersFragment extends Fragment {
         void bindUser(User user) {
             if (user == null)
                 Log.e(LOG_TAG, "user is null!");
-            if (user != null && user.getImageBytes() == null)
-                Log.e(LOG_TAG, "image bytes are null");
-            userImage.setImageDrawable(ImageUtils.drawableFromByteArray(user.getImageBytes()));
             userAlias.setText(user.getAlias());
             userName.setText(user.getName());
+
+            Picasso.get().load(user.getImageUrl()).into(userImage);
+
         }
 
         /**
