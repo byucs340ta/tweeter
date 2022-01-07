@@ -65,10 +65,6 @@ public class GetFollowersTask implements Runnable {
             List<User> followers = pageOfUsers.getFirst();
             boolean hasMorePages = pageOfUsers.getSecond();
 
-            for (User u : followers) {
-                BackgroundTaskUtils.loadImage(u);
-            }
-
             sendSuccessMessage(followers, hasMorePages);
 
         } catch (Exception ex) {

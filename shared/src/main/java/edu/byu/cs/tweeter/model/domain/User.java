@@ -24,10 +24,7 @@ public class User implements Comparable<User>, Serializable {
      * URL that points to the user's profile image.
      */
     public String imageUrl;
-    /**
-     * Byte array containing the user's profile image (after download from web).
-     */
-    private byte[] imageBytes;
+
 
     public User() {
     }
@@ -61,14 +58,6 @@ public class User implements Comparable<User>, Serializable {
 
     public String getImageUrl() {
         return imageUrl;
-    }
-
-    public byte[] getImageBytes() {
-        return imageBytes;
-    }
-
-    public void setImageBytes(byte[] imageBytes) {
-        this.imageBytes = imageBytes;
     }
 
     @Override

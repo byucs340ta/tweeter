@@ -15,6 +15,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.Locale;
 
 import edu.byu.cs.client.R;
@@ -61,7 +63,7 @@ public class StatusDialogFragment extends AppCompatDialogFragment {
         alias.setTextSize(15);
         alias.setTextColor(getResources().getColor(R.color.lightGray));
         image = view.findViewById(R.id.dialogImage);
-        image.setImageDrawable(ImageUtils.drawableFromByteArray(Cache.getInstance().getCurrUser().getImageBytes()));
+        Picasso.get().load(Cache.getInstance().getCurrUser().getImageUrl()).into(image);
         post = view.findViewById(R.id.dialogPost);
 
         post.addTextChangedListener(new TextWatcher() {

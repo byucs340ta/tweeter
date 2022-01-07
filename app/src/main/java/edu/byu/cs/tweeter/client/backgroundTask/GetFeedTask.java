@@ -66,10 +66,6 @@ public class GetFeedTask implements Runnable {
             List<Status> statuses = pageOfStatus.getFirst();
             boolean hasMorePages = pageOfStatus.getSecond();
 
-            for (Status s : statuses) {
-                BackgroundTaskUtils.loadImage(s.getUser());
-            }
-
             sendSuccessMessage(statuses, hasMorePages);
 
         } catch (Exception ex) {
