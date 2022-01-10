@@ -24,6 +24,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
@@ -123,6 +125,17 @@ public class StoryFragment extends Fragment {
             userName = itemView.findViewById(R.id.statusName);
             post = itemView.findViewById(R.id.statusPost);
             datetime = itemView.findViewById(R.id.statusDatetime);
+            
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
+                            userAlias.getText().toString(), new GetUserHandler());
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(getUserTask);
+                    Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
+                }
+            });
         }
 
         /**
@@ -131,7 +144,7 @@ public class StoryFragment extends Fragment {
          * @param status the status.
          */
         void bindStatus(Status status) {
-            userImage.setImageDrawable(ImageUtils.drawableFromByteArray(status.getUser().getImageBytes()));
+            Picasso.get().load(status.getUser().getImageUrl()).into(userImage);
             userAlias.setText(status.getUser().getAlias());
             userName.setText(status.getUser().getName());
             datetime.setText(status.getDate());

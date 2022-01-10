@@ -50,8 +50,6 @@ public class LoginTask implements Runnable {
             User loggedInUser = loginResult.getFirst();
             AuthToken authToken = loginResult.getSecond();
 
-            BackgroundTaskUtils.loadImage(loggedInUser);
-
             sendSuccessMessage(loggedInUser, authToken);
 
         } catch (Exception ex) {

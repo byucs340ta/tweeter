@@ -65,8 +65,6 @@ public class RegisterTask implements Runnable {
             User registeredUser = registerResult.getFirst();
             AuthToken authToken = registerResult.getSecond();
 
-            BackgroundTaskUtils.loadImage(registeredUser);
-
             sendSuccessMessage(registeredUser, authToken);
 
         } catch (Exception ex) {

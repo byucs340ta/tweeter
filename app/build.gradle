@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
     defaultConfig {
         applicationId "edu.byu.cs.tweeter"
-        minSdkVersion 26
-        targetSdkVersion 29
+        minSdkVersion 30
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -18,8 +18,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = 11
+        targetCompatibility = 11
     }
 }
 
@@ -31,11 +31,21 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
-    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'org.jetbrains:annotations-java5:15.0'
     implementation 'org.jetbrains:annotations-java5:15.0'
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+
+    // Image management
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    // Testing related dependencies
+
+    // Intentionally using JUnit 4, so styles match Mockito, etc
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+
+    // requires test/resources/mockito-extensions/org.mockito.plugins.MockMaker to have content "mock-maker-inline"
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.0.0'
+
+    androidTestImplementation group: 'org.mockito', name: 'mockito-android', version: '4.0.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

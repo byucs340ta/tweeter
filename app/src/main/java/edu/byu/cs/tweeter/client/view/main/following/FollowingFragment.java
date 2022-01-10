@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -125,9 +127,9 @@ public class FollowingFragment extends Fragment {
          * @param user the user.
          */
         void bindUser(User user) {
-            userImage.setImageDrawable(ImageUtils.drawableFromByteArray(user.getImageBytes()));
             userAlias.setText(user.getAlias());
             userName.setText(user.getName());
+            Picasso.get().load(user.getImageUrl()).into(userImage);
         }
 
         /**
