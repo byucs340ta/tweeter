@@ -2,13 +2,11 @@
 
 buildscript {
     repositories {
+        mavenCentral()
         google()
-
-        // Deprecated as of Gradle 7.0.
-        // Fortunately, the are placing it in read-only mode instead of deleting (see https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)
-        // We still need this since the replacement (`mavenCentral()`) doesn't have the shadow jar plugin available (see https://stackoverflow.com/a/67482465)
-        jcenter()
-        
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.3'
@@ -21,11 +19,11 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
-
-        // See the deprecation note above.
-        jcenter()
-
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 }
 
