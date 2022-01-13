@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 
 /**
  * Implements the pop-up dialog for sending a new status.
