@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
