@@ -28,7 +28,6 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -88,11 +87,7 @@ public class StoryFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
         storyRecyclerView.setLayoutManager(layoutManager);
 
-        try {
-            storyRecyclerViewAdapter = new StoryRecyclerViewAdapter();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        storyRecyclerViewAdapter = new StoryRecyclerViewAdapter();
         storyRecyclerView.setAdapter(storyRecyclerViewAdapter);
 
         storyRecyclerView.addOnScrollListener(new StoryRecyclerViewPaginationScrollListener(layoutManager));
@@ -236,7 +231,7 @@ public class StoryFragment extends Fragment {
         /**
          * Creates an instance and loads the first page of story data.
          */
-        StoryRecyclerViewAdapter() throws MalformedURLException {
+        StoryRecyclerViewAdapter() {
             loadMoreItems();
         }
 
@@ -340,7 +335,7 @@ public class StoryFragment extends Fragment {
          * Causes the Adapter to display a loading footer and make a request to get more story
          * data.
          */
-        void loadMoreItems() throws MalformedURLException {
+        void loadMoreItems() {
             if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
                 isLoading = true;
                 addLoadingFooter();
@@ -441,11 +436,7 @@ public class StoryFragment extends Fragment {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(() -> {
-                        try {
                             storyRecyclerViewAdapter.loadMoreItems();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        }
                     }, 0);
                 }
             }
