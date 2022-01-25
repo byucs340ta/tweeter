@@ -28,7 +28,6 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -88,11 +87,7 @@ public class FeedFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
         feedRecyclerView.setLayoutManager(layoutManager);
 
-        try {
-            feedRecyclerViewAdapter = new FeedRecyclerViewAdapter();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        feedRecyclerViewAdapter = new FeedRecyclerViewAdapter();
         feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
 
         feedRecyclerView.addOnScrollListener(new FeedRecyclerViewPaginationScrollListener(layoutManager));
@@ -233,7 +228,7 @@ public class FeedFragment extends Fragment {
         /**
          * Creates an instance and loads the first page of feed data.
          */
-        FeedRecyclerViewAdapter() throws MalformedURLException {
+        FeedRecyclerViewAdapter() {
             loadMoreItems();
         }
 
@@ -337,7 +332,7 @@ public class FeedFragment extends Fragment {
          * Causes the Adapter to display a loading footer and make a request to get more feed
          * data.
          */
-        void loadMoreItems() throws MalformedURLException {
+        void loadMoreItems(){
             if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
                 isLoading = true;
                 addLoadingFooter();
@@ -353,7 +348,7 @@ public class FeedFragment extends Fragment {
          * Adds a dummy status to the list of statuses so the RecyclerView will display a view (the
          * loading footer view) at the bottom of the list.
          */
-        private void addLoadingFooter() throws MalformedURLException {
+        private void addLoadingFooter() {
             addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<String>() {{
                 add("https://youtube.com");
             }}, new ArrayList<String>() {{
@@ -438,11 +433,7 @@ public class FeedFragment extends Fragment {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(() -> {
-                        try {
                             feedRecyclerViewAdapter.loadMoreItems();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        }
                     }, 0);
                 }
             }

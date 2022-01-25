@@ -22,7 +22,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -199,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
     }
 
-    public List<String> parseURLs(String post) throws MalformedURLException {
+    public List<String> parseURLs(String post) {
         List<String> containedUrls = new ArrayList<>();
         for (String word : post.split("\\s")) {
             if (word.startsWith("http://") || word.startsWith("https://")) {
