@@ -38,6 +38,7 @@ import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.presenter.FeedPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -45,7 +46,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Feed" tab.
  */
-public class FeedFragment extends Fragment {
+public class FeedFragment extends Fragment implements FeedPresenter.View {
     private static final String LOG_TAG = "FeedFragment";
     private static final String USER_KEY = "UserKey";
 
@@ -55,8 +56,11 @@ public class FeedFragment extends Fragment {
     private static final int PAGE_SIZE = 10;
 
     private User user;
+    private boolean isLoading = false;
 
     private FeedRecyclerViewAdapter feedRecyclerViewAdapter;
+
+    private FeedPresenter presenter;
 
     /**
      * Creates an instance of the fragment and places the target user in an arguments
@@ -82,6 +86,7 @@ public class FeedFragment extends Fragment {
 
         //noinspection ConstantConditions
         user = (User) getArguments().getSerializable(USER_KEY);
+        presenter = new FeedPresenter(this, user);
 
         RecyclerView feedRecyclerView = view.findViewById(R.id.feedRecyclerView);
 
@@ -98,6 +103,45 @@ public class FeedFragment extends Fragment {
         feedRecyclerView.addOnScrollListener(new FeedRecyclerViewPaginationScrollListener(layoutManager));
 
         return view;
+    }
+
+    public void loadMoreItems() {
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(() -> {
+            try {
+                presenter.loadMoreItems();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }, 0);
+    }
+
+    @Override
+    public void navigateToUser(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
+    }
+
+    @Override
+    public void setLoading(boolean value) throws MalformedURLException {
+        isLoading = value;
+        if (value) {
+            feedRecyclerViewAdapter.addLoadingFooter();
+        }
+        else {
+            feedRecyclerViewAdapter.removeLoadingFooter();
+        }
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void addItems(List<Status> statuses) {
+        feedRecyclerViewAdapter.addItems(statuses);
     }
 
     /**
@@ -128,10 +172,6 @@ public class FeedFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                            userAlias.getText().toString(), new GetUserHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(getUserTask);
                     Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                 }
             });
@@ -167,10 +207,7 @@ public class FeedFragment extends Fragment {
                             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickable));
                             startActivity(intent);
                         } else {
-                            GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                                    clickable, new GetUserHandler());
-                            ExecutorService executor = Executors.newSingleThreadExecutor();
-                            executor.execute(getUserTask);
+                            presenter.getUsers(clickable);
                             Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -194,29 +231,6 @@ public class FeedFragment extends Fragment {
             post.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
-        /**
-         * Message handler (i.e., observer) for GetUserTask.
-         */
-        private class GetUserHandler extends Handler {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-                if (success) {
-                    User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-                    startActivity(intent);
-                } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
     }
 
     /**
@@ -228,7 +242,6 @@ public class FeedFragment extends Fragment {
         private Status lastStatus;
 
         private boolean hasMorePages;
-        private boolean isLoading = false;
 
         /**
          * Creates an instance and loads the first page of feed data.
@@ -334,22 +347,6 @@ public class FeedFragment extends Fragment {
         }
 
         /**
-         * Causes the Adapter to display a loading footer and make a request to get more feed
-         * data.
-         */
-        void loadMoreItems() throws MalformedURLException {
-            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-                isLoading = true;
-                addLoadingFooter();
-
-                GetFeedTask getFeedTask = new GetFeedTask(Cache.getInstance().getCurrUserAuthToken(),
-                        user, PAGE_SIZE, lastStatus, new GetFeedHandler());
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(getFeedTask);
-            }
-        }
-
-        /**
          * Adds a dummy status to the list of statuses so the RecyclerView will display a view (the
          * loading footer view) at the bottom of the list.
          */
@@ -367,34 +364,6 @@ public class FeedFragment extends Fragment {
          */
         private void removeLoadingFooter() {
             removeItem(feed.get(feed.size() - 1));
-        }
-
-
-        /**
-         * Message handler (i.e., observer) for GetFeedTask.
-         */
-        private class GetFeedHandler extends Handler {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                isLoading = false;
-                removeLoadingFooter();
-
-                boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
-                if (success) {
-                    List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.STATUSES_KEY);
-                    hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-
-                    lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-
-                    feedRecyclerViewAdapter.addItems(statuses);
-                } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get feed: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get feed because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
         }
     }
 
@@ -432,19 +401,8 @@ public class FeedFragment extends Fragment {
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            if (!feedRecyclerViewAdapter.isLoading && feedRecyclerViewAdapter.hasMorePages) {
-                if ((visibleItemCount + firstVisibleItemPosition) >=
-                        totalItemCount && firstVisibleItemPosition >= 0) {
-                    // Run this code later on the UI thread
-                    final Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(() -> {
-                        try {
-                            feedRecyclerViewAdapter.loadMoreItems();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        }
-                    }, 0);
-                }
+            if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+                loadMoreItems();
             }
         }
     }
