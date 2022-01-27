@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,12 +23,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
@@ -46,8 +41,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
 
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
-
-    private User user;
 
     private boolean isLoading;
 
@@ -78,7 +71,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
         View view = inflater.inflate(R.layout.fragment_followers, container, false);
 
         //noinspection ConstantConditions
-        user = (User) getArguments().getSerializable(USER_KEY);
+        User user = (User) getArguments().getSerializable(USER_KEY);
         AuthToken token = Cache.getInstance().getCurrUserAuthToken();
         presenter = new FollowersPresenter(this, user, token);
 
@@ -98,9 +91,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
     public void loadMoreItems() {
         // Run this code later on the UI thread
         final Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(() -> {
-            presenter.loadMoreItems();
-        }, 0);
+        handler.postDelayed(() -> presenter.loadMoreItems(), 0);
     }
 
     @Override
@@ -152,12 +143,9 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
             userAlias = itemView.findViewById(R.id.userAlias);
             userName = itemView.findViewById(R.id.userName);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.getTargetUser(userAlias.getText().toString());
-                    Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
-                }
+            itemView.setOnClickListener(view -> {
+                presenter.getTargetUser(userAlias.getText().toString());
+                Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
             });
         }
 

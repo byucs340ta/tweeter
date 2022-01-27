@@ -13,7 +13,7 @@ public class LoginPresenter implements UserService.LoginObserver {
         void clearInfoMessage();
     }
 
-    private View view;
+    private final View view;
 
     public LoginPresenter(View view) {
         this.view = view;
@@ -25,7 +25,7 @@ public class LoginPresenter implements UserService.LoginObserver {
 
         String message = validateLogin(alias, password);
 
-        if (message == "Validated") {
+        if (message.equals("Validated")) {
             view.displayInfoMessage("Logging In...");
             new UserService().login(alias, password, this);
         }

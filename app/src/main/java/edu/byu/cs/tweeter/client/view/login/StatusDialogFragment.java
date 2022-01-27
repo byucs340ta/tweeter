@@ -26,9 +26,6 @@ import edu.byu.cs.tweeter.client.cache.Cache;
  * Implements the pop-up dialog for sending a new status.
  */
 public class StatusDialogFragment extends AppCompatDialogFragment {
-    private TextView fullName;
-    private TextView alias;
-    private ImageView image;
     private EditText post;
     private Observer observer;
     private TextView wordCount;
@@ -41,27 +38,19 @@ public class StatusDialogFragment extends AppCompatDialogFragment {
         View view = inflater.inflate(R.layout.status_dialog, null);
 
         builder.setView(view)
-                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setNegativeButton("Close", (dialog, which) -> {
 
-                    }
                 })
-                .setPositiveButton("POST STATUS", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        observer.onStatusPosted(post.getText().toString());
-                    }
-                });
+                .setPositiveButton("POST STATUS", (dialog, which) -> observer.onStatusPosted(post.getText().toString()));
 
-        fullName = view.findViewById(R.id.dialogFullName);
+        TextView fullName = view.findViewById(R.id.dialogFullName);
         fullName.setText(Cache.getInstance().getCurrUser().getName());
         fullName.setTextSize(17);
-        alias = view.findViewById(R.id.dialogAlias);
+        TextView alias = view.findViewById(R.id.dialogAlias);
         alias.setText(Cache.getInstance().getCurrUser().getAlias());
         alias.setTextSize(15);
         alias.setTextColor(getResources().getColor(R.color.lightGray));
-        image = view.findViewById(R.id.dialogImage);
+        ImageView image = view.findViewById(R.id.dialogImage);
         Picasso.get().load(Cache.getInstance().getCurrUser().getImageUrl()).into(image);
         post = view.findViewById(R.id.dialogPost);
 
@@ -94,7 +83,7 @@ public class StatusDialogFragment extends AppCompatDialogFragment {
         try {
             observer = (Observer) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement the StatusDialogFragment.Observer");
+            throw new ClassCastException(context + " must implement the StatusDialogFragment.Observer");
         }
     }
 

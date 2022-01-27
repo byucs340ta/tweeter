@@ -50,7 +50,7 @@ public class FollowerService {
      */
     private class GetFollowersHandler extends Handler {
 
-        private GetFollowersObserver observer;
+        private final GetFollowersObserver observer;
 
         public GetFollowersHandler(Looper looper, GetFollowersObserver observer) {
             super(looper);

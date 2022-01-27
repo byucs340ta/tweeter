@@ -35,7 +35,7 @@ public class UserService {
     }
 
     private static class GetUserHandler extends Handler {
-        private GetUserObserver observer;
+        private final GetUserObserver observer;
 
         public GetUserHandler(GetUserObserver observer) {
             this.observer = observer;
@@ -66,7 +66,7 @@ public class UserService {
 
     private class RegisterHandler extends Handler {
 
-        private UserService.RegisterObserver observer;
+        private final UserService.RegisterObserver observer;
 
         public RegisterHandler(UserService.RegisterObserver observer) {
             this.observer = observer;
@@ -129,7 +129,7 @@ public class UserService {
 
     private class LoginHandler extends Handler {
 
-        private LoginObserver observer;
+        private final LoginObserver observer;
 
         public LoginHandler(LoginObserver observer) {
             this.observer = observer;
@@ -169,7 +169,7 @@ public class UserService {
     }
 
     private class LogoutHandler extends Handler {
-        private UserService.LogoutObserver observer;
+        private final UserService.LogoutObserver observer;
 
         public LogoutHandler(UserService.LogoutObserver observer) {
             this.observer = observer;

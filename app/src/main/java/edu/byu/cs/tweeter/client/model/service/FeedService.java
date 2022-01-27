@@ -37,7 +37,7 @@ public class FeedService {
      */
     private static class GetFeedHandler extends Handler {
 
-        private GetFeedObserver observer;
+        private final GetFeedObserver observer;
 
         public GetFeedHandler(GetFeedObserver observer) {
             this.observer = observer;

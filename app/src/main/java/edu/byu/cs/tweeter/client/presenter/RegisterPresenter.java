@@ -16,7 +16,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         void clearInfoMessage();
     }
 
-    private RegisterPresenter.View view;
+    private final RegisterPresenter.View view;
 
     public RegisterPresenter(View view) {
         this.view = view;
@@ -32,7 +32,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
 
         String message = validateRegistration(firstName, lastName, alias, password, image);
 
-        if (message == "Validated") {
+        if (message.equals("Validated")) {
             view.displayInfoMessage("Registering...");
             new UserService().register(firstName, lastName, alias, password, image, this);
         }

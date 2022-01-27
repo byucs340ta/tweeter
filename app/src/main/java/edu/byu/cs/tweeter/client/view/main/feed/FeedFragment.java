@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -31,13 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FeedPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -47,15 +41,11 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Implements the "Feed" tab.
  */
 public class FeedFragment extends Fragment implements FeedPresenter.View {
-    private static final String LOG_TAG = "FeedFragment";
     private static final String USER_KEY = "UserKey";
 
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-    private static final int PAGE_SIZE = 10;
-
-    private User user;
     private boolean isLoading = false;
 
     private FeedRecyclerViewAdapter feedRecyclerViewAdapter;
@@ -85,7 +75,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
         //noinspection ConstantConditions
-        user = (User) getArguments().getSerializable(USER_KEY);
+        User user = (User) getArguments().getSerializable(USER_KEY);
         presenter = new FeedPresenter(this, user);
 
         RecyclerView feedRecyclerView = view.findViewById(R.id.feedRecyclerView);
@@ -169,12 +159,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
             post = itemView.findViewById(R.id.statusPost);
             datetime = itemView.findViewById(R.id.statusDatetime);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
-                }
-            });
+            itemView.setOnClickListener(view -> Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show());
         }
 
         /**
@@ -350,10 +335,10 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
          * Adds a dummy status to the list of statuses so the RecyclerView will display a view (the
          * loading footer view) at the bottom of the list.
          */
-        private void addLoadingFooter() throws MalformedURLException {
-            addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<String>() {{
+        private void addLoadingFooter() {
+            addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<>() {{
                 add("https://youtube.com");
-            }}, new ArrayList<String>() {{
+            }}, new ArrayList<>() {{
                 add("@Dude1");
             }}));
         }

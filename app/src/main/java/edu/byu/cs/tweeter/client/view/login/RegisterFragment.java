@@ -25,7 +25,6 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Implements the register screen.
  */
 public class RegisterFragment extends Fragment implements RegisterPresenter.View {
-    private static final String LOG_TAG = "RegisterFragment";
     private static final int RESULT_IMAGE = 10;
 
     private EditText firstName;
@@ -33,7 +32,6 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
     private EditText alias;
     private EditText password;
     private Button imageUploaderButton;
-    private Button registerButton;
     private ImageView imageToUpload;
     private TextView errorView;
     private Toast registeringToast;
@@ -61,7 +59,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
         password = view.findViewById(R.id.registerPassword);
         imageUploaderButton = view.findViewById(R.id.imageButton);
         imageToUpload = view.findViewById(R.id.registerImage);
-        registerButton = view.findViewById(R.id.registerButton);
+        Button registerButton = view.findViewById(R.id.registerButton);
         errorView = view.findViewById(R.id.registerError);
 
         imageUploaderButton.setOnClickListener(_view -> presenter.uploadImage());

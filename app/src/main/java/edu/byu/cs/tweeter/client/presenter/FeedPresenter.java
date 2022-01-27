@@ -10,10 +10,10 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FeedPresenter implements FeedService.GetFeedObserver, UserService.GetUserObserver {
-    private View view;
+    private final View view;
     private boolean isLoading = false;
     private boolean hasMorePages = true;
-    private User user;
+    private final User user;
     private Status lastStatus = null;
 
     public interface View {

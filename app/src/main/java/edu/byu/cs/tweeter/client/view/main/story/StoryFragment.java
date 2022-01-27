@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -31,13 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.StoryPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -47,15 +41,11 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Implements the "Story" tab.
  */
 public class StoryFragment extends Fragment implements StoryPresenter.View {
-    private static final String LOG_TAG = "StoryFragment";
     private static final String USER_KEY = "UserKey";
 
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-    private static final int PAGE_SIZE = 10;
-
-    private User user;
     private boolean isLoading = false;
     private StoryPresenter presenter;
 
@@ -84,7 +74,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
         View view = inflater.inflate(R.layout.fragment_story, container, false);
 
         //noinspection ConstantConditions
-        user = (User) getArguments().getSerializable(USER_KEY);
+        User user = (User) getArguments().getSerializable(USER_KEY);
         presenter = new StoryPresenter(this, user);
 
         RecyclerView storyRecyclerView = view.findViewById(R.id.storyRecyclerView);
@@ -106,9 +96,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
 
     public void loadMoreItems() {
         final Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(() -> {
-            presenter.loadMoreItems();
-        }, 0);
+        handler.postDelayed(() -> presenter.loadMoreItems(), 0);
     }
 
     @Override
@@ -338,9 +326,9 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
          * loading footer view) at the bottom of the list.
          */
         private void addLoadingFooter() {
-            addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<String>() {{
+            addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<>() {{
                 add("https://youtube.com");
-            }}, new ArrayList<String>() {{
+            }}, new ArrayList<>() {{
                 add("@Dude1");
             }}));
         }

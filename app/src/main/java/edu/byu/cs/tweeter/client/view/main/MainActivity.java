@@ -2,8 +2,6 @@ package edu.byu.cs.tweeter.client.view.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -22,30 +19,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
-import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
-import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
-import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
-import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter;
 import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.client.view.login.StatusDialogFragment;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
@@ -57,14 +35,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     public static final String CURRENT_USER_KEY = "CurrentUser";
 
-    private Toast logOutToast;
-    private Toast postingToast;
     private User selectedUser;
     private TextView followeeCount;
     private TextView followerCount;
     private Button followButton;
 
-    private MainPresenter presenter = new MainPresenter(this);
+    private final MainPresenter presenter = new MainPresenter(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +52,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             throw new RuntimeException("User not passed to activity");
         }
 
-        AuthToken token = Cache.getInstance().getCurrUserAuthToken();
-
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), selectedUser);
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setOffscreenPageLimit(1);
@@ -87,12 +61,9 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
         FloatingActionButton fab = findViewById(R.id.fab);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                StatusDialogFragment statusDialogFragment = new StatusDialogFragment();
-                statusDialogFragment.show(getSupportFragmentManager(), "post-status-dialog");
-            }
+        fab.setOnClickListener(view -> {
+            StatusDialogFragment statusDialogFragment = new StatusDialogFragment();
+            statusDialogFragment.show(getSupportFragmentManager(), "post-status-dialog");
         });
 
         presenter.updateSelectedUserFollowingAndFollowers(selectedUser);
@@ -121,18 +92,15 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             presenter.isFollower();
         }
 
-        followButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                followButton.setEnabled(false);
+        followButton.setOnClickListener(v -> {
+            followButton.setEnabled(false);
 
-                if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-                    presenter.handleSuccessUnfollow(selectedUser);
-                    Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
-                } else {
-                    presenter.handleSuccessFollow(selectedUser);
-                    Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
-                }
+            if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
+                presenter.handleSuccessUnfollow(selectedUser);
+                Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
+            } else {
+                presenter.handleSuccessFollow(selectedUser);
+                Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -156,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void onStatusPosted(String post) {
-        postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
+        Toast postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
         postingToast.show();
 
         try {

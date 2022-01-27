@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +22,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
@@ -40,7 +35,6 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class FollowingFragment extends Fragment implements FollowingPresenter.View {
 
-    private static final String LOG_TAG = "FollowingFragment";
     private static final String USER_KEY = "UserKey";
 
     private static final int LOADING_DATA_VIEW = 0;
@@ -139,9 +133,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
      */
     private void loadMoreItems() { // Services Layer
         final Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(() -> {
-            presenter.loadMoreItems();
-        }, 0);
+        handler.postDelayed(() -> presenter.loadMoreItems(), 0);
     }
 
     /**
@@ -165,12 +157,9 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             userAlias = itemView.findViewById(R.id.userAlias);
             userName = itemView.findViewById(R.id.userName);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.getTargetUser(userAlias.getText().toString());
-                    Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
-                }
+            itemView.setOnClickListener(view -> {
+                presenter.getTargetUser(userAlias.getText().toString());
+                Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
             });
         }
 

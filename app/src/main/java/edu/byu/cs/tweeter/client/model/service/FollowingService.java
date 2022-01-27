@@ -79,7 +79,7 @@ public class FollowingService {
      */
     public static class GetFollowingHandler extends Handler {
 
-        private GetFollowingObserver observer;
+        private final GetFollowingObserver observer;
 
         public GetFollowingHandler(Looper looper, GetFollowingObserver observer) {
             super(looper);

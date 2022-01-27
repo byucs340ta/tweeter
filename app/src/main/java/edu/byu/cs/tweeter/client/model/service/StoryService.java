@@ -36,7 +36,7 @@ public class StoryService {
      */
     private static class GetStoryHandler extends Handler {
 
-        private GetStoryObserver observer;
+        private final GetStoryObserver observer;
 
         public GetStoryHandler(GetStoryObserver observer) {
             this.observer = observer;

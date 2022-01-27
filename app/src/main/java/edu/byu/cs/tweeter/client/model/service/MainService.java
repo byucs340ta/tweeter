@@ -49,7 +49,7 @@ public class MainService {
     }
 
     private class FollowHandler extends Handler {
-        private FollowObserver observer;
+        private final FollowObserver observer;
 
         public FollowHandler(FollowObserver observer) {
             this.observer = observer;
@@ -91,7 +91,7 @@ public class MainService {
 
     private class UnfollowHandler extends Handler {
 
-        private UnfollowObserver observer;
+        private final UnfollowObserver observer;
 
         public UnfollowHandler(UnfollowObserver observer) {
             this.observer = observer;
@@ -123,7 +123,7 @@ public class MainService {
 
     private class GetFollowersCountHandler extends Handler {
 
-        private GetFollowersCountObserver observer;
+        private final GetFollowersCountObserver observer;
 
         public GetFollowersCountHandler(GetFollowersCountObserver observer) {
             this.observer = observer;
@@ -154,7 +154,7 @@ public class MainService {
 
     private class GetFollowingCountHandler extends Handler {
 
-        private GetFollowingCountObserver observer;
+        private final GetFollowingCountObserver observer;
 
         public GetFollowingCountHandler(GetFollowingCountObserver observer) {
             this.observer = observer;
@@ -193,7 +193,7 @@ public class MainService {
 
     private class IsFollowerHandler extends Handler {
 
-        private IsFollowerObserver observer;
+        private final IsFollowerObserver observer;
 
         public IsFollowerHandler(IsFollowerObserver observer) {
             this.observer = observer;

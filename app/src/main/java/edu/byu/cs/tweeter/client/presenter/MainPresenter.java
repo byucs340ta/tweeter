@@ -27,7 +27,7 @@ public class MainPresenter implements UserService.LogoutObserver, PostStatusServ
         void setIsNotFollowerButton();
     }
 
-    private View view;
+    private final View view;
 
     public MainPresenter(View view) {
         this.view = view;
@@ -38,7 +38,7 @@ public class MainPresenter implements UserService.LogoutObserver, PostStatusServ
         new UserService().logout(this);
     }
 
-    public void postStatus(String post) throws ParseException, MalformedURLException {
+    public void postStatus(String post) throws ParseException {
         view.displayInfoMessage("Posting Status...");
         new PostStatusService().postStatus(post, this);
     }

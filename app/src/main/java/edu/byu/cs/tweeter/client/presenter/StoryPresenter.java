@@ -9,10 +9,10 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class StoryPresenter implements StoryService.GetStoryObserver, UserService.GetUserObserver {
-    private StoryPresenter.View view;
+    private final StoryPresenter.View view;
     private boolean isLoading = false;
     private boolean hasMorePages = true;
-    private User user;
+    private final User user;
     private Status lastStatus = null;
 
     public interface View {

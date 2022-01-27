@@ -5,7 +5,6 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -27,7 +26,7 @@ public class PostStatusService {
         void handleExceptionPostStatus(Exception e);
     }
 
-    public void postStatus(String post, PostStatusObserver observer) throws ParseException, MalformedURLException {
+    public void postStatus(String post, PostStatusObserver observer) throws ParseException {
         Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
         PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
                 newStatus, new PostStatusHandler(observer));
@@ -37,7 +36,7 @@ public class PostStatusService {
 
     private class PostStatusHandler extends Handler {
 
-        private PostStatusObserver observer;
+        private final PostStatusObserver observer;
 
         private PostStatusHandler(PostStatusObserver observer) {
             this.observer = observer;
@@ -65,7 +64,7 @@ public class PostStatusService {
         return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
     }
 
-    public List<String> parseURLs(String post) throws MalformedURLException {
+    public List<String> parseURLs(String post) {
         List<String> containedUrls = new ArrayList<>();
         for (String word : post.split("\\s")) {
             if (word.startsWith("http://") || word.startsWith("https://")) {

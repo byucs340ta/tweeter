@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.domain.User;
  * The Cache class stores globally accessible data.
  */
 public class Cache {
-    private static Cache instance = new Cache();
+    private static final Cache instance = new Cache();
 
     public static Cache getInstance() {
         return instance;
