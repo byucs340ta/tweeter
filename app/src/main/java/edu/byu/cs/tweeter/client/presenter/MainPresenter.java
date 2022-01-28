@@ -11,7 +11,6 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -21,13 +20,14 @@ public class MainPresenter {
 
     public interface View {
         void displayErrorMessage(String message);
-        void cancelToast();
+        void cancelPostingToast();
         void updateSelectedUserFollowingAndFollowers();
         void updateFollowButton(boolean b);
         void setFollowerCount(int count);
         void setFolloweeCount(int count);
-
+        void cancelLogoutToast();
         void enableFollowButton(boolean b);
+        void logoutUser();
     }
 
     private FollowService followService;
@@ -37,14 +37,14 @@ public class MainPresenter {
 
     public MainPresenter(View view) {
         this.view = view;
-        this.userService = new UserService();
         this.statusService = new StatusService();
         this.followService = new FollowService();
+        this.userService = new UserService();
     }
 
-    public void postStatus(String post, User currUser) throws ParseException {
+    public void postStatus(String post) throws ParseException {
         try {
-            Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
+            Status newStatus = new Status(post,  Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
             statusService.postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
 
         } catch (Exception e) {
@@ -52,20 +52,24 @@ public class MainPresenter {
         }
     }
 
-    public void unfollow(AuthToken authToken, User user) {
-        followService.unfollow(authToken, user, new UnfollowObserver());
+    public void unfollow(User user) {
+        followService.unfollow(Cache.getInstance().getCurrUserAuthToken(), user, new UnfollowObserver());
     }
 
-    public void follow(AuthToken authToken, User user) {
-        followService.follow(authToken, user, new FollowObserver());
+    public void follow(User user) {
+        followService.follow(Cache.getInstance().getCurrUserAuthToken(), user, new FollowObserver());
     }
 
-    public void isFollower(AuthToken authToken, User currentUser, User selectedUser) {
-        followService.isFollower(authToken, currentUser, selectedUser, new IsFollowerObserver());
+    public void isFollower(User selectedUser) {
+        followService.isFollower(Cache.getInstance().getCurrUserAuthToken(), Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerObserver());
     }
 
-    public void updateSelectedUserFollowingAndFollowers(AuthToken authToken, User user) {
-        followService.updateSelectedUserFollowingAndFollowers(authToken, user, new GetFollowersCountObserver(), new GetFollowingCountObserver());
+    public void updateSelectedUserFollowingAndFollowers(User user) {
+        followService.updateSelectedUserFollowingAndFollowers(Cache.getInstance().getCurrUserAuthToken(), user, new GetFollowersCountObserver(), new GetFollowingCountObserver());
+    }
+
+    public void logoutUser() {
+        userService.logoutUser(new LogoutObserver());
     }
 
     public String getFormattedDateTime() throws ParseException {
@@ -140,7 +144,7 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess() {
-            view.cancelToast();
+            view.cancelPostingToast();
         }
 
         @Override
@@ -249,6 +253,25 @@ public class MainPresenter {
         public void handleException(Exception exception) {
             view.displayErrorMessage("Failed to follow because of exception: " + exception.getMessage());
             view.enableFollowButton(true);
+        }
+    }
+
+    public class LogoutObserver implements UserService.LogoutObserver {
+
+        @Override
+        public void handleSuccess() {
+            view.cancelLogoutToast();
+            view.logoutUser();
+        }
+
+        @Override
+        public void handleFailure(String message) {
+            view.displayErrorMessage("Failed to logout: " + message);
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+            view.displayErrorMessage("Failed to logout because of exception: " + exception.getMessage());
         }
     }
 

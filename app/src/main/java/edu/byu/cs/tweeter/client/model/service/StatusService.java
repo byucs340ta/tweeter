@@ -27,37 +27,11 @@ public class StatusService {
         void handleException(Exception exception);
     }
 
-    public interface GetFeedObserver {
-        void handleSuccess(List<Status> statuses, boolean hasMorePages);
-        void handleFailure(String message);
-        void handleException(Exception exception);
-    }
-
-    public interface PostStatusObserver {
-        void handleSuccess();
-        void handleFailure(String message);
-        void handleException(Exception exception);
-    }
-
     public void getStory(AuthToken authToken, User user, int pageSize, Status lastStatus, GetStoryObserver getStoryObserver) {
         GetStoryTask getStoryTask = new GetStoryTask(Cache.getInstance().getCurrUserAuthToken(),
                 user, pageSize, lastStatus, new GetStoryHandler(getStoryObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getStoryTask);
-    }
-
-    public void getFeed(AuthToken authToken, User user, int pageSize, Status lastStatus, GetFeedObserver getFeedObserver) {
-        GetFeedTask getFeedTask = new GetFeedTask(Cache.getInstance().getCurrUserAuthToken(),
-                user, pageSize, lastStatus, new GetFeedHandler(getFeedObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getFeedTask);
-    }
-
-    public void postStatus(AuthToken authToken, Status newStatus, PostStatusObserver postStatusObserver) {
-        PostStatusTask statusTask = new PostStatusTask(authToken,
-                newStatus, new PostStatusHandler(postStatusObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(statusTask);
     }
 
     /**
@@ -91,6 +65,19 @@ public class StatusService {
         }
     }
 
+    public interface GetFeedObserver {
+        void handleSuccess(List<Status> statuses, boolean hasMorePages);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    public void getFeed(AuthToken authToken, User user, int pageSize, Status lastStatus, GetFeedObserver getFeedObserver) {
+        GetFeedTask getFeedTask = new GetFeedTask(Cache.getInstance().getCurrUserAuthToken(),
+                user, pageSize, lastStatus, new GetFeedHandler(getFeedObserver));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(getFeedTask);
+    }
+
     /**
      * Message handler (i.e., observer) for GetFeedTask.
      */
@@ -121,6 +108,18 @@ public class StatusService {
         }
     }
 
+    public interface PostStatusObserver {
+        void handleSuccess();
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    public void postStatus(AuthToken authToken, Status newStatus, PostStatusObserver postStatusObserver) {
+        PostStatusTask statusTask = new PostStatusTask(authToken,
+                newStatus, new PostStatusHandler(postStatusObserver));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(statusTask);
+    }
 
     // PostStatusHandler
 

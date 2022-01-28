@@ -26,9 +26,6 @@ public class StoryPresenter {
         return isLoading;
     }
 
-    public void setLoading(boolean loading) {
-        isLoading = loading;
-    }
 
     public interface View {
         void displayErrorMessage(String message);

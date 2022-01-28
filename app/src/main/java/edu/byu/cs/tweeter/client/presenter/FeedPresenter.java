@@ -29,10 +29,6 @@ public class FeedPresenter {
         return isLoading;
     }
 
-    public void setLoading(boolean loading) {
-        isLoading = loading;
-    }
-
     public interface View {
         void displayErrorMessage(String message);
         void setLoadingFooter(boolean b);
@@ -47,6 +43,7 @@ public class FeedPresenter {
     public FeedPresenter(View view) {
         this.view = view;
         this.statusService = new StatusService();
+        this.userService = new UserService();
     }
 
     public void loadMoreItems(User user) {

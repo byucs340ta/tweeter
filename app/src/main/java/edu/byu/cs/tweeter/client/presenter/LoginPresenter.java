@@ -1,11 +1,6 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.content.Intent;
-import android.widget.Toast;
-
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter {
@@ -25,7 +20,7 @@ public class LoginPresenter {
 
     public void logIn(String alias, String password) {
         try {
-//            validateLogin(alias, password);
+            validateLogin(alias, password);
             userService.logIn(alias, password, new LoginObserver());
         } catch (Exception e) {
             throw e;

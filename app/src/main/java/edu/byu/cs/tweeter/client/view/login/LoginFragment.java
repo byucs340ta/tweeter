@@ -73,25 +73,10 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
         return view;
     }
 
-
-    // move this too
-    public void validateLogin() {
-        if (alias.getText().charAt(0) != '@') {
-            throw new IllegalArgumentException("Alias must begin with @.");
-        }
-        if (alias.getText().length() < 2) {
-            throw new IllegalArgumentException("Alias must contain 1 or more characters after the @.");
-        }
-        if (password.getText().length() == 0) {
-            throw new IllegalArgumentException("Password cannot be empty.");
-        }
-    }
-
     @Override
     public void logIn(User user) {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-
 
         loginInToast.cancel();
 

@@ -46,8 +46,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-    private static final int PAGE_SIZE = 10;
-
     private User user;
 
     private StoryRecyclerViewAdapter storyRecyclerViewAdapter;
@@ -323,15 +321,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
          */
         void loadMoreItems() {
             presenter.loadMoreItems(user);
-//            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-//                isLoading = true;
-//                addLoadingFooter();
-//
-//                GetStoryTask getStoryTask = new GetStoryTask(Cache.getInstance().getCurrUserAuthToken(),
-//                        user, PAGE_SIZE, lastStatus, new GetStoryHandler());
-//                ExecutorService executor = Executors.newSingleThreadExecutor();
-//                executor.execute(getStoryTask);
-//            }
         }
 
         /**
@@ -353,34 +342,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
         private void removeLoadingFooter() {
             removeItem(story.get(story.size() - 1));
         }
-
-
-//        /**
-//         * Message handler (i.e., observer) for GetStoryTask.
-//         */
-//        private class GetStoryHandler extends Handler {
-//            @Override
-//            public void handleMessage(@NonNull Message msg) {
-//                isLoading = false;
-//                removeLoadingFooter();
-//
-//                boolean success = msg.getData().getBoolean(GetStoryTask.SUCCESS_KEY);
-//                if (success) {
-//                    List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetStoryTask.STATUSES_KEY);
-//                    hasMorePages = msg.getData().getBoolean(GetStoryTask.MORE_PAGES_KEY);
-//
-//                    lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-//
-//                    storyRecyclerViewAdapter.addItems(statuses);
-//                } else if (msg.getData().containsKey(GetStoryTask.MESSAGE_KEY)) {
-//                    String message = msg.getData().getString(GetStoryTask.MESSAGE_KEY);
-//                    Toast.makeText(getContext(), "Failed to get story: " + message, Toast.LENGTH_LONG).show();
-//                } else if (msg.getData().containsKey(GetStoryTask.EXCEPTION_KEY)) {
-//                    Exception ex = (Exception) msg.getData().getSerializable(GetStoryTask.EXCEPTION_KEY);
-//                    Toast.makeText(getContext(), "Failed to get story because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        }
     }
 
     /**

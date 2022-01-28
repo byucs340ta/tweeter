@@ -26,12 +26,6 @@ public class FollowersPresenter {
         return isLoading;
     }
 
-    public void setLoading(boolean loading) {
-        isLoading = loading;
-    }
-
-
-
     public interface View {
         void displayErrorMessage(String message);
         void setLoadingFooter(boolean b);
