@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +22,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -51,6 +45,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
     private FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
 
     private FollowingPresenter presenter;
+
 
     /**
      * Creates an instance of the fragment and places the target user in an arguments
@@ -111,6 +106,13 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
         followingRecyclerViewAdapter.addItems(followees);
     }
 
+    @Override
+    public void setIntent(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
+    }
+
     /**
      * The ViewHolder for the RecyclerView that displays the Following data.
      */
@@ -119,8 +121,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
         private final ImageView userImage;
         private final TextView userAlias;
         private final TextView userName;
-//        private UserService userService;
-//        private UserService.GetUserObserver userObserver;
 
         /**
          * Creates an instance and sets an OnClickListener for the user's row.
@@ -134,18 +134,11 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             userAlias = itemView.findViewById(R.id.userAlias);
             userName = itemView.findViewById(R.id.userName);
 
-//            userService = new UserService();
-//            userObserver = new UserService.GetUserObserver();
-
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    userService.getUser(userAlias.getText().toString(), userObserver);
-                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                            userAlias.getText().toString(), new GetUserHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(getUserTask);
+                    presenter.getUser(userAlias.getText().toString());
                     Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                 }
             });
@@ -160,29 +153,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             userAlias.setText(user.getAlias());
             userName.setText(user.getName());
             Picasso.get().load(user.getImageUrl()).into(userImage);
-        }
-
-        /**
-         * Message handler (i.e., observer) for GetUserTask.
-         */
-        private class GetUserHandler extends Handler {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-                if (success) {
-                    User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-                    startActivity(intent);
-                } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
         }
     }
 

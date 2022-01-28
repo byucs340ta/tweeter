@@ -24,13 +24,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -113,6 +108,13 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
         followersRecyclerViewAdapter.addItems(followers);
     }
 
+    @Override
+    public void setIntent(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
+    }
+
     /**
      * The ViewHolder for the RecyclerView that displays the follower data.
      */
@@ -137,10 +139,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                            userAlias.getText().toString(), new GetUserHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(getUserTask);
+                    presenter.getUser(userAlias.getText().toString());
                     Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                 }
             });
@@ -159,29 +158,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
 
             Picasso.get().load(user.getImageUrl()).into(userImage);
 
-        }
-
-        /**
-         * Message handler (i.e., observer) for GetUserTask.
-         */
-        private class GetUserHandler extends Handler {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-                if (success) {
-                    User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-                    startActivity(intent);
-                } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
         }
     }
 
@@ -311,34 +287,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
         private void removeLoadingFooter() {
             removeItem(users.get(users.size() - 1));
         }
-
-
-//        /**
-//         * Message handler (i.e., observer) for GetFollowersTask.
-//         */
-//        private class GetFollowersHandler extends Handler {
-//            @Override
-//            public void handleMessage(@NonNull Message msg) {
-//                isLoading = false;
-//                removeLoadingFooter();
-//
-//                boolean success = msg.getData().getBoolean(GetFollowersTask.SUCCESS_KEY);
-//                if (success) {
-//                    List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.FOLLOWERS_KEY);
-//                    hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-//
-//                    lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
-//
-//                    followersRecyclerViewAdapter.addItems(followers);
-//                } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {
-//                    String message = msg.getData().getString(GetFollowersTask.MESSAGE_KEY);
-//                    Toast.makeText(getContext(), "Failed to get followers: " + message, Toast.LENGTH_LONG).show();
-//                } else if (msg.getData().containsKey(GetFollowersTask.EXCEPTION_KEY)) {
-//                    Exception ex = (Exception) msg.getData().getSerializable(GetFollowersTask.EXCEPTION_KEY);
-//                    Toast.makeText(getContext(), "Failed to get followers because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        }
     }
 
     /**
