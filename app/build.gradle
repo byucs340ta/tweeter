@@ -1,8 +1,9 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdk 30
     defaultConfig {
         applicationId "edu.byu.cs.tweeter"
         minSdkVersion 30
