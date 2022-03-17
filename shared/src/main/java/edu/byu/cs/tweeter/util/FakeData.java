@@ -51,13 +51,13 @@ public class FakeData {
     /**
      * Generated auth token.
      */
-    private static final AuthToken authToken = new AuthToken();
+    private final AuthToken authToken = new AuthToken();
 
     /**
      * List of generated users.
      * Used to return lists of followers and followees.
      */
-    private static final List<User> allUsers = Arrays.asList(
+    private final List<User> allUsers = Arrays.asList(
             user1, user2, user3, user4, user5, user6, user7, user8, user9, user10, user11,
             user12, user13, user14, user15, user16, user17, user18, user19, user20, user21
     );
@@ -66,13 +66,30 @@ public class FakeData {
      * List of generated statuses.
      * Used to return lists of story and feed statuses.
      */
-    private static final List<Status> allStatuses = new ArrayList<>();
+    private final List<Status> allStatuses = new ArrayList<>();
 
     // Used to force statuses to be re-generated if test cases use
     // different sets of fake users (by mocking the getFakeUsers method).
-    private static List<User> fakeUsersUsedToGenerateStatuses = null;
+    private List<User> fakeUsersUsedToGenerateStatuses = null;
 
-    public FakeData() {
+    private static FakeData instance;
+
+    public static FakeData getInstance() {
+        if(instance == null)
+        {
+            // We could use the 'synchronized' keyword in the method declaration but then we would incur overhead with every call
+            synchronized (FakeData.class) {
+                // Once we get the lock we have to make sure some other thread didn't create the instance while we waited for the lock
+                if(instance == null) {
+                    instance = new FakeData();
+                }
+            }
+        }
+
+        return instance;
+    }
+
+    private FakeData() {
         if (getFakeUsers() != getFakeUsers()) {
             // Verify that getFakeUsers always returns the same list of users.
             // (This could be violated by mock implementations of getFakeUsers.)

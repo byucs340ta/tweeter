@@ -74,7 +74,7 @@ public class RegisterTask implements Runnable {
     }
 
     private FakeData getFakeData() {
-        return new FakeData();
+        return FakeData.getInstance();
     }
 
     private Pair<User, AuthToken> doRegister() {

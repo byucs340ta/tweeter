@@ -74,7 +74,7 @@ public class GetFollowingTask implements Runnable {
     }
 
     private FakeData getFakeData() {
-        return new FakeData();
+        return FakeData.getInstance();
     }
 
     private Pair<List<User>, Boolean> getFollowees() {

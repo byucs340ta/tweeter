@@ -53,7 +53,7 @@ public class GetUserTask implements Runnable {
     }
 
     private FakeData getFakeData() {
-        return new FakeData();
+        return FakeData.getInstance();
     }
 
     private User getUser() {
