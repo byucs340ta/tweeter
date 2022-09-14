@@ -297,7 +297,7 @@ public class FollowersFragment extends Fragment {
          * loading footer view) at the bottom of the list.
          */
         private void addLoadingFooter() {
-            addItem(new User("Dummy", "User", ""));
+            addItem(new User("Dummy", "User", "dummyurl"));
         }
 
         /**
