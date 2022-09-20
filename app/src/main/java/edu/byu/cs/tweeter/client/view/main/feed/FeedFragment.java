@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -167,7 +168,7 @@ public class FeedFragment extends Fragment {
                     @Override
                     public void updateDrawState(@NotNull TextPaint ds) {
                         super.updateDrawState(ds);
-                        ds.setColor(getResources().getColor(R.color.colorAccent));
+                        ds.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                         ds.setUnderlineText(false);
                     }
                 }, startIndex, (startIndex + mention.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
