@@ -158,16 +158,11 @@ public class FeedFragment extends Fragment {
 
                         String clickable = s.subSequence(start, end).toString();
 
-                        if (clickable.contains("http")) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickable));
-                            startActivity(intent);
-                        } else {
-                            GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                                    clickable, new GetUserHandler());
-                            ExecutorService executor = Executors.newSingleThreadExecutor();
-                            executor.execute(getUserTask);
-                            Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
-                        }
+                        GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
+                                clickable, new GetUserHandler());
+                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                        executor.execute(getUserTask);
+                        Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
