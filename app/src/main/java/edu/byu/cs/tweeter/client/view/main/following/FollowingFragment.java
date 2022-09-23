@@ -131,11 +131,10 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             userAlias = itemView.findViewById(R.id.userAlias);
             userName = itemView.findViewById(R.id.userName);
 
+            // TODO: Move this. Login Functionality. Toast belongs in UI. The rest belongs running in a thread. (15:30 on video)
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    // TODO: Move this. Login Functionality
                     GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
                             userAlias.getText().toString(), new GetUserHandler());
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -159,10 +158,10 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
         /**
          * Message handler (i.e., observer) for GetUserTask.
          */
+        // TODO: Move this. look at (15:30 for advice)
         private class GetUserHandler extends Handler {
             @Override
             public void handleMessage(@NonNull Message msg) {
-                // TODO: Move this
                 boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
                 if (success) {
                     User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);

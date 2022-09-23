@@ -52,12 +52,11 @@ public class FollowingPresenter {
     private class GetFollowingObserver implements FollowService.GetFollowingObserver {
         @Override
         public void addFollowees(List<User> followees, boolean hasMorePages) {
-            lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
-            //keep things out of UI so move out of UI.
-            view.addFollowees(followees);
-            view.setLoadingFooter(false);
-            FollowingPresenter.this.hasMorePages = hasMorePages;
             isLoading = false;
+            view.setLoadingFooter(false);
+            lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
+            view.addFollowees(followees);
+            FollowingPresenter.this.hasMorePages = hasMorePages;
         }
 
         @Override

@@ -31,13 +31,14 @@ import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the "Followers" tab.
  */
-public class FollowersFragment extends Fragment {
+public class FollowersFragment extends Fragment implements FollowersPresenter.View {
 
     private static final String LOG_TAG = "FollowersFragment";
     private static final String USER_KEY = "UserKey";
@@ -50,6 +51,8 @@ public class FollowersFragment extends Fragment {
     private User user;
 
     private FollowersRecyclerViewAdapter followersRecyclerViewAdapter;
+
+    private FollowersPresenter presenter;
 
     /**
      * Creates an instance of the fragment and places the target user in an arguments
@@ -86,6 +89,8 @@ public class FollowersFragment extends Fragment {
 
         followersRecyclerView.addOnScrollListener(new FollowRecyclerViewPaginationScrollListener(layoutManager));
 
+        presenter = new FollowersPresenter();
+
         return view;
     }
 
@@ -110,6 +115,8 @@ public class FollowersFragment extends Fragment {
             userAlias = itemView.findViewById(R.id.userAlias);
             userName = itemView.findViewById(R.id.userName);
 
+
+            // TODO: Move this. Login Functionality. Toast belongs in UI. The rest belongs running in a thread. (15:30 on video)
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -140,6 +147,7 @@ public class FollowersFragment extends Fragment {
         /**
          * Message handler (i.e., observer) for GetUserTask.
          */
+        // TODO: Move this. look at (15:30 for advice)
         private class GetUserHandler extends Handler {
             @Override
             public void handleMessage(@NonNull Message msg) {
