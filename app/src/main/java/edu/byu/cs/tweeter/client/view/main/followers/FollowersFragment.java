@@ -168,7 +168,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
         /**
          * Message handler (i.e., observer) for GetUserTask.
          */
-        // TODO: Move this. look at (15:30 for advice)
+        // TODO: Move this to User Service. look at (15:30 for advice)
         private class GetUserHandler extends Handler {
             @Override
             public void handleMessage(@NonNull Message msg) {
