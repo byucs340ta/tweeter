@@ -35,6 +35,7 @@ public class FollowingPresenter {
         service = new FollowService();
     }
 
+
     public boolean isLoading() {
         return isLoading;
     }
