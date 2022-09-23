@@ -143,6 +143,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
             post = itemView.findViewById(R.id.statusPost);
             datetime = itemView.findViewById(R.id.statusDatetime);
 
+            // TODO: Need to move this!
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -191,7 +192,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
                             ExecutorService executor = Executors.newSingleThreadExecutor();
                             executor.execute(getUserTask);
                             Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
-      asdfsad                  }
+                        }
                     }
 
                     @Override
