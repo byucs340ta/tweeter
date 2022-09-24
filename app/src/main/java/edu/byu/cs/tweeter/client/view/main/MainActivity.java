@@ -40,6 +40,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.presenter.MainPresenter;
 import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.client.view.login.StatusDialogFragment;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -48,7 +49,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * The main activity for the application. Contains tabs for feed, story, following, and followers.
  */
-public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer {
+public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.View {
 
     private static final String LOG_TAG = "MainActivity";
 
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     private TextView followeeCount;
     private TextView followerCount;
     private Button followButton;
+
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +110,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
         followButton = findViewById(R.id.followButton);
 
+        presenter = new MainPresenter(this);
+
         if (selectedUser.compareTo(Cache.getInstance().getCurrUser()) == 0) {
             followButton.setVisibility(View.GONE);
         } else {
+            // TODO: THIS NEEDS TO MOVE
             followButton.setVisibility(View.VISIBLE);
             IsFollowerTask isFollowerTask = new IsFollowerTask(Cache.getInstance().getCurrUserAuthToken(),
                     Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerHandler());
@@ -122,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             public void onClick(View v) {
                 followButton.setEnabled(false);
 
+                // TODO: Both these need to move
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
                     UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
                             selectedUser, new UnfollowHandler());
@@ -154,9 +161,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
             logOutToast.show();
 
-            LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler());
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(logoutTask);
+            presenter.logoutUser();
 
             return true;
         } else {
@@ -164,21 +169,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-    public void logoutUser() {
-        //Revert to login screen.
-        Intent intent = new Intent(this, LoginActivity.class);
-        //Clear everything so that the main activity is recreated with the login page.
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //Clear user data (cached data).
-        Cache.getInstance().clearCache();
-        startActivity(intent);
-    }
-
     @Override
     public void onStatusPosted(String post) {
         postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
         postingToast.show();
 
+        // TODO: This needs to move
         try {
             Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
             PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
@@ -191,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
+    // TODO: Move functionthat we don't need in the view
     public String getFormattedDateTime() throws ParseException {
         SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
@@ -282,23 +279,22 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-    // LogoutHandler
-    private class LogoutHandler extends Handler {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
-            if (success) {
-                logOutToast.cancel();
-                logoutUser();
-            } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to logout: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to logout because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
+    @Override
+    public void displayMessage(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
     }
+
+    @Override
+    public void postLogoutUser() {
+        logOutToast.cancel();
+        //Revert to login screen.
+        Intent intent = new Intent(this, LoginActivity.class);
+        //Clear everything so that the main activity is recreated with the login page.
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+    // TODO: Move all of these handlers!
 
     // GetFollowersCountHandler
     private class GetFollowersCountHandler extends Handler {

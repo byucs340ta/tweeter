@@ -28,6 +28,26 @@ public class FollowService {
         void displayException(Exception ex);
     }
 
+    public interface GetFollowersCountObserver {
+
+    }
+
+    public interface GetFollowingCountObserver {
+
+    }
+
+    public interface IsFollowerObserver {
+
+    }
+
+    public interface FollowObserver {
+
+    }
+
+    public interface UnfollowObserver {
+
+    }
+
     public void loadMoreItemsFollowees(AuthToken currUserAuthToken, User user, int pageSize, User lastFollowee, GetFollowingObserver getFollowingObserver) {
         // TODO: Combine this in 2B with the loardMoreItemsFollowers
         GetFollowingTask getFollowingTask = new GetFollowingTask(currUserAuthToken,

@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
+import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
@@ -39,6 +40,13 @@ public class UserService {
         void registerUser(User registeredUser);
     }
 
+    public interface GetLogoutObserver {
+        void displayErrorMessage(String message);
+        void displayException(Exception ex);
+        void logoutUser();
+    }
+
+    // TODO: Move this to the FollowService
     public interface GetUserProfileObserver {
         void displayErrorMessage(String message);
         void displayException(Exception ex);
@@ -67,13 +75,21 @@ public class UserService {
         String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
         // Send register request.
-        RegisterTask registerTask = new RegisterTask(firstName.toString(), lastName.toString(),
-                alias.toString(), password.toString(), imageBytesBase64, new RegisterHandler(observer));
+        RegisterTask registerTask = new RegisterTask(firstName, lastName,
+                alias, password, imageBytesBase64, new RegisterHandler(observer));
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(registerTask);
     }
 
+
+    public void logoutUser(AuthToken authToken, GetLogoutObserver observer) {
+        LogoutTask logoutTask = new LogoutTask(authToken, new LogoutHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(logoutTask);
+    }
+
+    // TODO: Move this to the FollowService
     public void getUserProfile (AuthToken authToken, String userAlias, GetUserProfileObserver observer) {
         GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
                 userAlias, new GetUserHandler(observer));
@@ -148,10 +164,11 @@ public class UserService {
         }
     }
 
+
+    // TODO: Move this to the FollowService.
     /**
      * Message handler (i.e., observer) for GetUserTask.
      */
-    // TODO: Move this. look at (15:30 for advice)
     private class GetUserHandler extends Handler {
 
         private GetUserProfileObserver observer;
@@ -172,6 +189,30 @@ public class UserService {
                 observer.displayErrorMessage(message);
             } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
+                observer.displayException(ex);
+            }
+        }
+    }
+
+    // LogoutHandler
+    private class LogoutHandler extends Handler {
+
+        private UserService.GetLogoutObserver observer;
+
+        public LogoutHandler(UserService.GetLogoutObserver observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
+            if (success) {
+                observer.logoutUser();
+            } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
+                observer.displayErrorMessage(message);
+            } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
                 observer.displayException(ex);
             }
         }

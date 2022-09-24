@@ -30,6 +30,10 @@ public class StatusService {
         void displayException(Exception ex);
     }
 
+    public interface PostStatusObserver {
+
+    }
+
     public void loadMoreItemsFeed(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetFeedObserver getFeedObserver) {
         GetFeedTask getFeedTask = new GetFeedTask(currUserAuthToken, user, pageSize, lastStatus, new GetFeedHandler(getFeedObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
