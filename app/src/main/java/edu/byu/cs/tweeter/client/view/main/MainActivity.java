@@ -255,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
+    // TODO: Move things
     public void updateSelectedUserFollowingAndFollowers() {
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -282,7 +283,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // LogoutHandler
-
     private class LogoutHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -301,7 +301,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // GetFollowersCountHandler
-
     private class GetFollowersCountHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -320,7 +319,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // GetFollowingCountHandler
-
     private class GetFollowingCountHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -339,7 +337,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // IsFollowerHandler
-
     private class IsFollowerHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -367,7 +364,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // FollowHandler
-
     private class FollowHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -388,7 +384,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // UnfollowHandler
-
     private class UnfollowHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -409,7 +404,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // PostStatusHandler
-
     private class PostStatusHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {

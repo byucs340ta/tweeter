@@ -45,11 +45,11 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+
         loginInToast = Toast.makeText(getContext(), "Logging In...", Toast.LENGTH_LONG);
 
         presenter = new LoginPresenter(this);
 
-        // TODO: Store these in the presenter?
         alias = view.findViewById(R.id.loginUsername);
         password = view.findViewById(R.id.loginPassword);
         errorView = view.findViewById(R.id.loginError);
@@ -63,8 +63,6 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
                     presenter.validateLogin(alias.getText().toString(), password.getText().toString());
                     errorView.setText(null);
                     presenter.login(alias.getText().toString(), password.getText().toString());
-
-
                 } catch (Exception e) {
                     errorView.setText(e.getMessage());
                 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowingPresenter {
@@ -11,7 +12,8 @@ public class FollowingPresenter {
     // MARK - Class Variables
     private static final int PAGE_SIZE = 10;
     private View view;
-    private FollowService service;
+    private FollowService followService;
+    private UserService userService;
     private User lastFollowee;
     private boolean hasMorePages;
     private boolean isLoading = false;
@@ -26,7 +28,8 @@ public class FollowingPresenter {
     // MARK - Class constructor
     public FollowingPresenter(View view) {
         this.view = view;
-        service = new FollowService();
+        followService = new FollowService();
+        userService = new UserService();
     }
 
     // MARK - Getter Methods
@@ -41,7 +44,7 @@ public class FollowingPresenter {
     public void loadMoreItems(User user) {
         isLoading = true;
         view.setLoadingFooter(true);
-        service.loadMoreItemsFollowees(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
+        followService.loadMoreItemsFollowees(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
     }
 
     // MARK - Inner Classes

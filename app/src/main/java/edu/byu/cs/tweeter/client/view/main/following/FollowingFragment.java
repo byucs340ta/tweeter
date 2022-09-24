@@ -139,6 +139,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
                             userAlias.getText().toString(), new GetUserHandler());
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     executor.execute(getUserTask);
+
                     Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                 }
             });
