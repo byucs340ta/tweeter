@@ -20,7 +20,7 @@ public class MainPresenter {
         void displayFollowersCount(int count);
         void displayFollowingCount(int count);
         void displayFollowingRelationship(boolean isFollower);
-        void postFollowUser();
+        void postFollowUserStatusChange(boolean canFollowUser);
     }
 
     // MARK - Class Constructor
@@ -51,6 +51,10 @@ public class MainPresenter {
 
     public void startFollowing(User selectedUser) {
         followService.followUser(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetFollowObserver());
+    }
+
+    public void unfollowUser(User selectedUser) {
+        followService.unfollowUser(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetUnfollowObserver());
     }
 
     // Mark - Inner Classes
@@ -139,7 +143,24 @@ public class MainPresenter {
 
         @Override
         public void postUserFollowed() {
-            view.postFollowUser();
+            view.postFollowUserStatusChange(false);
+        }
+    }
+
+    private class GetUnfollowObserver implements FollowService.GetUnfollowObserver {
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to unfollow: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to unfollow because of exception: " + ex.getMessage());
+        }
+
+        @Override
+        public void postUnfollowUser() {
+            view.postFollowUserStatusChange(true);
         }
     }
 }

@@ -17,6 +17,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
+import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -62,7 +63,9 @@ public class FollowService {
     }
 
     public interface GetUnfollowObserver {
-
+        void displayErrorMessage(String message);
+        void displayException(Exception ex);
+        void postUnfollowUser();
     }
 
     // MARK - Call Methods
@@ -108,7 +111,38 @@ public class FollowService {
         executor.execute(followTask);
     }
 
+    public void unfollowUser(AuthToken authToken, User selectedUser, GetUnfollowObserver getUnfollowObserver) {
+        UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
+                selectedUser, new UnfollowHandler(getUnfollowObserver));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(unfollowTask);
+    }
+
     // MARK - Handlers
+    /**
+     * Message handler (i.e., observer) for UnfollowHandler
+     */
+    private class UnfollowHandler extends Handler {
+       private GetUnfollowObserver observer;
+
+       public UnfollowHandler(GetUnfollowObserver observer) {
+           this.observer = observer;
+       }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
+            if (success) {
+                observer.postUnfollowUser();
+            } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
+                observer.displayErrorMessage(message);
+            } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);
+                observer.displayException(ex);
+            }
+        }
+    }
 
     /**
      * Message handler (i.e., observer) for FollowTask
