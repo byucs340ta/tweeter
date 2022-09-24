@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
@@ -55,7 +56,9 @@ public class FollowService {
     }
 
     public interface GetFollowObserver {
-
+        void displayErrorMessage(String message);
+        void displayException(Exception ex);
+        void postUserFollowed();
     }
 
     public interface GetUnfollowObserver {
@@ -99,7 +102,40 @@ public class FollowService {
         executor.execute(isFollowerTask);
     }
 
+    public void followUser(AuthToken authToken, User selectedUser, GetFollowObserver getFollowObserver) {
+        FollowTask followTask = new FollowTask(authToken, selectedUser, new FollowHandler(getFollowObserver));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(followTask);
+    }
+
     // MARK - Handlers
+
+    /**
+     * Message handler (i.e., observer) for FollowTask
+     */
+    private class FollowHandler extends Handler {
+
+        private GetFollowObserver observer;
+
+        public FollowHandler(GetFollowObserver observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(FollowTask.SUCCESS_KEY);
+            if (success) {
+                observer.postUserFollowed();
+            } else if (msg.getData().containsKey(FollowTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(FollowTask.MESSAGE_KEY);
+                observer.displayErrorMessage(message);
+            } else if (msg.getData().containsKey(FollowTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(FollowTask.EXCEPTION_KEY);
+                observer.displayException(ex);
+            }
+            // followButton.setEnabled(true); // moved to view
+        }
+    }
 
     /**
      * Message handler (i.e., observer) for IsFollowerTask

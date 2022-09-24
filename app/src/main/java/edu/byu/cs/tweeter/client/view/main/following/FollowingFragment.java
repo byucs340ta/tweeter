@@ -289,8 +289,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             removeItem(users.get(users.size() - 1));
         }
 
-
-
     }
 
     /**
@@ -339,5 +337,4 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             }
         }
     }
-
 }

@@ -20,6 +20,7 @@ public class MainPresenter {
         void displayFollowersCount(int count);
         void displayFollowingCount(int count);
         void displayFollowingRelationship(boolean isFollower);
+        void postFollowUser();
     }
 
     // MARK - Class Constructor
@@ -34,7 +35,6 @@ public class MainPresenter {
 
     public void logoutUser() {
         userService.logoutUser(Cache.getInstance().getCurrUserAuthToken(), new GetLogoutObserver());
-
         //Clear user data (cached data).
         Cache.getInstance().clearCache();
     }
@@ -47,6 +47,10 @@ public class MainPresenter {
     public void checkFollowRelationship(User selectedUser) {
         followService.checkFollowRelationship(Cache.getInstance().getCurrUserAuthToken(),
                 Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerObserver());
+    }
+
+    public void startFollowing(User selectedUser) {
+        followService.followUser(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetFollowObserver());
     }
 
     // Mark - Inner Classes
@@ -118,6 +122,24 @@ public class MainPresenter {
         @Override
         public void displayFollowingRelationship(boolean isFollower) {
             view.displayFollowingRelationship(isFollower);
+        }
+    }
+
+    private class GetFollowObserver implements FollowService.GetFollowObserver {
+
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to follow: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to follow because of exception: " + ex.getMessage());
+        }
+
+        @Override
+        public void postUserFollowed() {
+            view.postFollowUser();
         }
     }
 }
