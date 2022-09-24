@@ -15,6 +15,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -22,6 +23,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService {
 
+    // MARK - Interfaces
     public interface GetFollowingObserver {
         void addFollowees(List<User> followees, boolean hasMorePages);
         void displayErrorMessage(String message);
@@ -47,17 +49,20 @@ public class FollowService {
     }
 
     public interface IsFollowerObserver {
+        void displayErrorMessage(String message);
+        void displayException(Exception ex);
+        void displayFollowingRelationship(boolean isFollower);
+    }
+
+    public interface GetFollowObserver {
 
     }
 
-    public interface FollowObserver {
+    public interface GetUnfollowObserver {
 
     }
 
-    public interface UnfollowObserver {
-
-    }
-
+    // MARK - Call Methods
     public void loadMoreItemsFollowees(AuthToken currUserAuthToken, User user, int pageSize, User lastFollowee, GetFollowingObserver getFollowingObserver) {
         // TODO: Combine this in 2B with the loardMoreItemsFollowers
         GetFollowingTask getFollowingTask = new GetFollowingTask(currUserAuthToken,
@@ -74,19 +79,53 @@ public class FollowService {
         executor.execute(getFollowersTask);
     }
 
-
     public void getFollowCounts(AuthToken authToken, User selectedUser, GetFollowersCountObserver followersObserver, GetFollowingCountObserver followingObserver) {
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
         // Get count of most recently selected user's followers.
-        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
+        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(authToken,
                 selectedUser, new GetFollowersCountHandler(followersObserver));
         executor.execute(followersCountTask);
 
         // Get count of most recently selected user's followees (who they are following)
-        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(),
+        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(authToken,
                 selectedUser, new GetFollowingCountHandler(followingObserver));
         executor.execute(followingCountTask);
+    }
+
+    public void checkFollowRelationship(AuthToken authToken, User currentUser, User selectedUser, IsFollowerObserver isFollowerObserver) {
+        IsFollowerTask isFollowerTask = new IsFollowerTask(authToken, currentUser, selectedUser, new IsFollowerHandler(isFollowerObserver));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(isFollowerTask);
+    }
+
+    // MARK - Handlers
+
+    /**
+     * Message handler (i.e., observer) for IsFollowerTask
+     */
+    private class IsFollowerHandler extends Handler {
+
+        private IsFollowerObserver observer;
+
+        public IsFollowerHandler(IsFollowerObserver observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(IsFollowerTask.SUCCESS_KEY);
+            if (success) {
+                boolean isFollower = msg.getData().getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
+                observer.displayFollowingRelationship(isFollower);
+            } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
+                observer.displayErrorMessage(message);
+            } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);
+                observer.displayException(ex);
+            }
+        }
     }
 
     /**
@@ -144,7 +183,9 @@ public class FollowService {
         }
     }
 
-    // GetFollowersCountHandler
+    /**
+     * Message handler (i.e., observer) for GetFollowersCountTask
+     */
     private class GetFollowersCountHandler extends Handler {
 
         private GetFollowersCountObserver observer;
@@ -170,7 +211,9 @@ public class FollowService {
         }
     }
 
-    // GetFollowingCountHandler
+    /**
+     * Message handler (i.e., observer) for GetFollowingCountHandler
+     */
     private class GetFollowingCountHandler extends Handler {
 
         private GetFollowingCountObserver observer;

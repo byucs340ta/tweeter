@@ -43,7 +43,6 @@ public class UserService {
         void logoutUser();
     }
 
-    // TODO: Move this to the FollowService
     public interface GetUserProfileObserver {
         void displayErrorMessage(String message);
         void displayException(Exception ex);
@@ -79,20 +78,19 @@ public class UserService {
         executor.execute(registerTask);
     }
 
-
     public void logoutUser(AuthToken authToken, GetLogoutObserver observer) {
         LogoutTask logoutTask = new LogoutTask(authToken, new LogoutHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(logoutTask);
     }
 
-    // TODO: Move this to the FollowService
     public void getUserProfile (AuthToken authToken, String userAlias, GetUserProfileObserver observer) {
         GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
                 userAlias, new GetUserHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getUserTask);
     }
+
 
     // MARK - Handlers for the tasks
 
@@ -161,8 +159,6 @@ public class UserService {
         }
     }
 
-
-    // TODO: Move this to the FollowService.
     /**
      * Message handler (i.e., observer) for GetUserTask.
      */
@@ -191,7 +187,9 @@ public class UserService {
         }
     }
 
-    // LogoutHandler
+    /**
+     * Message handler (i.e., observer) for LogoutTask.
+     */
     private class LogoutHandler extends Handler {
 
         private UserService.GetLogoutObserver observer;

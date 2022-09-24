@@ -19,6 +19,7 @@ public class MainPresenter {
         void postLogoutUser();
         void displayFollowersCount(int count);
         void displayFollowingCount(int count);
+        void displayFollowingRelationship(boolean isFollower);
     }
 
     // MARK - Class Constructor
@@ -30,6 +31,7 @@ public class MainPresenter {
     }
 
     // MARK - Methods
+
     public void logoutUser() {
         userService.logoutUser(Cache.getInstance().getCurrUserAuthToken(), new GetLogoutObserver());
 
@@ -38,7 +40,13 @@ public class MainPresenter {
     }
 
     public void getFollowCounts(User selectedUser) {
-        followService.getFollowCounts(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetFollowersCountObserver(), new GetFollowingCountObserver());
+        followService.getFollowCounts(Cache.getInstance().getCurrUserAuthToken(), selectedUser,
+                new GetFollowersCountObserver(), new GetFollowingCountObserver());
+    }
+
+    public void checkFollowRelationship(User selectedUser) {
+        followService.checkFollowRelationship(Cache.getInstance().getCurrUserAuthToken(),
+                Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerObserver());
     }
 
     // Mark - Inner Classes
@@ -93,6 +101,23 @@ public class MainPresenter {
         @Override
         public void displayException(Exception ex) {
             view.displayMessage("Failed to get following count because of exception: " + ex.getMessage());
+        }
+    }
+
+    private class IsFollowerObserver implements FollowService.IsFollowerObserver {
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to determine following relationship: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to determine following relationship because of exception: " + ex.getMessage());
+        }
+
+        @Override
+        public void displayFollowingRelationship(boolean isFollower) {
+            view.displayFollowingRelationship(isFollower);
         }
     }
 }
