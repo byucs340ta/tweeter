@@ -23,6 +23,7 @@ public class FollowingPresenter {
         void displayMessage(String message);
         void setLoadingFooter(boolean value);
         void addFollowees(List<User> followees);
+        void getUserProfile(User user);
     }
 
     // MARK - Class constructor
@@ -41,6 +42,11 @@ public class FollowingPresenter {
     }
 
     // MARK - Methods
+
+    public void getUserProfile(String userAlias) {
+        userService.getUserProfile(Cache.getInstance().getCurrUserAuthToken(), userAlias, new GetUserProfileObserver());
+    }
+
     public void loadMoreItems(User user) {
         isLoading = true;
         view.setLoadingFooter(true);
@@ -70,6 +76,24 @@ public class FollowingPresenter {
             isLoading = false;
             view.displayMessage("Failed to get following because of exception: " + ex.getMessage());
             view.setLoadingFooter(false);
+        }
+    }
+
+    private class GetUserProfileObserver implements UserService.GetUserProfileObserver {
+
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to get user's profile: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+        }
+
+        @Override
+        public void getUserProfile(User user) {
+            view.getUserProfile(user);
         }
     }
 }

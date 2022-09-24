@@ -1,9 +1,11 @@
 package edu.byu.cs.tweeter.client.model.service;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -12,9 +14,11 @@ import java.util.Base64;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -33,6 +37,12 @@ public class UserService {
         void displayErrorMessage(String message);
         void displayException(Exception ex);
         void registerUser(User registeredUser);
+    }
+
+    public interface GetUserProfileObserver {
+        void displayErrorMessage(String message);
+        void displayException(Exception ex);
+        void getUserProfile(User user);
     }
 
     // MARK - Class Methods
@@ -64,6 +74,12 @@ public class UserService {
         executor.execute(registerTask);
     }
 
+    public void getUserProfile (AuthToken authToken, String userAlias, GetUserProfileObserver observer) {
+        GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
+                userAlias, new GetUserHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(getUserTask);
+    }
 
     // MARK - Handlers for the tasks
 
@@ -127,6 +143,35 @@ public class UserService {
                 observer.displayErrorMessage(message);
             } else if (msg.getData().containsKey(LoginTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(LoginTask.EXCEPTION_KEY);
+                observer.displayException(ex);
+            }
+        }
+    }
+
+    /**
+     * Message handler (i.e., observer) for GetUserTask.
+     */
+    // TODO: Move this. look at (15:30 for advice)
+    private class GetUserHandler extends Handler {
+
+        private GetUserProfileObserver observer;
+
+        public GetUserHandler(GetUserProfileObserver observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
+            if (success) {
+                User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
+                observer.getUserProfile(user);
+
+            } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
+                observer.displayErrorMessage(message);
+            } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
                 observer.displayException(ex);
             }
         }
