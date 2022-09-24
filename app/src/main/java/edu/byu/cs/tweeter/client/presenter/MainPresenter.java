@@ -1,12 +1,10 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.content.Intent;
-
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.view.login.LoginActivity;
+import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter {
 
@@ -19,6 +17,8 @@ public class MainPresenter {
     public interface View {
         void displayMessage(String message);
         void postLogoutUser();
+        void displayFollowersCount(int count);
+        void displayFollowingCount(int count);
     }
 
     // MARK - Class Constructor
@@ -37,6 +37,10 @@ public class MainPresenter {
         Cache.getInstance().clearCache();
     }
 
+    public void getFollowCounts(User selectedUser) {
+        followService.getFollowCounts(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetFollowersCountObserver(), new GetFollowingCountObserver());
+    }
+
     // Mark - Inner Classes
     private class GetLogoutObserver implements UserService.GetLogoutObserver {
 
@@ -53,6 +57,42 @@ public class MainPresenter {
         @Override
         public void logoutUser() {
             view.postLogoutUser();
+        }
+    }
+
+    private class GetFollowersCountObserver implements FollowService.GetFollowersCountObserver {
+
+        @Override
+        public void displayFollowersCount(int count) {
+            view.displayFollowersCount(count);
+        }
+
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to get followers count: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to get followers count because of exception: " + ex.getMessage());
+        }
+    }
+
+    private class GetFollowingCountObserver implements FollowService.GetFollowingCountObserver {
+
+        @Override
+        public void displayFollowingCount(int count) {
+            view.displayFollowingCount(count);
+        }
+
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to get following count: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to get following count because of exception: " + ex.getMessage());
         }
     }
 }
