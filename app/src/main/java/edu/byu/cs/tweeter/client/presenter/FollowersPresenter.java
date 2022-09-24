@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowersPresenter {
@@ -11,7 +12,8 @@ public class FollowersPresenter {
     // MARK - Class Variables
     private View view;
     private static final int PAGE_SIZE = 10;
-    private FollowService service;
+    private FollowService followService;
+    private UserService userService;
     private User lastFollower;
     private boolean hasMorePages;
     private boolean isLoading = false;
@@ -21,12 +23,14 @@ public class FollowersPresenter {
         void displayMessage(String message);
         void setLoadingFooter(boolean value);
         void addFollowers(List<User> followers);
+        void getUserProfile(User user);
     }
 
     // MARK - Class constructor
     public FollowersPresenter(View view) {
         this.view = view;
-        service = new FollowService();
+        followService = new FollowService();
+        userService = new UserService();
     }
 
     // MARK - Getter Methods
@@ -38,10 +42,14 @@ public class FollowersPresenter {
     }
 
     // MARK - Methods
+    public void getUserProfile(String userAlias) {
+        userService.getUserProfile(Cache.getInstance().getCurrUserAuthToken(), userAlias, new FollowersPresenter.GetUserProfileObserver());
+    }
+
     public void loadMoreItems(User user) {
         isLoading = true;
         view.setLoadingFooter(true);
-        service.loadMoreItemsFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new GetFollowersObserver());
+        followService.loadMoreItemsFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new GetFollowersObserver());
     }
 
     // MARK - Inner Classes
@@ -67,6 +75,24 @@ public class FollowersPresenter {
             isLoading = false;
             view.setLoadingFooter(false);
             view.displayMessage("Failed to get followers because of exception: " + ex.getMessage());
+        }
+    }
+
+    private class GetUserProfileObserver implements UserService.GetUserProfileObserver {
+
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to get user's profile: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+        }
+
+        @Override
+        public void getUserProfile(User user) {
+            view.getUserProfile(user);
         }
     }
 }

@@ -42,7 +42,6 @@ public class FollowingPresenter {
     }
 
     // MARK - Methods
-
     public void getUserProfile(String userAlias) {
         userService.getUserProfile(Cache.getInstance().getCurrUserAuthToken(), userAlias, new GetUserProfileObserver());
     }
