@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -12,7 +13,8 @@ public class FeedPresenter {
     // MARK - Class Variables
     private static final int PAGE_SIZE = 10;
     private View view;
-    private StatusService service;
+    private StatusService statusService;
+    private UserService userService;
     private Status lastStatus;
     private boolean hasMoreStatuses;
     private boolean isLoading = false;
@@ -22,12 +24,14 @@ public class FeedPresenter {
         void displayMessage(String message);
         void setLoadingFooter(boolean value);
         void addStatusToFeed(List<Status> statuses);
+        void getUserProfile(User user);
     }
 
     // MARK - Constructor
     public FeedPresenter(View view) {
         this.view = view;
-        service = new StatusService();
+        statusService = new StatusService();
+        userService = new UserService();
     }
 
     // MARK - Getter Methods
@@ -39,10 +43,14 @@ public class FeedPresenter {
     }
 
     // MARK - Class Methods
+    public void getUserProfile(String userAlias) {
+        userService.getUserProfile(Cache.getInstance().getCurrUserAuthToken(), userAlias, new GetUserProfileObserver());
+    }
+
     public void loadMoreItems(User user) {
         isLoading = true;
         view.setLoadingFooter(true);
-        service.loadMoreItemsFeed(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastStatus, new GetFeedObserver());
+        statusService.loadMoreItemsFeed(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastStatus, new GetFeedObserver());
     }
 
     // MARK - Inner Classes
@@ -68,6 +76,24 @@ public class FeedPresenter {
             isLoading = false;
             view.setLoadingFooter(false);
             view.displayMessage("Failed to get feed because of exception: " + ex.getMessage());
+        }
+    }
+
+    private class GetUserProfileObserver implements UserService.GetUserProfileObserver {
+
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to get user's profile: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+        }
+
+        @Override
+        public void getUserProfile(User user) {
+            view.getUserProfile(user);
         }
     }
 }

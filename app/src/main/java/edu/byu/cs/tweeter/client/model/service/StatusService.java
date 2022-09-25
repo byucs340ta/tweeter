@@ -68,8 +68,7 @@ public class StatusService {
 
     // MARK: - Helper Methods
 
-    // TODO: Make these private
-    public String getFormattedDateTime() throws ParseException {
+    private String getFormattedDateTime() throws ParseException {
         SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
 
@@ -77,7 +76,7 @@ public class StatusService {
 
     }
 
-    public List<String> parseURLs(String post) {
+    private List<String> parseURLs(String post) {
         List<String> containedUrls = new ArrayList<>();
         for (String word : post.split("\\s")) {
             if (word.startsWith("http://") || word.startsWith("https://")) {
@@ -93,7 +92,7 @@ public class StatusService {
         return containedUrls;
     }
 
-    public List<String> parseMentions(String post) {
+    private List<String> parseMentions(String post) {
         List<String> containedMentions = new ArrayList<>();
 
         for (String word : post.split("\\s")) {
@@ -107,7 +106,7 @@ public class StatusService {
 
         return containedMentions;
     }
-    public int findUrlEndIndex(String word) {
+    private int findUrlEndIndex(String word) {
         if (word.contains(".com")) {
             int index = word.indexOf(".com");
             index += 4;

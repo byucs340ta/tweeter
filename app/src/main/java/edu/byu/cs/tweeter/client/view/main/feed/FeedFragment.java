@@ -118,6 +118,13 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
         feedRecyclerViewAdapter.addItems(statuses);
     }
 
+    @Override
+    public void getUserProfile(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
+    }
+
     /**
      * The ViewHolder for the RecyclerView that displays the feed data.
      */
@@ -143,14 +150,10 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
             post = itemView.findViewById(R.id.statusPost);
             datetime = itemView.findViewById(R.id.statusDatetime);
 
-            // TODO: Need to move this!
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                            userAlias.getText().toString(), new GetUserHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(getUserTask);
+                    presenter.getUserProfile(userAlias.getText().toString());
                     Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                 }
             });
@@ -161,7 +164,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
          *
          * @param status the status.
          */
-        // TODO: This needs to be moved. Too much view logic.
         void bindStatus(Status status) {
             Picasso.get().load(status.getUser().getImageUrl()).into(userImage);
             userAlias.setText(status.getUser().getAlias());
@@ -187,10 +189,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
                             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickable));
                             startActivity(intent);
                         } else {
-                            GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                                    clickable, new GetUserHandler());
-                            ExecutorService executor = Executors.newSingleThreadExecutor();
-                            executor.execute(getUserTask);
+                            presenter.getUserProfile(userAlias.getText().toString());
                             Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -213,31 +212,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
             post.setClickable(true);
             post.setMovementMethod(LinkMovementMethod.getInstance());
         }
-
-        /**
-         * Message handler (i.e., observer) for GetUserTask.
-         */
-        // TODO: this needs to be moved to User Service.
-        private class GetUserHandler extends Handler {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-                if (success) {
-                    User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-                    startActivity(intent);
-                } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
     }
 
     /**
@@ -347,7 +321,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
          * Causes the Adapter to display a loading footer and make a request to get more feed
          * data.
          */
-        // TODO: Need to do video tutorial edits
         void loadMoreItems(){
             if (!presenter.isLoading()) {   // This guard is important for avoiding a race condition in the scrolling code.
                 presenter.loadMoreItems(user);
@@ -373,8 +346,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
         private void removeLoadingFooter() {
             removeItem(feed.get(feed.size() - 1));
         }
-
-
 
     }
 

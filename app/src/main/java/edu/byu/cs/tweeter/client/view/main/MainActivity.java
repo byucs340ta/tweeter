@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         if (selectedUser.compareTo(Cache.getInstance().getCurrUser()) == 0) {
             followButton.setVisibility(View.GONE);
         } else {
-            // TODO: THIS NEEDS TO MOVE
             followButton.setVisibility(View.VISIBLE);
             presenter.checkFollowRelationship(selectedUser);
         }
@@ -164,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
         postingToast.show();
 
-        // TODO: This needs to move
         try {
             presenter.postStatus(post);
         } catch (Exception ex) {

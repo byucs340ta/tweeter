@@ -143,8 +143,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
             userAlias = itemView.findViewById(R.id.userAlias);
             userName = itemView.findViewById(R.id.userName);
 
-
-            // TODO: Move this. Login Functionality. Toast belongs in UI. The rest belongs running in a thread. (15:30 on video)
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
