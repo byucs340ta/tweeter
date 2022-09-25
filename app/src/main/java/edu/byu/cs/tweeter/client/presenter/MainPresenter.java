@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import java.text.ParseException;
+
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
@@ -21,6 +23,7 @@ public class MainPresenter {
         void displayFollowingCount(int count);
         void displayFollowingRelationship(boolean isFollower);
         void postFollowUserStatusChange(boolean canFollowUser);
+        void postStatusPosted();
     }
 
     // MARK - Class Constructor
@@ -55,6 +58,10 @@ public class MainPresenter {
 
     public void unfollowUser(User selectedUser) {
         followService.unfollowUser(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetUnfollowObserver());
+    }
+
+    public void postStatus(String post) throws ParseException {
+        statusService.postStatus(post, Cache.getInstance().getCurrUser(), new PostStatusObserver());
     }
 
     // Mark - Inner Classes
@@ -161,6 +168,23 @@ public class MainPresenter {
         @Override
         public void postUnfollowUser() {
             view.postFollowUserStatusChange(true);
+        }
+    }
+
+    private class PostStatusObserver implements StatusService.PostStatusObserver {
+        @Override
+        public void displayErrorMessage(String message) {
+            view.displayMessage("Failed to post status: " + message);
+        }
+
+        @Override
+        public void displayException(Exception ex) {
+            view.displayMessage("Failed to post status because of exception: " + ex.getMessage());
+        }
+
+        @Override
+        public void postMessagePosted() {
+            view.postStatusPosted();
         }
     }
 }

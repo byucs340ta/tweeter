@@ -17,6 +17,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
+import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
@@ -119,8 +120,9 @@ public class FollowService {
     }
 
     // MARK - Handlers
+
     /**
-     * Message handler (i.e., observer) for UnfollowHandler
+     * Message handler (i.e., observer) for UnfollowTask
      */
     private class UnfollowHandler extends Handler {
        private GetUnfollowObserver observer;

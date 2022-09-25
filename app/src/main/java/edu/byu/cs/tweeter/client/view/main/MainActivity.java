@@ -126,16 +126,14 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             public void onClick(View v) {
                 followButton.setEnabled(false);
 
-                // TODO: Both these need to move
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
                     presenter.unfollowUser(selectedUser);
                     Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
-                    followButton.setEnabled(true);
                 } else {
                     presenter.startFollowing(selectedUser);
                     Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
-                    followButton.setEnabled(true);
                 }
+                followButton.setEnabled(true);
             }
         });
     }
@@ -168,79 +166,10 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
         // TODO: This needs to move
         try {
-            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
-            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-                    newStatus, new PostStatusHandler());
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(statusTask);
+            presenter.postStatus(post);
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             Toast.makeText(this, "Failed to post the status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    // TODO: Move functionthat we don't need in the view
-    public String getFormattedDateTime() throws ParseException {
-        SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
-
-        return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
-    }
-
-    public List<String> parseURLs(String post) {
-        List<String> containedUrls = new ArrayList<>();
-        for (String word : post.split("\\s")) {
-            if (word.startsWith("http://") || word.startsWith("https://")) {
-
-                int index = findUrlEndIndex(word);
-
-                word = word.substring(0, index);
-
-                containedUrls.add(word);
-            }
-        }
-
-        return containedUrls;
-    }
-
-    public List<String> parseMentions(String post) {
-        List<String> containedMentions = new ArrayList<>();
-
-        for (String word : post.split("\\s")) {
-            if (word.startsWith("@")) {
-                word = word.replaceAll("[^a-zA-Z0-9]", "");
-                word = "@".concat(word);
-
-                containedMentions.add(word);
-            }
-        }
-
-        return containedMentions;
-    }
-
-    public int findUrlEndIndex(String word) {
-        if (word.contains(".com")) {
-            int index = word.indexOf(".com");
-            index += 4;
-            return index;
-        } else if (word.contains(".org")) {
-            int index = word.indexOf(".org");
-            index += 4;
-            return index;
-        } else if (word.contains(".edu")) {
-            int index = word.indexOf(".edu");
-            index += 4;
-            return index;
-        } else if (word.contains(".net")) {
-            int index = word.indexOf(".net");
-            index += 4;
-            return index;
-        } else if (word.contains(".mil")) {
-            int index = word.indexOf(".mil");
-            index += 4;
-            return index;
-        } else {
-            return word.length();
         }
     }
 
@@ -304,23 +233,9 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         updateFollowButton(canFollowUser);
     }
 
-    // TODO: Move all of these handlers!
-
-    // PostStatusHandler
-    private class PostStatusHandler extends Handler {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(PostStatusTask.SUCCESS_KEY);
-            if (success) {
-                postingToast.cancel();
-                Toast.makeText(MainActivity.this, "Successfully Posted!", Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(PostStatusTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(PostStatusTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to post status: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(PostStatusTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(PostStatusTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to post status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
+    @Override
+    public void postStatusPosted() {
+        postingToast.cancel();
+        Toast.makeText(MainActivity.this, "Successfully Posted!", Toast.LENGTH_LONG).show();
     }
 }
