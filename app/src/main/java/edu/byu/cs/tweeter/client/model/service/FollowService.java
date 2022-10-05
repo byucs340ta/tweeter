@@ -1,6 +1,5 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,12 +12,11 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowersCountHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowersHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowingCountHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowingHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.IsFollowerHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.PagedNotificationHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.PagedNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -26,17 +24,9 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class FollowService {
 
     // MARK - Interfaces
-    public interface GetFollowingObserver {
-        void addFollowees(List<User> followees, boolean hasMorePages);
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-    }
+    public interface GetFollowingObserver extends PagedNotificationObserver<User> { }
 
-    public interface GetFollowersObserver {
-        void addFollowers(List<User> followers, boolean hasMorePages);
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-    }
+    public interface GetFollowersObserver extends PagedNotificationObserver<User> { }
 
     public interface GetFollowersCountObserver {
         void displayFollowersCount(int count);
@@ -64,7 +54,7 @@ public class FollowService {
     public void loadMoreItemsFollowees(AuthToken currUserAuthToken, User user, int pageSize, User lastFollowee, GetFollowingObserver getFollowingObserver) {
         // TODO: Combine this in 2B with the loardMoreItemsFollowers
         GetFollowingTask getFollowingTask = new GetFollowingTask(currUserAuthToken,
-                user, pageSize, lastFollowee, new GetFollowingHandler(getFollowingObserver));
+                user, pageSize, lastFollowee, new PagedNotificationHandler<User>(getFollowingObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFollowingTask);
     }
@@ -72,7 +62,7 @@ public class FollowService {
     public void loadMoreItemsFollowers(AuthToken currUserAuthToken, User user, int pageSize, User lastFollower, GetFollowersObserver getFollowersObserver) {
         // TODO: Combine this in 2B with the loadMoreItemsFollowees
         GetFollowersTask getFollowersTask = new GetFollowersTask(currUserAuthToken,
-                user, pageSize, lastFollower, new GetFollowersHandler(getFollowersObserver));
+                user, pageSize, lastFollower, new PagedNotificationHandler<User>(getFollowersObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFollowersTask);
     }

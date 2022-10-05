@@ -56,7 +56,7 @@ public class FeedPresenter {
     // MARK - Inner Classes
     private class GetFeedObserver implements StatusService.GetFeedObserver {
         @Override
-        public void addToFeed(List<Status> statuses, boolean hasMoreStatuses) {
+        public void handleSuccess(List<Status> statuses, boolean hasMoreStatuses) {
             isLoading = false;
             view.setLoadingFooter(false);
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;

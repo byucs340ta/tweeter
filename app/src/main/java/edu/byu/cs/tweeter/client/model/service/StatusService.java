@@ -1,10 +1,5 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -18,9 +13,9 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PostStatusTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFeedHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetStoryHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.PagedNotificationHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.PagedNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -28,29 +23,21 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class StatusService {
 
-    public interface GetStoryObserver {
-        void addStatusToStory(List<Status> statuses, boolean hasMorePages);
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-    }
+    public interface GetStoryObserver extends PagedNotificationObserver<Status> { }
 
-    public interface GetFeedObserver {
-        void addToFeed(List<Status> statuses, boolean hasMorePages);
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-    }
+    public interface GetFeedObserver extends PagedNotificationObserver<Status> { }
 
-    public interface PostStatusObserver extends SimpleNotificationObserver {   }
+    public interface PostStatusObserver extends SimpleNotificationObserver { }
 
     public void loadMoreItemsFeed(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetFeedObserver getFeedObserver) {
-        GetFeedTask getFeedTask = new GetFeedTask(currUserAuthToken, user, pageSize, lastStatus, new GetFeedHandler(getFeedObserver));
+        GetFeedTask getFeedTask = new GetFeedTask(currUserAuthToken, user, pageSize, lastStatus, new PagedNotificationHandler<Status>(getFeedObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFeedTask);
     }
 
     public void loadMoreItemsStory(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetStoryObserver getStoryObserver) {
         GetStoryTask getStoryTask = new GetStoryTask(currUserAuthToken,
-                user, pageSize, lastStatus, new GetStoryHandler(getStoryObserver));
+                user, pageSize, lastStatus, new PagedNotificationHandler<Status>(getStoryObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getStoryTask);
     }

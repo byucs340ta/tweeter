@@ -59,15 +59,6 @@ public class StoryPresenter {
     private class GetStoryObserver implements StatusService.GetStoryObserver {
 
         @Override
-        public void addStatusToStory(List<Status> statuses, boolean hasMorePages) {
-            isLoading = false;
-            view.setLoadingFooter(false);
-            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-            view.addStatusesToStory(statuses);
-            StoryPresenter.this.hasMorePages = hasMorePages;
-        }
-
-        @Override
         public void displayErrorMessage(String message) {
             isLoading = false;
             view.setLoadingFooter(false);
@@ -79,6 +70,15 @@ public class StoryPresenter {
             isLoading = false;
             view.setLoadingFooter(false);
             view.displayMessage("Failed to get story because of exception: " + ex.getMessage());
+        }
+
+        @Override
+        public void handleSuccess(List<Status> items, boolean hasMorePages) {
+            isLoading = false;
+            view.setLoadingFooter(false);
+            lastStatus = (items.size() > 0) ? items.get(items.size() - 1) : null;
+            view.addStatusesToStory((List<Status>) items);
+            StoryPresenter.this.hasMorePages = hasMorePages;
         }
     }
 

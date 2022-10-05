@@ -55,11 +55,11 @@ public class FollowersPresenter {
     // MARK - Inner Classes
     private class GetFollowersObserver implements FollowService.GetFollowersObserver {
         @Override
-        public void addFollowers(List<User> followers, boolean hasMorePages) {
+        public void handleSuccess(List<User> items, boolean hasMorePages) {
             isLoading = false;
             view.setLoadingFooter(false);
-            lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
-            view.addFollowers(followers);
+            lastFollower = (items.size() > 0) ? items.get(items.size() - 1) : null;
+            view.addFollowers(items);
             FollowersPresenter.this.hasMorePages = hasMorePages;
         }
 
