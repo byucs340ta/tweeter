@@ -10,27 +10,20 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 /**
  * Background task that logs out a user (i.e., ends a session).
  */
-public class LogoutTask implements Runnable {
+public class LogoutTask extends BackgroundTask {
     private static final String LOG_TAG = "LogoutTask";
-
-    public static final String SUCCESS_KEY = "success";
-    public static final String MESSAGE_KEY = "message";
-    public static final String EXCEPTION_KEY = "exception";
 
     /**
      * Auth token for logged-in user.
      */
     private AuthToken authToken;
-    /**
-     * Message handler that will receive task results.
-     */
-    private Handler messageHandler;
 
     public LogoutTask(AuthToken authToken, Handler messageHandler) {
+        super(messageHandler);
         this.authToken = authToken;
-        this.messageHandler = messageHandler;
     }
 
+    /* // run doesn't have much...
     @Override
     public void run() {
         try {
@@ -42,36 +35,15 @@ public class LogoutTask implements Runnable {
             sendExceptionMessage(ex);
         }
     }
-
-    private void sendSuccessMessage() {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, true);
-
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
+     */
+    @Override
+    protected void processTask() {
+        // TODO: Should something be here
     }
 
-    private void sendFailedMessage(String message) {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putString(MESSAGE_KEY, message);
-
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
+    @Override
+    protected void loadSuccessBundle(Bundle msgBundle) {
+        // TODO: Should something be here?
     }
 
-    private void sendExceptionMessage(Exception exception) {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putSerializable(EXCEPTION_KEY, exception);
-
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
-    }
 }

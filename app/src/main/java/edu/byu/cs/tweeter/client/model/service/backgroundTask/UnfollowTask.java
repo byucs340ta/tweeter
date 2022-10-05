@@ -11,12 +11,8 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Background task that removes a following relationship between two users.
  */
-public class UnfollowTask implements Runnable {
+public class UnfollowTask extends BackgroundTask {
     private static final String LOG_TAG = "UnfollowTask";
-
-    public static final String SUCCESS_KEY = "success";
-    public static final String MESSAGE_KEY = "message";
-    public static final String EXCEPTION_KEY = "exception";
 
     /**
      * Auth token for logged-in user.
@@ -27,17 +23,14 @@ public class UnfollowTask implements Runnable {
      * The user that is being followed.
      */
     private User followee;
-    /**
-     * Message handler that will receive task results.
-     */
-    private Handler messageHandler;
 
     public UnfollowTask(AuthToken authToken, User followee, Handler messageHandler) {
+        super(messageHandler);
         this.authToken = authToken;
         this.followee = followee;
-        this.messageHandler = messageHandler;
     }
 
+    /* // run doesn't have much
     @Override
     public void run() {
         try {
@@ -50,35 +43,15 @@ public class UnfollowTask implements Runnable {
         }
     }
 
-    private void sendSuccessMessage() {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, true);
+     */
 
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
+    @Override
+    protected void processTask() {
+        // TODO: Should something be here?
     }
 
-    private void sendFailedMessage(String message) {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putString(MESSAGE_KEY, message);
-
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
-    }
-
-    private void sendExceptionMessage(Exception exception) {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putSerializable(EXCEPTION_KEY, exception);
-
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
+    @Override
+    protected void loadSuccessBundle(Bundle msgBundle) {
+        // TODO: should something be ehre?
     }
 }
