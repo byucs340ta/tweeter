@@ -84,7 +84,7 @@ public class LoginFragment extends Fragment {
     }
 
     public void validateLogin() {
-        if (alias.getText().charAt(0) != '@') {
+        if (alias.getText().length() > 0 && alias.getText().charAt(0) != '@') {
             throw new IllegalArgumentException("Alias must begin with @.");
         }
         if (alias.getText().length() < 2) {
