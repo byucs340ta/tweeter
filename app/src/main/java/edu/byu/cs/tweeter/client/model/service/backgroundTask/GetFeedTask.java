@@ -17,15 +17,12 @@ import edu.byu.cs.tweeter.util.Pair;
 /**
  * Background task that retrieves a page of statuses from a user's feed.
  */
-public class GetFeedTask extends BackgroundTask {
+public class GetFeedTask extends AuthenticatedTask {
     private static final String LOG_TAG = "GetFeedTask";
 
     public static final String STATUSES_KEY = "statuses";
     public static final String MORE_PAGES_KEY = "more-pages";
-    /**
-     * Auth token for logged-in user.
-     */
-    private AuthToken authToken;
+
     /**
      * The user whose feed is being retrieved.
      * (This can be any user, not just the currently logged-in user.)
@@ -46,8 +43,7 @@ public class GetFeedTask extends BackgroundTask {
 
     public GetFeedTask(AuthToken authToken, User targetUser, int limit, Status lastStatus,
                        Handler messageHandler) {
-        super(messageHandler);
-        this.authToken = authToken;
+        super(messageHandler, authToken);
         this.targetUser = targetUser;
         this.limit = limit;
         this.lastStatus = lastStatus;

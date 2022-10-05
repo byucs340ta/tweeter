@@ -17,16 +17,12 @@ import edu.byu.cs.tweeter.util.Pair;
 /**
  * Background task that retrieves a page of statuses from a user's story.
  */
-public class GetStoryTask extends BackgroundTask {
+public class GetStoryTask extends AuthenticatedTask {
     private static final String LOG_TAG = "GetStoryTask";
 
     public static final String STATUSES_KEY = "statuses";
     public static final String MORE_PAGES_KEY = "more-pages";
 
-    /**
-     * Auth token for logged-in user.
-     */
-    private AuthToken authToken;
     /**
      * The user whose story is being retrieved.
      * (This can be any user, not just the currently logged-in user.)
@@ -47,8 +43,7 @@ public class GetStoryTask extends BackgroundTask {
 
     public GetStoryTask(AuthToken authToken, User targetUser, int limit, Status lastStatus,
                         Handler messageHandler) {
-        super(messageHandler);
-        this.authToken = authToken;
+        super(messageHandler, authToken);
         this.targetUser = targetUser;
         this.limit = limit;
         this.lastStatus = lastStatus;

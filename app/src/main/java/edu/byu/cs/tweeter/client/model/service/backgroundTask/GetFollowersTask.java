@@ -16,16 +16,12 @@ import edu.byu.cs.tweeter.util.Pair;
 /**
  * Background task that retrieves a page of followers.
  */
-public class GetFollowersTask extends BackgroundTask {
+public class GetFollowersTask extends AuthenticatedTask {
     private static final String LOG_TAG = "GetFollowersTask";
 
     public static final String FOLLOWERS_KEY = "followers";
     public static final String MORE_PAGES_KEY = "more-pages";
 
-    /**
-     * Auth token for logged-in user.
-     */
-    private AuthToken authToken;
     /**
      * The user whose followers are being retrieved.
      * (This can be any user, not just the currently logged-in user.)
@@ -46,8 +42,7 @@ public class GetFollowersTask extends BackgroundTask {
 
     public GetFollowersTask(AuthToken authToken, User targetUser, int limit, User lastFollower,
                             Handler messageHandler) {
-        super(messageHandler);
-        this.authToken = authToken;
+        super(messageHandler, authToken);
         this.targetUser = targetUser;
         this.limit = limit;
         this.lastFollower = lastFollower;

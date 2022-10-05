@@ -2,18 +2,15 @@ package edu.byu.cs.tweeter.client.model.service.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.util.FakeData;
 import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that creates a new user account and logs in the new user (i.e., starts a session).
  */
-public class RegisterTask extends BackgroundTask {
+public class RegisterTask extends AuthenticateTask {
     private static final String LOG_TAG = "RegisterTask";
 
     public static final String USER_KEY = "user";
@@ -28,28 +25,20 @@ public class RegisterTask extends BackgroundTask {
      */
     private String lastName;
     /**
-     * The user's username (or "alias" or "handle"). E.g., "@susan".
-     */
-    private String username;
-    /**
-     * The user's password.
-     */
-    private String password;
-    /**
      * The base-64 encoded bytes of the user's profile image.
      */
     private String image;
 
     private User registeredUser;
+
+    //TODO: Should I do soming with the authtoken?
     private AuthToken authToken;
 
-    public RegisterTask(String firstName, String lastName, String username, String password,
+    public RegisterTask(String firstName, String lastName, String alias, String password,
                         String image, Handler messageHandler) {
-        super(messageHandler);
+        super(messageHandler, alias, password);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.username = username;
-        this.password = password;
         this.image = image;
     }
 

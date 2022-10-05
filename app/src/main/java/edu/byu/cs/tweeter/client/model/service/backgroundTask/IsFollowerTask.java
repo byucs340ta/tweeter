@@ -13,15 +13,11 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Background task that determines if one user is following another.
  */
-public class IsFollowerTask extends BackgroundTask {
+public class IsFollowerTask extends AuthenticatedTask {
     private static final String LOG_TAG = "IsFollowerTask";
 
     public static final String IS_FOLLOWER_KEY = "is-follower";
 
-    /**
-     * Auth token for logged-in user.
-     */
-    private AuthToken authToken;
     /**
      * The alleged follower.
      */
@@ -34,8 +30,7 @@ public class IsFollowerTask extends BackgroundTask {
     private boolean isFollower;
 
     public IsFollowerTask(AuthToken authToken, User follower, User followee, Handler messageHandler) {
-        super(messageHandler);
-        this.authToken = authToken;
+        super(messageHandler, authToken);
         this.follower = follower;
         this.followee = followee;
     }
