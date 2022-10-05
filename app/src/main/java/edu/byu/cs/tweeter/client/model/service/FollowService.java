@@ -11,11 +11,11 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingCountT
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.UnfollowTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowersCountHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowingCountHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.CountNotificationHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.IsFollowerHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.PagedNotificationHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.CountNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.PagedNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -28,17 +28,9 @@ public class FollowService {
 
     public interface GetFollowersObserver extends PagedNotificationObserver<User> { }
 
-    public interface GetFollowersCountObserver {
-        void displayFollowersCount(int count);
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-    }
+    public interface GetFollowersCountObserver extends CountNotificationObserver { }
 
-    public interface GetFollowingCountObserver {
-        void displayFollowingCount(int count);
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-    }
+    public interface GetFollowingCountObserver extends CountNotificationObserver {  }
 
     public interface IsFollowerObserver {
         void displayErrorMessage(String message);
@@ -72,12 +64,12 @@ public class FollowService {
 
         // Get count of most recently selected user's followers.
         GetFollowersCountTask followersCountTask = new GetFollowersCountTask(authToken,
-                selectedUser, new GetFollowersCountHandler(followersObserver));
+                selectedUser, new CountNotificationHandler(followersObserver));
         executor.execute(followersCountTask);
 
         // Get count of most recently selected user's followees (who they are following)
         GetFollowingCountTask followingCountTask = new GetFollowingCountTask(authToken,
-                selectedUser, new GetFollowingCountHandler(followingObserver));
+                selectedUser, new CountNotificationHandler(followingObserver));
         executor.execute(followingCountTask);
     }
 

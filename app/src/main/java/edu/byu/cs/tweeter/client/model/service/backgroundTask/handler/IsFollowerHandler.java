@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.IsFollowerTask;
 
+
+// TODO: Extend BackgroundTaskHandler
+
 /**
  * Message handler (i.e., observer) for IsFollowerTask
  */

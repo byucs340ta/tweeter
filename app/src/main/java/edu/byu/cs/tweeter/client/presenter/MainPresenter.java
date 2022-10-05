@@ -86,7 +86,7 @@ public class MainPresenter {
     private class GetFollowersCountObserver implements FollowService.GetFollowersCountObserver {
 
         @Override
-        public void displayFollowersCount(int count) {
+        public void handleSuccess(int count) {
             view.displayFollowersCount(count);
         }
 
@@ -104,7 +104,7 @@ public class MainPresenter {
     private class GetFollowingCountObserver implements FollowService.GetFollowingCountObserver {
 
         @Override
-        public void displayFollowingCount(int count) {
+        public void handleSuccess(int count) {
             view.displayFollowingCount(count);
         }
 
