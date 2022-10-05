@@ -24,28 +24,8 @@ public class FollowTask extends AuthenticatedTask {
         this.followee = followee;
     }
 
-    /* // run doesn't have much
-    @Override
-    public void run() {
-        try {
-
-            sendSuccessMessage();
-
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
-            sendExceptionMessage(ex);
-        }
-    }
-
-     */
-
     @Override
     protected void processTask() {
-        // TODO: mission somethuign here?
-    }
-
-    @Override
-    protected void loadSuccessBundle(Bundle msgBundle) {
-        // TODO: Missing somehting here?
+        sendSuccessMessage();
     }
 }

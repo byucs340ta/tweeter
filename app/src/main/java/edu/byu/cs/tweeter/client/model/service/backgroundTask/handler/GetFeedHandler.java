@@ -9,6 +9,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFeedTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedTask;
 import edu.byu.cs.tweeter.model.domain.Status;
 
 /**
@@ -26,7 +27,7 @@ public class GetFeedHandler extends Handler {
 
         boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
         if (success) {
-            List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.STATUSES_KEY);
+            List<Status> statuses = (List<Status>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);
             boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
             observer.addToFeed(statuses, hasMorePages);
         } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {

@@ -36,6 +36,7 @@ public class GetUserTask extends AuthenticatedTask {
     @Override
     protected void processTask() {
         this.user = getUser();
+        sendSuccessMessage();
     }
 
     @Override

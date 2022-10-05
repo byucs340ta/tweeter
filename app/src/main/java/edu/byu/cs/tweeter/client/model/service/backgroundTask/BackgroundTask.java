@@ -34,7 +34,7 @@ public abstract class BackgroundTask implements Runnable {
     public void run() {
         try {
             processTask();
-            sendSuccessMessage();
+           // sendSuccessMessage();
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             sendExceptionMessage(ex);
@@ -43,7 +43,7 @@ public abstract class BackgroundTask implements Runnable {
 
     protected abstract void processTask();
 
-    private void sendSuccessMessage() {
+    protected void sendSuccessMessage() {
         Bundle msgBundle = createBundle(true);
 
         loadSuccessBundle(msgBundle);
@@ -51,7 +51,9 @@ public abstract class BackgroundTask implements Runnable {
         sendMessage(msgBundle);
     }
 
-    protected abstract void loadSuccessBundle(Bundle msgBundle);
+    protected void loadSuccessBundle(Bundle msgBundle) {
+        // by default, do nothing
+    }
 
     private void sendFailedMessage(String message) {
         Bundle msgBundle = createBundle(false);
@@ -63,7 +65,6 @@ public abstract class BackgroundTask implements Runnable {
     protected void sendExceptionMessage(Exception exception) {
         Bundle msgBundle = createBundle(false);
         msgBundle.putSerializable(EXCEPTION_KEY, exception);
-
         sendMessage(msgBundle);
     }
 

@@ -17,27 +17,8 @@ public class LogoutTask extends AuthenticatedTask {
         super(messageHandler, authToken);
     }
 
-    /* // run doesn't have much...
-    @Override
-    public void run() {
-        try {
-
-            sendSuccessMessage();
-
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
-            sendExceptionMessage(ex);
-        }
-    }
-     */
     @Override
     protected void processTask() {
-        // TODO: Should something be here
+        sendSuccessMessage();
     }
-
-    @Override
-    protected void loadSuccessBundle(Bundle msgBundle) {
-        // TODO: Should something be here?
-    }
-
 }

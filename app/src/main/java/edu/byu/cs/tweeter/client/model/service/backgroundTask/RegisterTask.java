@@ -1,6 +1,5 @@
 package edu.byu.cs.tweeter.client.model.service.backgroundTask;
 
-import android.os.Bundle;
 import android.os.Handler;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -12,9 +11,6 @@ import edu.byu.cs.tweeter.util.Pair;
  */
 public class RegisterTask extends AuthenticateTask {
     private static final String LOG_TAG = "RegisterTask";
-
-    public static final String USER_KEY = "user";
-    public static final String AUTH_TOKEN_KEY = "auth-token";
 
     /**
      * The user's first name.
@@ -29,10 +25,6 @@ public class RegisterTask extends AuthenticateTask {
      */
     private String image;
 
-    private User registeredUser;
-
-    //TODO: Should I do soming with the authtoken?
-    private AuthToken authToken;
 
     public RegisterTask(String firstName, String lastName, String alias, String password,
                         String image, Handler messageHandler) {
@@ -42,20 +34,7 @@ public class RegisterTask extends AuthenticateTask {
         this.image = image;
     }
 
-    @Override
-    protected void processTask() {
-        Pair<User, AuthToken> registerResult = doRegister();
-        registeredUser = registerResult.getFirst();
-        authToken = registerResult.getSecond();
-    }
-
-    @Override
-    protected void loadSuccessBundle(Bundle msgBundle) {
-        msgBundle.putSerializable(USER_KEY, registeredUser);
-        msgBundle.putSerializable(AUTH_TOKEN_KEY, authToken);
-    }
-
-    private Pair<User, AuthToken> doRegister() {
+    protected Pair<User, AuthToken> runAuthenticationTask() {
         User registeredUser = getFakeData().getFirstUser();
         AuthToken authToken = getFakeData().getAuthToken();
         return new Pair<>(registeredUser, authToken);

@@ -35,23 +35,10 @@ public class IsFollowerTask extends AuthenticatedTask {
         this.followee = followee;
     }
 
-    /* // WHAT TO DO ABOUT sendSuccessMessage?
-    @Override
-    public void run() {
-        try {
-
-            sendSuccessMessage(new Random().nextInt() > 0);
-
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
-            sendExceptionMessage(ex);
-        }
-    }
-     */
-
     @Override
     protected void processTask() {
         isFollower = new Random().nextInt() > 0;
+        sendSuccessMessage();
     }
 
     @Override

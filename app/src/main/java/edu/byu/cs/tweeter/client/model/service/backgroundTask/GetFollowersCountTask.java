@@ -29,24 +29,10 @@ public class GetFollowersCountTask extends AuthenticatedTask {
         this.targetUser = targetUser;
     }
 
-    /* // run doesn't have much
-    @Override
-    public void run() {
-        try {
-
-            sendSuccessMessage(20);
-
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
-            sendExceptionMessage(ex);
-        }
-    }
-
-     */
-
     @Override
     protected void processTask() {
         count = 20;
+        sendSuccessMessage();
     }
 
     @Override

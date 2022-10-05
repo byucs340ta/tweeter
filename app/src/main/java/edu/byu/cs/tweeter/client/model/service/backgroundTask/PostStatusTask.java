@@ -25,27 +25,8 @@ public class PostStatusTask extends AuthenticatedTask {
         this.status = status;
     }
 
-    /* // run doesnt have much
-    @Override
-    public void run() {
-        try {
-
-            sendSuccessMessage();
-
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
-            sendExceptionMessage(ex);
-        }
-    }
-     */
-
     @Override
     protected void processTask() {
-        // TODO: Should seomthing be here?
-    }
-
-    @Override
-    protected void loadSuccessBundle(Bundle msgBundle) {
-        // TODO: Should something be here?
+        sendSuccessMessage();
     }
 }
