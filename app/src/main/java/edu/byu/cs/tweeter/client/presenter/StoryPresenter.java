@@ -60,10 +60,11 @@ public class StoryPresenter {
 
         @Override
         public void addStatusToStory(List<Status> statuses, boolean hasMorePages) {
-            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             isLoading = false;
             view.setLoadingFooter(false);
+            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             view.addStatusesToStory(statuses);
+            StoryPresenter.this.hasMorePages = hasMorePages;
         }
 
         @Override
