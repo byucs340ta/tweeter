@@ -1,56 +1,55 @@
-package edu.byu.cs.tweeter.client.backgroundTask;
+package edu.byu.cs.tweeter.client.model.service.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.util.Random;
+
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.util.FakeData;
-import edu.byu.cs.tweeter.util.Pair;
 
 /**
- * Background task that logs in a user (i.e., starts a session).
+ * Background task that determines if one user is following another.
  */
-public class LoginTask implements Runnable {
-
-    private static final String LOG_TAG = "LoginTask";
+public class IsFollowerTask implements Runnable {
+    private static final String LOG_TAG = "IsFollowerTask";
 
     public static final String SUCCESS_KEY = "success";
-    public static final String USER_KEY = "user";
-    public static final String AUTH_TOKEN_KEY = "auth-token";
+    public static final String IS_FOLLOWER_KEY = "is-follower";
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
 
     /**
-     * The user's username (or "alias" or "handle"). E.g., "@susan".
+     * Auth token for logged-in user.
      */
-    private String username;
+    private AuthToken authToken;
     /**
-     * The user's password.
+     * The alleged follower.
      */
-    private String password;
+    private User follower;
+    /**
+     * The alleged followee.
+     */
+    private User followee;
     /**
      * Message handler that will receive task results.
      */
     private Handler messageHandler;
 
-    public LoginTask(String username, String password, Handler messageHandler) {
-        this.username = username;
-        this.password = password;
+    public IsFollowerTask(AuthToken authToken, User follower, User followee, Handler messageHandler) {
+        this.authToken = authToken;
+        this.follower = follower;
+        this.followee = followee;
         this.messageHandler = messageHandler;
     }
 
     @Override
     public void run() {
         try {
-            Pair<User, AuthToken> loginResult = doLogin();
 
-            User loggedInUser = loginResult.getFirst();
-            AuthToken authToken = loginResult.getSecond();
-
-            sendSuccessMessage(loggedInUser, authToken);
+            sendSuccessMessage(new Random().nextInt() > 0);
 
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
@@ -58,21 +57,10 @@ public class LoginTask implements Runnable {
         }
     }
 
-    private FakeData getFakeData() {
-        return FakeData.getInstance();
-    }
-
-    private Pair<User, AuthToken> doLogin() {
-        User loggedInUser = getFakeData().getFirstUser();
-        AuthToken authToken = getFakeData().getAuthToken();
-        return new Pair<>(loggedInUser, authToken);
-    }
-
-    private void sendSuccessMessage(User loggedInUser, AuthToken authToken) {
+    private void sendSuccessMessage(boolean isFollower) {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, true);
-        msgBundle.putSerializable(USER_KEY, loggedInUser);
-        msgBundle.putSerializable(AUTH_TOKEN_KEY, authToken);
+        msgBundle.putBoolean(IS_FOLLOWER_KEY, isFollower);
 
         Message msg = Message.obtain();
         msg.setData(msgBundle);
