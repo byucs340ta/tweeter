@@ -78,7 +78,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void logoutUser() {
+        public void handleSuccess() {
             view.postLogoutUser();
         }
     }
@@ -149,7 +149,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void postUserFollowed() {
+        public void handleSuccess() {
             view.postFollowUserStatusChange(false);
         }
     }
@@ -166,7 +166,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void postUnfollowUser() {
+        public void handleSuccess() {
             view.postFollowUserStatusChange(true);
         }
     }
@@ -183,7 +183,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void postMessagePosted() {
+        public void handleSuccess() {
             view.postStatusPosted();
         }
     }

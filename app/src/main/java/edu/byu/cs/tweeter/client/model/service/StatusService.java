@@ -20,7 +20,8 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFeedHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetStoryHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.PostStatusHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -39,11 +40,7 @@ public class StatusService {
         void displayException(Exception ex);
     }
 
-    public interface PostStatusObserver {
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-        void postMessagePosted();
-    }
+    public interface PostStatusObserver extends SimpleNotificationObserver {   }
 
     public void loadMoreItemsFeed(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetFeedObserver getFeedObserver) {
         GetFeedTask getFeedTask = new GetFeedTask(currUserAuthToken, user, pageSize, lastStatus, new GetFeedHandler(getFeedObserver));
@@ -61,7 +58,7 @@ public class StatusService {
     public void postStatus(String post, User currUser, PostStatusObserver postStatusObserver) throws ParseException {
         Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
         PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-                newStatus, new PostStatusHandler(postStatusObserver));
+                newStatus, new SimpleNotificationHandler(postStatusObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(statusTask);
     }

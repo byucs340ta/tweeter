@@ -6,7 +6,7 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
-import edu.byu.cs.tweeter.client.model.service.GetCountTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetCountTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingCountTask;
 
 /**

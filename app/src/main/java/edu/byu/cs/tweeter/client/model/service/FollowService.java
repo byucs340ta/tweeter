@@ -12,13 +12,14 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingCountT
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.UnfollowTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.FollowHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowersCountHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowersHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowingCountHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowingHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.IsFollowerHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.UnfollowHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -55,17 +56,9 @@ public class FollowService {
         void displayFollowingRelationship(boolean isFollower);
     }
 
-    public interface GetFollowObserver {
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-        void postUserFollowed();
-    }
+    public interface GetFollowObserver extends SimpleNotificationObserver {   }
 
-    public interface GetUnfollowObserver {
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-        void postUnfollowUser();
-    }
+    public interface GetUnfollowObserver extends SimpleNotificationObserver {   }
 
     // MARK - Call Methods
     public void loadMoreItemsFollowees(AuthToken currUserAuthToken, User user, int pageSize, User lastFollowee, GetFollowingObserver getFollowingObserver) {
@@ -105,14 +98,14 @@ public class FollowService {
     }
 
     public void followUser(AuthToken authToken, User selectedUser, GetFollowObserver getFollowObserver) {
-        FollowTask followTask = new FollowTask(authToken, selectedUser, new FollowHandler(getFollowObserver));
+        FollowTask followTask = new FollowTask(authToken, selectedUser, new SimpleNotificationHandler(getFollowObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(followTask);
     }
 
     public void unfollowUser(AuthToken authToken, User selectedUser, GetUnfollowObserver getUnfollowObserver) {
         UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
-                selectedUser, new UnfollowHandler(getUnfollowObserver));
+                selectedUser, new SimpleNotificationHandler(getUnfollowObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(unfollowTask);
     }

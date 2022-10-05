@@ -2,10 +2,6 @@ package edu.byu.cs.tweeter.client.model.service;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
@@ -19,8 +15,9 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetUserHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.LoginHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.LogoutHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.RegisterHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -40,11 +37,7 @@ public class UserService {
         void registerUser(User registeredUser);
     }
 
-    public interface GetLogoutObserver {
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-        void logoutUser();
-    }
+    public interface GetLogoutObserver extends SimpleNotificationObserver {  }
 
     public interface GetUserProfileObserver {
         void displayErrorMessage(String message);
@@ -82,7 +75,7 @@ public class UserService {
     }
 
     public void logoutUser(AuthToken authToken, GetLogoutObserver observer) {
-        LogoutTask logoutTask = new LogoutTask(authToken, new LogoutHandler(observer));
+        LogoutTask logoutTask = new LogoutTask(authToken, new SimpleNotificationHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(logoutTask);
     }
