@@ -13,10 +13,11 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.AuthenticateNotificationHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetUserHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.LoginHandler;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.RegisterHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.AuthenticateNotificationObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.GetUserObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -25,31 +26,19 @@ public class UserService {
 
     // MARK - Interfaces
 
-    public interface GetLoginObserver {
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-        void loginUser(User loggedInUser);
-    }
+    public interface GetLoginObserver extends AuthenticateNotificationObserver { }
 
-    public interface GetRegisterObserver {
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-        void registerUser(User registeredUser);
-    }
+    public interface GetRegisterObserver extends AuthenticateNotificationObserver {  }
 
     public interface GetLogoutObserver extends SimpleNotificationObserver {  }
 
-    public interface GetUserProfileObserver {
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-        void getUserProfile(User user);
-    }
+    public interface GetUserProfileObserver extends GetUserObserver { }
 
     // MARK - Class Methods
 
     public void loginUser(String alias, String password, GetLoginObserver observer) {
         // Send the login request.
-        LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(observer));
+        LoginTask loginTask = new LoginTask(alias, password, new AuthenticateNotificationHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(loginTask);
     }
@@ -68,7 +57,7 @@ public class UserService {
 
         // Send register request.
         RegisterTask registerTask = new RegisterTask(firstName, lastName,
-                alias, password, imageBytesBase64, new RegisterHandler(observer));
+                alias, password, imageBytesBase64, new AuthenticateNotificationHandler(observer));
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(registerTask);

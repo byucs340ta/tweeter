@@ -92,7 +92,7 @@ public class FeedPresenter {
         }
 
         @Override
-        public void getUserProfile(User user) {
+        public void handleSuccess(User user) {
             view.getUserProfile(user);
         }
     }

@@ -84,14 +84,14 @@ public class FollowingPresenter {
         public void displayErrorMessage(String message) {
             view.displayMessage("Failed to get user's profile: " + message);
         }
-
         @Override
         public void displayException(Exception ex) {
             view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
         }
 
+        // TODO: Do I have this duplicated somewhere?
         @Override
-        public void getUserProfile(User user) {
+        public void handleSuccess(User user) {
             view.getUserProfile(user);
         }
     }

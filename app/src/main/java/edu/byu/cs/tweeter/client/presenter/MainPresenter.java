@@ -49,7 +49,7 @@ public class MainPresenter {
 
     public void checkFollowRelationship(User selectedUser) {
         followService.checkFollowRelationship(Cache.getInstance().getCurrUserAuthToken(),
-                Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerObserver());
+                Cache.getInstance().getCurrUser(), selectedUser, new GetIsFollowerObserver());
     }
 
     public void startFollowing(User selectedUser) {
@@ -119,7 +119,7 @@ public class MainPresenter {
         }
     }
 
-    private class IsFollowerObserver implements FollowService.IsFollowerObserver {
+    private class GetIsFollowerObserver implements FollowService.GetIsFollowerObserver {
         @Override
         public void displayErrorMessage(String message) {
             view.displayMessage("Failed to determine following relationship: " + message);
@@ -131,7 +131,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void displayFollowingRelationship(boolean isFollower) {
+        public void handleSuccess(boolean isFollower) {
             view.displayFollowingRelationship(isFollower);
         }
     }

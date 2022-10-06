@@ -90,8 +90,10 @@ public class FollowersPresenter {
             view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
         }
 
+
+        //TODO: I think I have this duplicated in 2 other places?
         @Override
-        public void getUserProfile(User user) {
+        public void handleSuccess(User user) {
             view.getUserProfile(user);
         }
     }

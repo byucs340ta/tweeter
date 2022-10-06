@@ -72,10 +72,10 @@ public class RegisterPresenter {
         }
 
         @Override
-        public void registerUser(User registeredUser) {
-            view.postRegisterUser(registeredUser);
+        public void handleSuccess(User authenticatedUser) {
+            view.postRegisterUser(authenticatedUser);
             view.setRegisteringToast(false);
-            view.displayMessage("Hello "+ registeredUser.getName());
+            view.displayMessage("Hello "+ authenticatedUser.getName());
         }
     }
 }

@@ -94,8 +94,9 @@ public class StoryPresenter {
             view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
         }
 
+        // TODO: I have this duplicated 3 other places..
         @Override
-        public void getUserProfile(User user) {
+        public void handleSuccess(User user) {
             view.getUserProfile(user);
         }
     }

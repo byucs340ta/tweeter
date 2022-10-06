@@ -54,10 +54,10 @@ public class LoginPresenter {
         }
 
         @Override
-        public void loginUser(User loggedInUser) {
-            view.postLoginUser(loggedInUser);
+        public void handleSuccess(User authenticatedUser) {
+            view.postLoginUser(authenticatedUser);
             view.setLoggingInToast(false);
-            view.displayMessage("Hello" + loggedInUser.getName());
+            view.displayMessage("Hello" + authenticatedUser.getName());
         }
     }
 }

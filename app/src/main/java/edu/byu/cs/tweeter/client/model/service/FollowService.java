@@ -16,6 +16,7 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.IsFollower
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.PagedNotificationHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.CountNotificationObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.IsFollowerObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.PagedNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -32,11 +33,7 @@ public class FollowService {
 
     public interface GetFollowingCountObserver extends CountNotificationObserver {  }
 
-    public interface IsFollowerObserver {
-        void displayErrorMessage(String message);
-        void displayException(Exception ex);
-        void displayFollowingRelationship(boolean isFollower);
-    }
+    public interface GetIsFollowerObserver extends IsFollowerObserver { }
 
     public interface GetFollowObserver extends SimpleNotificationObserver {   }
 
@@ -73,7 +70,7 @@ public class FollowService {
         executor.execute(followingCountTask);
     }
 
-    public void checkFollowRelationship(AuthToken authToken, User currentUser, User selectedUser, IsFollowerObserver isFollowerObserver) {
+    public void checkFollowRelationship(AuthToken authToken, User currentUser, User selectedUser, GetIsFollowerObserver isFollowerObserver) {
         IsFollowerTask isFollowerTask = new IsFollowerTask(authToken, currentUser, selectedUser, new IsFollowerHandler(isFollowerObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(isFollowerTask);
