@@ -17,7 +17,6 @@ public abstract class BasePresenter<T extends BasePresenter.View> {
 
     public interface View {
         void displayMessage(String Message);
-
     }
 
     // MARK: - Inner Classes
@@ -25,7 +24,6 @@ public abstract class BasePresenter<T extends BasePresenter.View> {
         String messageType;
 
         public BaseObserver(String messageType) {
-            processFailure();
             this.messageType = messageType;
         }
 
@@ -37,6 +35,7 @@ public abstract class BasePresenter<T extends BasePresenter.View> {
 
         @Override
         public void displayException(Exception ex) {
+            processFailure();
             view.displayMessage("Failed to " + messageType + " because of exception: " + ex.getMessage());
         }
 

@@ -10,20 +10,17 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.P
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class StoryPresenter {
+public class StoryPresenter extends BasePresenter<StoryPresenter.StoryView> {
 
     // MARK: - Class Variables
 
     private static final int PAGE_SIZE = 10;
     private StatusService statusService;
-    private UserService userService;
     private Status lastStatus;
     private boolean hasMorePages;
     private boolean isLoading = false;
-    private StoryView view;
 
     public interface StoryView extends BasePresenter.View {
-        void displayMessage(String message);
         void setLoadingFooter(boolean value);
         void addStatusesToStory(List<Status> statuses);
         void getUserProfile(User user);
@@ -31,9 +28,8 @@ public class StoryPresenter {
 
     // MARK - Constructor
     public StoryPresenter(StoryView view) {
-        this.view = view;
+        super(view);
         statusService = new StatusService();
-        userService = new UserService();
     }
 
     // MARK - Getter Methods
@@ -51,27 +47,16 @@ public class StoryPresenter {
     }
 
     public void loadMoreItems(User user) {
+        statusService.loadMoreItemsStory(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastStatus, new GetStoryObserver());
         isLoading = true;
         view.setLoadingFooter(true);
-        statusService.loadMoreItemsStory(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastStatus, new GetStoryObserver());
     }
 
-
     // MARK: - Inner Classes
-    private class GetStoryObserver implements PagedNotificationObserver<Status> {
+    private class GetStoryObserver extends BaseObserver implements PagedNotificationObserver<Status> {
 
-        @Override
-        public void displayErrorMessage(String message) {
-            isLoading = false;
-            view.setLoadingFooter(false);
-            view.displayMessage("Failed to get story: " + message);
-        }
-
-        @Override
-        public void displayException(Exception ex) {
-            isLoading = false;
-            view.setLoadingFooter(false);
-            view.displayMessage("Failed to get story because of exception: " + ex.getMessage());
+        public GetStoryObserver() {
+            super("get story");
         }
 
         @Override
@@ -82,19 +67,19 @@ public class StoryPresenter {
             view.addStatusesToStory((List<Status>) items);
             StoryPresenter.this.hasMorePages = hasMorePages;
         }
+
+        @Override
+        public void processFailure() {
+            isLoading = false;
+            view.setLoadingFooter(false);
+        }
     }
 
     // TODO: Duplicates of this exist
-    private class GetUserProfileObserver implements GetUserObserver {
+    private class GetUserProfileObserver extends BaseObserver implements GetUserObserver {
 
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to get user's profile: " + message);
-        }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+        public GetUserProfileObserver() {
+            super("get user's profile");
         }
 
         @Override

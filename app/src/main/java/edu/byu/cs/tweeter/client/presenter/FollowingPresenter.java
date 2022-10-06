@@ -9,30 +9,26 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.G
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.PagedNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter {
+public class FollowingPresenter extends BasePresenter<FollowingPresenter.FollowingView> {
 
     // MARK - Class Variables
     private static final int PAGE_SIZE = 10;
-    private View view;
     private FollowService followService;
-    private UserService userService;
     private User lastFollowee;
     private boolean hasMorePages;
     private boolean isLoading = false;
 
     // MARK - Interface Methods
-    public interface View {
-        void displayMessage(String message);
+    public interface FollowingView extends BasePresenter.View {
         void setLoadingFooter(boolean value);
         void addFollowees(List<User> followees);
         void getUserProfile(User user);
     }
 
     // MARK - Class constructor
-    public FollowingPresenter(View view) {
-        this.view = view;
+    public FollowingPresenter(FollowingView view) {
+        super(view);
         followService = new FollowService();
-        userService = new UserService();
     }
 
     // MARK - Getter Methods
@@ -49,13 +45,17 @@ public class FollowingPresenter {
     }
 
     public void loadMoreItems(User user) {
+        followService.loadMoreItemsFollowees(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
         isLoading = true;
         view.setLoadingFooter(true);
-        followService.loadMoreItemsFollowees(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
     }
 
     // MARK - Inner Classes
-    private class GetFollowingObserver implements PagedNotificationObserver<User> {
+    private class GetFollowingObserver extends BaseObserver implements PagedNotificationObserver<User> {
+        public GetFollowingObserver() {
+            super("get following");
+        }
+
         @Override
         public void handleSuccess(List<User> items, boolean hasMorePages) {
             isLoading = false;
@@ -66,33 +66,19 @@ public class FollowingPresenter {
         }
 
         @Override
-        public void displayErrorMessage(String message) {
+        public void processFailure() {
             isLoading = false;
-            view.displayMessage("Failed to get following: " + message);
-            view.setLoadingFooter(false);
-        }
-
-        @Override
-        public void displayException(Exception ex) {
-            isLoading = false;
-            view.displayMessage("Failed to get following because of exception: " + ex.getMessage());
             view.setLoadingFooter(false);
         }
     }
 
     // TODO: Duplicates of this exist
-    private class GetUserProfileObserver implements GetUserObserver {
+    private class GetUserProfileObserver extends BaseObserver implements GetUserObserver {
 
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to get user's profile: " + message);
-        }
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+        public GetUserProfileObserver() {
+            super("get user's profile");
         }
 
-        // TODO: Do I have this duplicated somewhere?
         @Override
         public void handleSuccess(User user) {
             view.getUserProfile(user);

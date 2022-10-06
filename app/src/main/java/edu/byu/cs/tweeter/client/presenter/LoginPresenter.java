@@ -15,7 +15,6 @@ public class LoginPresenter extends BasePresenter<LoginPresenter.LoginView> {
     // MARK: - Constructors
     public LoginPresenter(LoginView view) {
         super(view);
-        // userService = new UserService();
     }
 
     // MARK: - Class Methods

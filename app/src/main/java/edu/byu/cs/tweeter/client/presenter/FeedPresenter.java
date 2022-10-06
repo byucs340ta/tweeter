@@ -10,19 +10,17 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.P
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FeedPresenter {
+public class FeedPresenter extends BasePresenter<FeedPresenter.FeedView> {
 
     // MARK - Class Variables
     private static final int PAGE_SIZE = 10;
-    private View view;
     private StatusService statusService;
-    private UserService userService;
     private Status lastStatus;
     private boolean hasMoreStatuses;
     private boolean isLoading = false;
 
     // MARK - Interface Classes
-    public interface View {
+    public interface FeedView extends BasePresenter.View {
         void displayMessage(String message);
         void setLoadingFooter(boolean value);
         void addStatusToFeed(List<Status> statuses);
@@ -30,10 +28,9 @@ public class FeedPresenter {
     }
 
     // MARK - Constructor
-    public FeedPresenter(View view) {
-        this.view = view;
+    public FeedPresenter(FeedView view) {
+        super(view);
         statusService = new StatusService();
-        userService = new UserService();
     }
 
     // MARK - Getter Methods
@@ -50,13 +47,17 @@ public class FeedPresenter {
     }
 
     public void loadMoreItems(User user) {
+        statusService.loadMoreItemsFeed(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastStatus, new GetFeedObserver());
         isLoading = true;
         view.setLoadingFooter(true);
-        statusService.loadMoreItemsFeed(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastStatus, new GetFeedObserver());
     }
 
     // MARK - Inner Classes
-    private class GetFeedObserver implements PagedNotificationObserver<Status> {
+    private class GetFeedObserver extends BaseObserver implements PagedNotificationObserver<Status> {
+        public GetFeedObserver() {
+            super("get feed");
+        }
+
         @Override
         public void handleSuccess(List<Status> statuses, boolean hasMoreStatuses) {
             isLoading = false;
@@ -67,30 +68,16 @@ public class FeedPresenter {
         }
 
         @Override
-        public void displayErrorMessage(String message) {
+        public void processFailure() {
             isLoading = false;
             view.setLoadingFooter(false);
-            view.displayMessage("Failed to get feed: " + message);
-        }
-
-        @Override
-        public void displayException(Exception ex) {
-            isLoading = false;
-            view.setLoadingFooter(false);
-            view.displayMessage("Failed to get feed because of exception: " + ex.getMessage());
         }
     }
 
-    private class GetUserProfileObserver implements GetUserObserver {
+    private class GetUserProfileObserver extends BaseObserver implements GetUserObserver {
 
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to get user's profile: " + message);
-        }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+        public GetUserProfileObserver() {
+            super("get user's profile");
         }
 
         @Override

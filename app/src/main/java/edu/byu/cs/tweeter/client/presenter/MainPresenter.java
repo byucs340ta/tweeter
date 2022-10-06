@@ -11,16 +11,15 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.I
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter {
+public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
 
-    private View view;
+   // private MainView view;
     private FollowService followService;
-    private UserService userService;
+   // private UserService userService;
     private StatusService statusService;
 
     // MARK - Interface Methods
-    public interface View {
-        void displayMessage(String message);
+    public interface MainView extends BasePresenter.View {
         void postLogoutUser();
         void displayFollowersCount(int count);
         void displayFollowingCount(int count);
@@ -30,10 +29,9 @@ public class MainPresenter {
     }
 
     // MARK - Class Constructor
-    public MainPresenter(View view) {
-        this.view = view;
+    public MainPresenter(MainView view) {
+        super(view);
         followService = new FollowService();
-        userService = new UserService();
         statusService = new StatusService();
     }
 
@@ -68,123 +66,70 @@ public class MainPresenter {
     }
 
     // Mark - Inner Classes
-    private class GetLogoutObserver implements SimpleNotificationObserver {
-
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to logout: " + message);
+    private class GetLogoutObserver extends BaseObserver implements SimpleNotificationObserver {
+        public GetLogoutObserver() {
+            super("logout");
         }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to logout because of exception: " + ex.getMessage());
-        }
-
         @Override
         public void handleSuccess() {
             view.postLogoutUser();
         }
     }
 
-    private class GetFollowersCountObserver implements CountNotificationObserver {
-
+    private class GetFollowersCountObserver extends BaseObserver implements CountNotificationObserver {
+        public GetFollowersCountObserver() {
+            super("get followers count");
+        }
         @Override
         public void handleSuccess(int count) {
             view.displayFollowersCount(count);
         }
-
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to get followers count: " + message);
-        }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to get followers count because of exception: " + ex.getMessage());
-        }
     }
 
-    private class GetFollowingCountObserver implements CountNotificationObserver {
-
+    private class GetFollowingCountObserver extends BaseObserver implements CountNotificationObserver {
+        public GetFollowingCountObserver() {
+            super("get following count");
+        }
         @Override
         public void handleSuccess(int count) {
             view.displayFollowingCount(count);
         }
-
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to get following count: " + message);
-        }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to get following count because of exception: " + ex.getMessage());
-        }
     }
 
-    private class GetIsFollowerObserver implements IsFollowerObserver {
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to determine following relationship: " + message);
+    private class GetIsFollowerObserver extends BaseObserver implements IsFollowerObserver {
+        public GetIsFollowerObserver() {
+            super("determine following relationship");
         }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to determine following relationship because of exception: " + ex.getMessage());
-        }
-
         @Override
         public void handleSuccess(boolean isFollower) {
             view.displayFollowingRelationship(isFollower);
         }
     }
 
-    private class GetFollowObserver implements SimpleNotificationObserver {
-
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to follow: " + message);
+    private class GetFollowObserver extends BaseObserver implements SimpleNotificationObserver {
+        public GetFollowObserver() {
+            super("follow");
         }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to follow because of exception: " + ex.getMessage());
-        }
-
         @Override
         public void handleSuccess() {
             view.postFollowUserStatusChange(false);
         }
     }
 
-    private class GetUnfollowObserver implements SimpleNotificationObserver {
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to unfollow: " + message);
+    private class GetUnfollowObserver extends BaseObserver implements SimpleNotificationObserver {
+        public GetUnfollowObserver() {
+            super("unfollow");
         }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to unfollow because of exception: " + ex.getMessage());
-        }
-
         @Override
         public void handleSuccess() {
             view.postFollowUserStatusChange(true);
         }
     }
 
-    private class PostStatusObserver implements SimpleNotificationObserver {
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to post status: " + message);
+    private class PostStatusObserver extends BaseObserver implements SimpleNotificationObserver {
+        public PostStatusObserver() {
+            super("post status");
         }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to post status because of exception: " + ex.getMessage());
-        }
-
         @Override
         public void handleSuccess() {
             view.postStatusPosted();
