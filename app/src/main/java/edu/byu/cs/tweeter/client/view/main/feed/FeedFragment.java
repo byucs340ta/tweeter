@@ -188,6 +188,11 @@ public class FeedFragment extends Fragment {
          * Message handler (i.e., observer) for GetUserTask.
          */
         private class GetUserHandler extends Handler {
+
+            public GetUserHandler() {
+                super(Looper.getMainLooper());
+            }
+
             @Override
             public void handleMessage(@NonNull Message msg) {
                 boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
@@ -327,7 +332,7 @@ public class FeedFragment extends Fragment {
          * Causes the Adapter to display a loading footer and make a request to get more feed
          * data.
          */
-        void loadMoreItems(){
+        void loadMoreItems() {
             if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
                 isLoading = true;
                 addLoadingFooter();
@@ -364,6 +369,11 @@ public class FeedFragment extends Fragment {
          * Message handler (i.e., observer) for GetFeedTask.
          */
         private class GetFeedHandler extends Handler {
+
+            public GetFeedHandler() {
+                super(Looper.getMainLooper());
+            }
+
             @Override
             public void handleMessage(@NonNull Message msg) {
                 isLoading = false;
@@ -428,7 +438,7 @@ public class FeedFragment extends Fragment {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(() -> {
-                            feedRecyclerViewAdapter.loadMoreItems();
+                        feedRecyclerViewAdapter.loadMoreItems();
                     }, 0);
                 }
             }

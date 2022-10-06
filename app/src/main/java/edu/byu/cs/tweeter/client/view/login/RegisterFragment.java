@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -157,6 +158,11 @@ public class RegisterFragment extends Fragment {
     // RegisterHandler
 
     private class RegisterHandler extends Handler {
+
+        public RegisterHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(RegisterTask.SUCCESS_KEY);

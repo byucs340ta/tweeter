@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.view.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import java.util.concurrent.Executors;
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
@@ -284,6 +286,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     // LogoutHandler
 
     private class LogoutHandler extends Handler {
+
+        public LogoutHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
@@ -303,6 +310,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     // GetFollowersCountHandler
 
     private class GetFollowersCountHandler extends Handler {
+
+        public GetFollowersCountHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(GetFollowersCountTask.SUCCESS_KEY);
@@ -322,6 +334,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     // GetFollowingCountHandler
 
     private class GetFollowingCountHandler extends Handler {
+
+        public GetFollowingCountHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(GetFollowingCountTask.SUCCESS_KEY);
@@ -341,6 +358,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     // IsFollowerHandler
 
     private class IsFollowerHandler extends Handler {
+
+        public IsFollowerHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(IsFollowerTask.SUCCESS_KEY);
@@ -369,6 +391,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     // FollowHandler
 
     private class FollowHandler extends Handler {
+
+        public FollowHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(FollowTask.SUCCESS_KEY);
@@ -390,6 +417,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     // UnfollowHandler
 
     private class UnfollowHandler extends Handler {
+
+        public UnfollowHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
@@ -411,6 +443,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     // PostStatusHandler
 
     private class PostStatusHandler extends Handler {
+
+        public PostStatusHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(PostStatusTask.SUCCESS_KEY);

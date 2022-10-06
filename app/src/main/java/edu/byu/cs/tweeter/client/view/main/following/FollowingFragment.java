@@ -135,6 +135,11 @@ public class FollowingFragment extends Fragment {
          * Message handler (i.e., observer) for GetUserTask.
          */
         private class GetUserHandler extends Handler {
+
+            public GetUserHandler() {
+                super(Looper.getMainLooper());
+            }
+
             @Override
             public void handleMessage(@NonNull Message msg) {
                 boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
@@ -307,6 +312,11 @@ public class FollowingFragment extends Fragment {
          * Message handler (i.e., observer) for GetFollowingTask.
          */
         private class GetFollowingHandler extends Handler {
+
+            public GetFollowingHandler() {
+                super(Looper.getMainLooper());
+            }
+
             @Override
             public void handleMessage(@NonNull Message msg) {
                 isLoading = false;
