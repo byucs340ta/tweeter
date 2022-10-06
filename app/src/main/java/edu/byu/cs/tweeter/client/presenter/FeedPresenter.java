@@ -5,6 +5,8 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.GetUserObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.PagedNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -54,7 +56,7 @@ public class FeedPresenter {
     }
 
     // MARK - Inner Classes
-    private class GetFeedObserver implements StatusService.GetFeedObserver {
+    private class GetFeedObserver implements PagedNotificationObserver<Status> {
         @Override
         public void handleSuccess(List<Status> statuses, boolean hasMoreStatuses) {
             isLoading = false;
@@ -79,7 +81,7 @@ public class FeedPresenter {
         }
     }
 
-    private class GetUserProfileObserver implements UserService.GetUserProfileObserver {
+    private class GetUserProfileObserver implements GetUserObserver {
 
         @Override
         public void displayErrorMessage(String message) {

@@ -4,6 +4,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.AuthenticateNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class RegisterPresenter {
@@ -59,7 +60,7 @@ public class RegisterPresenter {
     }
 
     // MARK: - Inner Classes
-    private class GetRegisterObserver implements UserService.GetRegisterObserver {
+    private class GetRegisterObserver implements AuthenticateNotificationObserver {
 
         @Override
         public void displayErrorMessage(String message) {

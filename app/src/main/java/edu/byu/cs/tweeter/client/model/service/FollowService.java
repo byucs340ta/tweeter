@@ -24,23 +24,8 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService {
 
-    // MARK - Interfaces
-    public interface GetFollowingObserver extends PagedNotificationObserver<User> { }
-
-    public interface GetFollowersObserver extends PagedNotificationObserver<User> { }
-
-    public interface GetFollowersCountObserver extends CountNotificationObserver { }
-
-    public interface GetFollowingCountObserver extends CountNotificationObserver {  }
-
-    public interface GetIsFollowerObserver extends IsFollowerObserver { }
-
-    public interface GetFollowObserver extends SimpleNotificationObserver {   }
-
-    public interface GetUnfollowObserver extends SimpleNotificationObserver {   }
-
     // MARK - Call Methods
-    public void loadMoreItemsFollowees(AuthToken currUserAuthToken, User user, int pageSize, User lastFollowee, GetFollowingObserver getFollowingObserver) {
+    public void loadMoreItemsFollowees(AuthToken currUserAuthToken, User user, int pageSize, User lastFollowee, PagedNotificationObserver<User> getFollowingObserver) {
         // TODO: Combine this in 2B with the loardMoreItemsFollowers
         GetFollowingTask getFollowingTask = new GetFollowingTask(currUserAuthToken,
                 user, pageSize, lastFollowee, new PagedNotificationHandler<User>(getFollowingObserver));
@@ -48,7 +33,7 @@ public class FollowService {
         executor.execute(getFollowingTask);
     }
 
-    public void loadMoreItemsFollowers(AuthToken currUserAuthToken, User user, int pageSize, User lastFollower, GetFollowersObserver getFollowersObserver) {
+    public void loadMoreItemsFollowers(AuthToken currUserAuthToken, User user, int pageSize, User lastFollower, PagedNotificationObserver<User> getFollowersObserver) {
         // TODO: Combine this in 2B with the loadMoreItemsFollowees
         GetFollowersTask getFollowersTask = new GetFollowersTask(currUserAuthToken,
                 user, pageSize, lastFollower, new PagedNotificationHandler<User>(getFollowersObserver));
@@ -56,7 +41,7 @@ public class FollowService {
         executor.execute(getFollowersTask);
     }
 
-    public void getFollowCounts(AuthToken authToken, User selectedUser, GetFollowersCountObserver followersObserver, GetFollowingCountObserver followingObserver) {
+    public void getFollowCounts(AuthToken authToken, User selectedUser, CountNotificationObserver followersObserver, CountNotificationObserver followingObserver) {
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
         // Get count of most recently selected user's followers.
@@ -70,19 +55,19 @@ public class FollowService {
         executor.execute(followingCountTask);
     }
 
-    public void checkFollowRelationship(AuthToken authToken, User currentUser, User selectedUser, GetIsFollowerObserver isFollowerObserver) {
+    public void checkFollowRelationship(AuthToken authToken, User currentUser, User selectedUser, IsFollowerObserver isFollowerObserver) {
         IsFollowerTask isFollowerTask = new IsFollowerTask(authToken, currentUser, selectedUser, new IsFollowerHandler(isFollowerObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(isFollowerTask);
     }
 
-    public void followUser(AuthToken authToken, User selectedUser, GetFollowObserver getFollowObserver) {
+    public void followUser(AuthToken authToken, User selectedUser, SimpleNotificationObserver getFollowObserver) {
         FollowTask followTask = new FollowTask(authToken, selectedUser, new SimpleNotificationHandler(getFollowObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(followTask);
     }
 
-    public void unfollowUser(AuthToken authToken, User selectedUser, GetUnfollowObserver getUnfollowObserver) {
+    public void unfollowUser(AuthToken authToken, User selectedUser, SimpleNotificationObserver getUnfollowObserver) {
         UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
                 selectedUser, new SimpleNotificationHandler(getUnfollowObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();

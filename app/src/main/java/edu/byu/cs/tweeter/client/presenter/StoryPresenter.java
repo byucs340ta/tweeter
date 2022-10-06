@@ -5,6 +5,8 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.GetUserObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.PagedNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -56,7 +58,7 @@ public class StoryPresenter {
 
 
     // MARK: - Inner Classes
-    private class GetStoryObserver implements StatusService.GetStoryObserver {
+    private class GetStoryObserver implements PagedNotificationObserver<Status> {
 
         @Override
         public void displayErrorMessage(String message) {
@@ -82,7 +84,8 @@ public class StoryPresenter {
         }
     }
 
-    private class GetUserProfileObserver implements UserService.GetUserProfileObserver {
+    // TODO: Duplicates of this exist
+    private class GetUserProfileObserver implements GetUserObserver {
 
         @Override
         public void displayErrorMessage(String message) {

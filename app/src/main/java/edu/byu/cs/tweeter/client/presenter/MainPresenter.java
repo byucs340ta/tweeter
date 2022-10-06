@@ -6,6 +6,9 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.CountNotificationObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.IsFollowerObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter {
@@ -65,7 +68,7 @@ public class MainPresenter {
     }
 
     // Mark - Inner Classes
-    private class GetLogoutObserver implements UserService.GetLogoutObserver {
+    private class GetLogoutObserver implements SimpleNotificationObserver {
 
         @Override
         public void displayErrorMessage(String message) {
@@ -83,7 +86,7 @@ public class MainPresenter {
         }
     }
 
-    private class GetFollowersCountObserver implements FollowService.GetFollowersCountObserver {
+    private class GetFollowersCountObserver implements CountNotificationObserver {
 
         @Override
         public void handleSuccess(int count) {
@@ -101,7 +104,7 @@ public class MainPresenter {
         }
     }
 
-    private class GetFollowingCountObserver implements FollowService.GetFollowingCountObserver {
+    private class GetFollowingCountObserver implements CountNotificationObserver {
 
         @Override
         public void handleSuccess(int count) {
@@ -119,7 +122,7 @@ public class MainPresenter {
         }
     }
 
-    private class GetIsFollowerObserver implements FollowService.GetIsFollowerObserver {
+    private class GetIsFollowerObserver implements IsFollowerObserver {
         @Override
         public void displayErrorMessage(String message) {
             view.displayMessage("Failed to determine following relationship: " + message);
@@ -136,7 +139,7 @@ public class MainPresenter {
         }
     }
 
-    private class GetFollowObserver implements FollowService.GetFollowObserver {
+    private class GetFollowObserver implements SimpleNotificationObserver {
 
         @Override
         public void displayErrorMessage(String message) {
@@ -154,7 +157,7 @@ public class MainPresenter {
         }
     }
 
-    private class GetUnfollowObserver implements FollowService.GetUnfollowObserver {
+    private class GetUnfollowObserver implements SimpleNotificationObserver {
         @Override
         public void displayErrorMessage(String message) {
             view.displayMessage("Failed to unfollow: " + message);
@@ -171,7 +174,7 @@ public class MainPresenter {
         }
     }
 
-    private class PostStatusObserver implements StatusService.PostStatusObserver {
+    private class PostStatusObserver implements SimpleNotificationObserver {
         @Override
         public void displayErrorMessage(String message) {
             view.displayMessage("Failed to post status: " + message);

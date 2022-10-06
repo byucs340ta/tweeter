@@ -23,26 +23,20 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class StatusService {
 
-    public interface GetStoryObserver extends PagedNotificationObserver<Status> { }
-
-    public interface GetFeedObserver extends PagedNotificationObserver<Status> { }
-
-    public interface PostStatusObserver extends SimpleNotificationObserver { }
-
-    public void loadMoreItemsFeed(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetFeedObserver getFeedObserver) {
+    public void loadMoreItemsFeed(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, PagedNotificationObserver<Status> getFeedObserver) {
         GetFeedTask getFeedTask = new GetFeedTask(currUserAuthToken, user, pageSize, lastStatus, new PagedNotificationHandler<Status>(getFeedObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFeedTask);
     }
 
-    public void loadMoreItemsStory(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetStoryObserver getStoryObserver) {
+    public void loadMoreItemsStory(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, PagedNotificationObserver<Status> getStoryObserver) {
         GetStoryTask getStoryTask = new GetStoryTask(currUserAuthToken,
                 user, pageSize, lastStatus, new PagedNotificationHandler<Status>(getStoryObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getStoryTask);
     }
 
-    public void postStatus(String post, User currUser, PostStatusObserver postStatusObserver) throws ParseException {
+    public void postStatus(String post, User currUser, SimpleNotificationObserver postStatusObserver) throws ParseException {
         Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
         PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
                 newStatus, new SimpleNotificationHandler(postStatusObserver));

@@ -20,31 +20,25 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.A
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.GetUserObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService {
 
     // MARK - Interfaces
 
-    public interface GetLoginObserver extends AuthenticateNotificationObserver { }
-
-    public interface GetRegisterObserver extends AuthenticateNotificationObserver {  }
-
-    public interface GetLogoutObserver extends SimpleNotificationObserver {  }
-
-    public interface GetUserProfileObserver extends GetUserObserver { }
+   // public interface GetUserProfileObserver extends GetUserObserver { }
 
     // MARK - Class Methods
 
-    public void loginUser(String alias, String password, GetLoginObserver observer) {
+    public void loginUser(String alias, String password, AuthenticateNotificationObserver getLoginObserver) {
+
         // Send the login request.
-        LoginTask loginTask = new LoginTask(alias, password, new AuthenticateNotificationHandler(observer));
+        LoginTask loginTask = new LoginTask(alias, password, new AuthenticateNotificationHandler(getLoginObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(loginTask);
     }
 
     public void registerUser(String firstName, String lastName, String alias,
-                             String password, BitmapDrawable imageToUpload, GetRegisterObserver observer) {
+                             String password, BitmapDrawable imageToUpload, AuthenticateNotificationObserver observer) {
 
         // Convert image to byte array.
         Bitmap image = imageToUpload.getBitmap();
@@ -63,13 +57,13 @@ public class UserService {
         executor.execute(registerTask);
     }
 
-    public void logoutUser(AuthToken authToken, GetLogoutObserver observer) {
+    public void logoutUser(AuthToken authToken, SimpleNotificationObserver observer) {
         LogoutTask logoutTask = new LogoutTask(authToken, new SimpleNotificationHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(logoutTask);
     }
 
-    public void getUserProfile (AuthToken authToken, String userAlias, GetUserProfileObserver observer) {
+    public void getUserProfile (AuthToken authToken, String userAlias, GetUserObserver observer) {
         GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
                 userAlias, new GetUserHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
