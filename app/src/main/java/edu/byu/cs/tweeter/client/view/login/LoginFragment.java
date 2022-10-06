@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.view.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,6 +100,11 @@ public class LoginFragment extends Fragment {
      * Message handler (i.e., observer) for LoginTask
      */
     private class LoginHandler extends Handler {
+
+        public LoginHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(LoginTask.SUCCESS_KEY);

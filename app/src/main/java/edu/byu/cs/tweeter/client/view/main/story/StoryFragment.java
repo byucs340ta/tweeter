@@ -119,7 +119,7 @@ public class StoryFragment extends Fragment {
             userName = itemView.findViewById(R.id.statusName);
             post = itemView.findViewById(R.id.statusPost);
             datetime = itemView.findViewById(R.id.statusDatetime);
-            
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -191,6 +191,11 @@ public class StoryFragment extends Fragment {
          * Message handler (i.e., observer) for GetUserTask.
          */
         private class GetUserHandler extends Handler {
+
+            public GetUserHandler() {
+                super(Looper.getMainLooper());
+            }
+
             @Override
             public void handleMessage(@NonNull Message msg) {
                 boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
@@ -366,6 +371,11 @@ public class StoryFragment extends Fragment {
          * Message handler (i.e., observer) for GetStoryTask.
          */
         private class GetStoryHandler extends Handler {
+
+            public GetStoryHandler() {
+                super(Looper.getMainLooper());
+            }
+
             @Override
             public void handleMessage(@NonNull Message msg) {
                 isLoading = false;
@@ -430,7 +440,7 @@ public class StoryFragment extends Fragment {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(() -> {
-                            storyRecyclerViewAdapter.loadMoreItems();
+                        storyRecyclerViewAdapter.loadMoreItems();
                     }, 0);
                 }
             }
