@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.client.presenter.AuthenticatePresenter;
 import edu.byu.cs.tweeter.client.presenter.RegisterPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -25,7 +26,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the register screen.
  */
-public class RegisterFragment extends Fragment implements RegisterPresenter.RegisterView {
+public class RegisterFragment extends Fragment implements AuthenticatePresenter.AuthenticateView {
     private static final String LOG_TAG = "RegisterFragment";
     private static final int RESULT_IMAGE = 10;
 
@@ -115,7 +116,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.Regi
     }
 
     @Override
-    public void setRegisteringToast(boolean value) {
+    public void AuthenticatedToast(boolean value) {
         if (value) {
             registeringToast.show();
         } else {
@@ -124,7 +125,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.Regi
     }
 
     @Override
-    public void postRegisterUser(User registeredUser) {
+    public void postAuthenticateUser(User registeredUser) {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra(MainActivity.CURRENT_USER_KEY, registeredUser);
         try {

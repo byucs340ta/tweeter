@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.client.presenter.AuthenticatePresenter;
 import edu.byu.cs.tweeter.client.presenter.LoginPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -20,7 +21,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the login screen.
  */
-public class LoginFragment extends Fragment implements LoginPresenter.LoginView {
+public class LoginFragment extends Fragment implements AuthenticatePresenter.AuthenticateView {
     private static final String LOG_TAG = "LoginFragment";
 
     private Toast loginInToast;
@@ -60,7 +61,7 @@ public class LoginFragment extends Fragment implements LoginPresenter.LoginView 
             public void onClick(View view) {
                 // Login and move to MainActivity.
                 try {
-                    presenter.validateLogin(alias.getText().toString(), password.getText().toString());
+                    presenter.validateCredentials(alias.getText().toString(), password.getText().toString());
                     errorView.setText(null);
                     presenter.login(alias.getText().toString(), password.getText().toString());
                 } catch (Exception e) {
@@ -77,7 +78,7 @@ public class LoginFragment extends Fragment implements LoginPresenter.LoginView 
     }
 
     @Override
-    public void setLoggingInToast(boolean value) {
+    public void AuthenticatedToast(boolean value) {
         if (value) {
             loginInToast.show();
         } else {
@@ -86,7 +87,7 @@ public class LoginFragment extends Fragment implements LoginPresenter.LoginView 
     }
 
     @Override
-    public void postLoginUser(User loggedInUser) {
+    public void postAuthenticateUser(User loggedInUser) {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra(MainActivity.CURRENT_USER_KEY, loggedInUser);
         startActivity(intent);

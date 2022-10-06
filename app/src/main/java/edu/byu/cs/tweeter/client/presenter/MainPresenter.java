@@ -5,7 +5,6 @@ import java.text.ParseException;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.CountNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.IsFollowerObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
@@ -64,15 +63,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
     }
 
     // Mark - Inner Classes
-    private class GetLogoutObserver extends BaseObserver implements SimpleNotificationObserver {
-        public GetLogoutObserver() {
-            super("logout");
-        }
-        @Override
-        public void handleSuccess() {
-            view.postLogoutUser();
-        }
-    }
 
     private class GetFollowersCountObserver extends BaseObserver implements CountNotificationObserver {
         public GetFollowersCountObserver() {
@@ -93,6 +83,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
             view.displayFollowingCount(count);
         }
     }
+
 
     private class GetIsFollowerObserver extends BaseObserver implements IsFollowerObserver {
         public GetIsFollowerObserver() {
@@ -131,6 +122,16 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
         @Override
         public void handleSuccess() {
             view.postStatusPosted();
+        }
+    }
+
+    private class GetLogoutObserver extends BaseObserver implements SimpleNotificationObserver {
+        public GetLogoutObserver() {
+            super("logout");
+        }
+        @Override
+        public void handleSuccess() {
+            view.postLogoutUser();
         }
     }
 }

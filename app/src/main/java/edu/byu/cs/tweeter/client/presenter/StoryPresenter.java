@@ -7,11 +7,8 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class StoryPresenter extends PagedPresenter<Status, StatusService> {
 
-    // TODO: Remove this! Find where it is called and change it.
-    public interface StoryView extends PagedPresenter.PagedView<Status> { }
-
     // MARK - Constructor
-    public StoryPresenter(StoryView view) {
+    public StoryPresenter(PagedView<Status> view) {
         super(view, new StatusService());
     }
 
