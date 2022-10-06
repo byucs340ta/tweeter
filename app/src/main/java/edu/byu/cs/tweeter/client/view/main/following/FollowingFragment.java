@@ -101,7 +101,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
     }
 
     @Override
-    public void addFollowees(List<User> followees) {
+    public void addItemsToPage(List<User> followees) {
         followingRecyclerViewAdapter.addItems(followees);
     }
 

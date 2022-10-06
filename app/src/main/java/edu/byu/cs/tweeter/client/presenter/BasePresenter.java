@@ -1,9 +1,7 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.AuthenticateNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.ServiceObserver;
-import edu.byu.cs.tweeter.model.domain.User;
 
 public abstract class BasePresenter<T extends BasePresenter.View> {
 

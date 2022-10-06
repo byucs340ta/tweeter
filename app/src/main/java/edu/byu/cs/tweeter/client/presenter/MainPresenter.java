@@ -13,9 +13,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
 
-   // private MainView view;
     private FollowService followService;
-   // private UserService userService;
     private StatusService statusService;
 
     // MARK - Interface Methods
