@@ -6,10 +6,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PostStatusTask;
@@ -23,25 +22,24 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class StatusService {
 
+    // MARK - Class Methods
+
     public void loadMoreItemsFeed(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, PagedNotificationObserver<Status> getFeedObserver) {
         GetFeedTask getFeedTask = new GetFeedTask(currUserAuthToken, user, pageSize, lastStatus, new PagedNotificationHandler<Status>(getFeedObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getFeedTask);
+        BackgroundTaskUtils.runTask(getFeedTask);
     }
 
     public void loadMoreItemsStory(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, PagedNotificationObserver<Status> getStoryObserver) {
         GetStoryTask getStoryTask = new GetStoryTask(currUserAuthToken,
                 user, pageSize, lastStatus, new PagedNotificationHandler<Status>(getStoryObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getStoryTask);
+        BackgroundTaskUtils.runTask(getStoryTask);
     }
 
     public void postStatus(String post, User currUser, SimpleNotificationObserver postStatusObserver) throws ParseException {
         Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
         PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
                 newStatus, new SimpleNotificationHandler(postStatusObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(statusTask);
+        BackgroundTaskUtils.runTask(statusTask);
     }
 
     // MARK: - Helper Methods
@@ -84,6 +82,7 @@ public class StatusService {
 
         return containedMentions;
     }
+
     private int findUrlEndIndex(String word) {
         if (word.contains(".com")) {
             int index = word.indexOf(".com");

@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.LogoutTask;
@@ -23,18 +24,12 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 
 public class UserService {
 
-    // MARK - Interfaces
-
-   // public interface GetUserProfileObserver extends GetUserObserver { }
-
     // MARK - Class Methods
 
     public void loginUser(String alias, String password, AuthenticateNotificationObserver getLoginObserver) {
-
         // Send the login request.
         LoginTask loginTask = new LoginTask(alias, password, new AuthenticateNotificationHandler(getLoginObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(loginTask);
+        BackgroundTaskUtils.runTask(loginTask);
     }
 
     public void registerUser(String firstName, String lastName, String alias,
@@ -52,9 +47,7 @@ public class UserService {
         // Send register request.
         RegisterTask registerTask = new RegisterTask(firstName, lastName,
                 alias, password, imageBytesBase64, new AuthenticateNotificationHandler(observer));
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(registerTask);
+        BackgroundTaskUtils.runTask(registerTask);
     }
 
     public void logoutUser(AuthToken authToken, SimpleNotificationObserver observer) {
@@ -66,7 +59,6 @@ public class UserService {
     public void getUserProfile (AuthToken authToken, String userAlias, GetUserObserver observer) {
         GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
                 userAlias, new GetUserHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getUserTask);
+        BackgroundTaskUtils.runTask(getUserTask);
     }
 }
