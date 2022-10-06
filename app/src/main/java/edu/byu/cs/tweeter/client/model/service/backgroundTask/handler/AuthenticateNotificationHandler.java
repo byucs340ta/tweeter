@@ -22,4 +22,5 @@ public class AuthenticateNotificationHandler extends BackgroundTaskHandler<Authe
         Cache.getInstance().setCurrUserAuthToken(authToken);
         observer.handleSuccess(registeredUser);
     }
+
 }

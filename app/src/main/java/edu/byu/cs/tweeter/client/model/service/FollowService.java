@@ -27,21 +27,19 @@ public class FollowService {
 
     // MARK - Call Methods
     public void loadMoreItemsFollowees(AuthToken currUserAuthToken, User user, int pageSize, User lastFollowee, PagedNotificationObserver<User> getFollowingObserver) {
-        // TODO: Combine this in 2B with the loadMoreItemsFollowers
         GetFollowingTask getFollowingTask = new GetFollowingTask(currUserAuthToken,
                 user, pageSize, lastFollowee, new PagedNotificationHandler<User>(getFollowingObserver));
         BackgroundTaskUtils.runTask(getFollowingTask);
     }
 
     public void loadMoreItemsFollowers(AuthToken currUserAuthToken, User user, int pageSize, User lastFollower, PagedNotificationObserver<User> getFollowersObserver) {
-        // TODO: Combine this in 2B with the loadMoreItemsFollowees
         GetFollowersTask getFollowersTask = new GetFollowersTask(currUserAuthToken,
                 user, pageSize, lastFollower, new PagedNotificationHandler<User>(getFollowersObserver));
         BackgroundTaskUtils.runTask(getFollowersTask);
     }
 
     public void getFollowCounts(AuthToken authToken, User selectedUser, CountNotificationObserver followersObserver, CountNotificationObserver followingObserver) {
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        // ExecutorService executor = Executors.newFixedThreadPool(2);
 
         // Get count of most recently selected user's followers.
         GetFollowersCountTask followersCountTask = new GetFollowersCountTask(authToken,

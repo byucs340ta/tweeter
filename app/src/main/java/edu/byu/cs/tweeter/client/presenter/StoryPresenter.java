@@ -20,9 +20,9 @@ public class StoryPresenter {
     private Status lastStatus;
     private boolean hasMorePages;
     private boolean isLoading = false;
-    private View view;
+    private StoryView view;
 
-    public interface View {
+    public interface StoryView extends BasePresenter.View {
         void displayMessage(String message);
         void setLoadingFooter(boolean value);
         void addStatusesToStory(List<Status> statuses);
@@ -30,7 +30,7 @@ public class StoryPresenter {
     }
 
     // MARK - Constructor
-    public StoryPresenter(View view) {
+    public StoryPresenter(StoryView view) {
         this.view = view;
         statusService = new StatusService();
         userService = new UserService();
@@ -97,7 +97,6 @@ public class StoryPresenter {
             view.displayMessage("Failed to get user's profile because of exception: " + ex.getMessage());
         }
 
-        // TODO: I have this duplicated 3 other places..
         @Override
         public void handleSuccess(User user) {
             view.getUserProfile(user);

@@ -7,23 +7,18 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.AuthenticateNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter {
-
-    // MARK: - Class Variables
-    private View view;
-    private UserService service;
+public class RegisterPresenter extends BasePresenter<RegisterPresenter.RegisterView> {
 
     // MARK: - Interfaces
-    public interface View {
-        void displayMessage(String message);
+    public interface RegisterView extends BasePresenter.View {
         void setRegisteringToast(boolean value);
         void postRegisterUser(User registeredUser);
     }
 
     // MARK: - Constructors
-    public RegisterPresenter(View view) {
-        this.view = view;
-        service = new UserService();
+    public RegisterPresenter(RegisterView view) {
+        super(view);
+        userService = new UserService();
     }
 
     // MARK: - Class Methods
@@ -31,7 +26,7 @@ public class RegisterPresenter {
                          String password, BitmapDrawable imageToUpload) {
 
         view.setRegisteringToast(true);
-        service.registerUser(firstName, lastName, alias, password, imageToUpload, new GetRegisterObserver());
+        userService.registerUser(firstName, lastName, alias, password, imageToUpload, new GetRegisterObserver());
     }
 
     public void validateRegistration(String firstName, String lastName, String alias,
@@ -60,16 +55,10 @@ public class RegisterPresenter {
     }
 
     // MARK: - Inner Classes
-    private class GetRegisterObserver implements AuthenticateNotificationObserver {
+    private class GetRegisterObserver extends BaseObserver implements AuthenticateNotificationObserver {
 
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to register: " + message);
-        }
-
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to register because of exception: " + ex.getMessage());
+        public GetRegisterObserver() {
+            super("register");
         }
 
         @Override

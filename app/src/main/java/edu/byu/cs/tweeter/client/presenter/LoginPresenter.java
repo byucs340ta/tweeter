@@ -4,31 +4,27 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.AuthenticateNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class LoginPresenter {
-
-    // MARK: - Class Variables
-    private View view;
-    private UserService service;
+public class LoginPresenter extends BasePresenter<LoginPresenter.LoginView> {
 
     // MARK: - Interfaces
-    public interface View {
-        void displayMessage(String message);
+    public interface LoginView extends BasePresenter.View {
         void setLoggingInToast(boolean value);
         void postLoginUser(User loggedInUser);
     }
 
     // MARK: - Constructors
-    public LoginPresenter(View view) {
-        this.view = view;
-        service = new UserService();
+    public LoginPresenter(LoginView view) {
+        super(view);
+        // userService = new UserService();
     }
 
     // MARK: - Class Methods
     public void login(String alias, String password) {
         view.setLoggingInToast(true);
-        service.loginUser(alias, password, new GetLoginObserver());
+        userService.loginUser(alias, password, new GetLoginObserver());
     }
 
+    // MOve to parent of login/register class
     public void validateLogin(String alias, String password) {
         if (alias.charAt(0) != '@') {
             throw new IllegalArgumentException("Alias must begin with @.");
@@ -42,23 +38,18 @@ public class LoginPresenter {
     }
 
     // MARK: - Inner Classes
-    private class GetLoginObserver implements AuthenticateNotificationObserver {
+    protected class GetLoginObserver extends BaseObserver implements AuthenticateNotificationObserver {
 
-        @Override
-        public void displayErrorMessage(String message) {
-            view.displayMessage("Failed to login: " + message);
+        public GetLoginObserver() {
+            super("login");
         }
 
-        @Override
-        public void displayException(Exception ex) {
-            view.displayMessage("Failed to login because of exception: " + ex.getMessage());
-        }
-
+        // Make this abstract in parent class
         @Override
         public void handleSuccess(User authenticatedUser) {
             view.postLoginUser(authenticatedUser);
             view.setLoggingInToast(false);
-            view.displayMessage("Hello" + authenticatedUser.getName());
+            view.displayMessage("Hello " + authenticatedUser.getName());
         }
     }
 }

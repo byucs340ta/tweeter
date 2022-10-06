@@ -20,7 +20,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the login screen.
  */
-public class LoginFragment extends Fragment implements LoginPresenter.View {
+public class LoginFragment extends Fragment implements LoginPresenter.LoginView {
     private static final String LOG_TAG = "LoginFragment";
 
     private Toast loginInToast;

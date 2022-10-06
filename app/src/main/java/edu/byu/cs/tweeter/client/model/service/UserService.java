@@ -19,6 +19,7 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetUserHan
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.SimpleNotificationHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.AuthenticateNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.GetUserObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 

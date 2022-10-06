@@ -39,7 +39,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Story" tab.
  */
-public class StoryFragment extends Fragment implements StoryPresenter.View {
+public class StoryFragment extends Fragment implements StoryPresenter.StoryView {
     private static final String LOG_TAG = "StoryFragment";
     private static final String USER_KEY = "UserKey";
 
