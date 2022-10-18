@@ -2,8 +2,6 @@ package edu.byu.cs.tweeter.client.view.login;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,24 +10,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.LoginPresenter;
+import edu.byu.cs.tweeter.client.presenter.view.AuthView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the login screen.
  */
-public class LoginFragment extends Fragment implements LoginPresenter.LoginView {
+public class LoginFragment extends Fragment implements AuthView {
     private static final String LOG_TAG = "LoginFragment";
 
     private Toast loginInToast;
@@ -72,6 +64,13 @@ public class LoginFragment extends Fragment implements LoginPresenter.LoginView 
     }
 
     @Override
+    public void authSuccessful(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
+    }
+
+    @Override
     public void displayErrorMessage(String message) {
         errorView.setText(message);
     }
@@ -82,13 +81,6 @@ public class LoginFragment extends Fragment implements LoginPresenter.LoginView 
     }
 
     @Override
-    public void displayInfoMessage(String message) {
-        clearInfoMessage();
-        loginInToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
-        loginInToast.show();
-    }
-
-    @Override
     public void clearInfoMessage() {
         if(loginInToast != null) {
             loginInToast.cancel();
@@ -96,10 +88,11 @@ public class LoginFragment extends Fragment implements LoginPresenter.LoginView 
         }
     }
 
+
     @Override
-    public void navigateToUser(User user) {
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-        startActivity(intent);
+    public void displayMessage(String message) {
+        clearInfoMessage();
+        loginInToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
+        loginInToast.show();
     }
 }

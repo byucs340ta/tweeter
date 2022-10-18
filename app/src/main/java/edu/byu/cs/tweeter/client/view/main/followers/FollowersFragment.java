@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,14 +23,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowerPresenter;
+import edu.byu.cs.tweeter.client.presenter.view.ScrollableView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -39,7 +35,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Followers" tab.
  */
-public class FollowersFragment extends Fragment implements FollowerPresenter.FollowerView {
+public class FollowersFragment extends Fragment implements ScrollableView<User> {
 
     private static final String LOG_TAG = "FollowersFragment";
     private static final String USER_KEY = "UserKey";
@@ -91,10 +87,20 @@ public class FollowersFragment extends Fragment implements FollowerPresenter.Fol
 
         followersRecyclerView.addOnScrollListener(new FollowRecyclerViewPaginationScrollListener(layoutManager));
 
-        presenter = new FollowerPresenter(user, token, this);
-        presenter.loadItems();
+        presenter = new FollowerPresenter(this);
+        presenter.loadMoreItems(user);
 
         return view;
+    }
+
+    @Override
+    public void setLoadingStatus(boolean value) {
+        if (value) {
+            followersRecyclerViewAdapter.addLoadingFooter();
+        }
+        else {
+            followersRecyclerViewAdapter.removeLoadingFooter();
+        }
     }
 
     @Override
@@ -103,8 +109,10 @@ public class FollowersFragment extends Fragment implements FollowerPresenter.Fol
     }
 
     @Override
-    public void setLoading(boolean loading) {
-        followersRecyclerViewAdapter.setLoading(loading);
+    public void goToUser(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
     }
 
     @Override
@@ -113,12 +121,6 @@ public class FollowersFragment extends Fragment implements FollowerPresenter.Fol
         followerToast.show();
     }
 
-    @Override
-    public void navigateToUser(User user) {
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-        startActivity(intent);
-    }
 
     /**
      * The ViewHolder for the RecyclerView that displays the follower data.
@@ -145,7 +147,7 @@ public class FollowersFragment extends Fragment implements FollowerPresenter.Fol
                 @Override
                 public void onClick(View view) {
                     String alias = userAlias.getText().toString();
-                    presenter.selectUser(alias);
+                    presenter.goToUser(alias);
                 }
             });
         }
@@ -177,7 +179,7 @@ public class FollowersFragment extends Fragment implements FollowerPresenter.Fol
          * Creates an instance and loads the first page of following data.
          */
         FollowersRecyclerViewAdapter() {
-            presenter.loadItems();
+            presenter.loadMoreItems(user);
         }
 
         /**
@@ -336,13 +338,13 @@ public class FollowersFragment extends Fragment implements FollowerPresenter.Fol
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            if (!presenter.isLoading() && presenter.hasMorePage()) {
+            if (!presenter.isLoading() && presenter.morePages()) {
                 if ((visibleItemCount + firstVisibleItemPosition) >=
                         totalItemCount && firstVisibleItemPosition >= 0) {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(() -> {
-                        presenter.loadItems();
+                        presenter.loadMoreItems(user);
                     }, 0);
                 }
             }

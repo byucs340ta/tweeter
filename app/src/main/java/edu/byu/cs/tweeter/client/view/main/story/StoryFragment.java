@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -31,14 +30,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.StoryPresenter;
+import edu.byu.cs.tweeter.client.presenter.view.ScrollableView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -47,7 +43,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Story" tab.
  */
-public class StoryFragment extends Fragment implements StoryPresenter.StoryView {
+public class StoryFragment extends Fragment implements ScrollableView<Status> {
     private static final String LOG_TAG = "StoryFragment";
     private static final String USER_KEY = "UserKey";
 
@@ -88,7 +84,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
         user = (User) getArguments().getSerializable(USER_KEY);
         AuthToken token = Cache.getInstance().getCurrUserAuthToken();
 
-        presenter = new StoryPresenter(user, token, this);
+        presenter = new StoryPresenter(this);
 
         RecyclerView storyRecyclerView = view.findViewById(R.id.storyRecyclerView);
 
@@ -100,19 +96,9 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
 
         storyRecyclerView.addOnScrollListener(new StoryRecyclerViewPaginationScrollListener(layoutManager));
 
-        presenter.loadItems();
+        presenter.loadMoreItems(user);
 
         return view;
-    }
-
-    @Override
-    public void setStatuses(List<Status> statuses) {
-        storyRecyclerViewAdapter.addItems(statuses);
-    }
-
-    @Override
-    public void setLoading(boolean loading) {
-        storyRecyclerViewAdapter.setLoading(loading);
     }
 
     @Override
@@ -122,15 +108,24 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
     }
 
     @Override
-    public void navigateToUser(User user) {
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-        startActivity(intent);
+    public void setLoadingStatus(boolean value) {
+        if (value) {
+            storyRecyclerViewAdapter.addLoadingFooter();
+        }
+        else {
+            storyRecyclerViewAdapter.removeLoadingFooter();
+        }
     }
 
     @Override
-    public void navigateToUri(Uri uri) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    public void addItems(List<Status> items) {
+        storyRecyclerViewAdapter.addItems(items);
+    }
+
+    @Override
+    public void goToUser(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
         startActivity(intent);
     }
 
@@ -163,7 +158,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
                 @Override
                 public void onClick(View view) {
                     String alias = userAlias.getText().toString();
-                    presenter.selectUser(alias);
+                    presenter.goToUser(alias);
                 }
             });
         }
@@ -194,7 +189,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
 
                         String clickable = s.subSequence(start, end).toString();
 
-                        presenter.selectUser(clickable);
+                        presenter.goToUser(clickable);
                     }
 
                     @Override
@@ -230,7 +225,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
          * Creates an instance and loads the first page of story data.
          */
         StoryRecyclerViewAdapter() {
-            presenter.loadItems();
+            presenter.loadMoreItems(user);
         }
 
         /**
@@ -393,13 +388,13 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            if (!presenter.isLoading() && presenter.hasMorePage()) {
+            if (!presenter.isLoading() && presenter.morePages()) {
                 if ((visibleItemCount + firstVisibleItemPosition) >=
                         totalItemCount && firstVisibleItemPosition >= 0) {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(() -> {
-                            presenter.loadItems();
+                            presenter.loadMoreItems(user);
                     }, 0);
                 }
             }

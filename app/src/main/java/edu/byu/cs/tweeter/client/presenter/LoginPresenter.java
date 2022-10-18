@@ -5,71 +5,34 @@ import android.widget.Toast;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.AccountService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.presenter.view.AuthView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class LoginPresenter implements AccountService.LoginObserver {
+public class LoginPresenter extends AuthPresenter {
 
-    private LoginView view;
-    public LoginPresenter(LoginView view) {
-        this.view = view;
+    public LoginPresenter(AuthView view) {
+        super(view);
     }
 
     public void login(String username, String password) {
         String errorMessage = validateLogin(username, password);
+        AuthView view = getView();
         if (errorMessage == null) {
-            view.clearInfoMessage();
             view.clearErrorMessage();
-            view.displayInfoMessage("Logging In...");
-            new AccountService().login(username, password, this);
+            view.clearInfoMessage();
+            view.displayMessage("Logging in...");
+            accountService.login(username, password, new LoginObserver());
         }
         else {
             view.displayErrorMessage(errorMessage);
         }
-
     }
 
-    public interface LoginView {
-        void displayErrorMessage(String message);
-        void clearErrorMessage();
-
-        void displayInfoMessage(String message);
-        void clearInfoMessage();
-
-        void navigateToUser(User user);
-    }
-
-    public String validateLogin(String alias, String password) {
-        if (alias.charAt(0) != '@') {
-            return "Alias must begin with @.";
+    public class LoginObserver extends AuthObserver {
+        @Override
+        protected String getBaseMessage() {
+            return "Failed to login";
         }
-        if (alias.length() < 2) {
-            return "Alias must contain 1 or more characters after the @.";
-        }
-        if (password.length() == 0) {
-            return "Password cannot be empty.";
-        }
-
-        return null;
     }
-
-    @Override
-    public void handleLoginSuccess(User user, AuthToken authToken) {
-        view.clearInfoMessage();
-        view.clearErrorMessage();
-
-        view.displayInfoMessage("Hello " + Cache.getInstance().getCurrUser().getName());
-        view.navigateToUser(user);
-    }
-
-    @Override
-    public void handleLoginFailure(String message) {
-        view.displayInfoMessage("Failed to login: " + message);
-    }
-
-    @Override
-    public void handleLoginThrewException(Exception ex) {
-        view.displayInfoMessage("Failed to login because of exception: " + ex.getMessage());
-    }
-
 }
