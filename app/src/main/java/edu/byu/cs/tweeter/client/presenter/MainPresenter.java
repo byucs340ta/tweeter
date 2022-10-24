@@ -38,8 +38,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
 
     public void logoutUser() {
         getUserService().logoutUser(Cache.getInstance().getCurrUserAuthToken(), new LogoutObserver());
-        //Clear user data (cached data).
-        Cache.getInstance().clearCache();
     }
 
     public void getFollowCounts(User selectedUser) {
@@ -132,10 +130,12 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
         public LogoutObserver() {
             super("logout");
         }
+
         @Override
         public void handleSuccess() {
-            Cache.getInstance().clearCache();
             // view.clearInfoMessage();
+            //Clear user data (cached data).
+            Cache.getInstance().clearCache();
             view.postLogoutUser();
         }
     }

@@ -12,7 +12,7 @@ public abstract class BasePresenter<T extends BasePresenter.View> {
         this.view = view;
 
         // removed in mockito video example
-       // this.userService = getUserService();
+        this.userService = getUserService();
     }
 
     protected UserService getUserService() {

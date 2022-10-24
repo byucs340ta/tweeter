@@ -34,13 +34,12 @@ public class MainPresenterUnitTest {
         Mockito.when(mainPresenterSpy.getUserService()).thenReturn(mockUserService);
     }
 
-
     @Test
     public void testLogout_logoutSuccessful() {
         Answer<Void> answer = new Answer<>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                MainPresenter.LogoutObserver observer = invocation.getArgument(0, MainPresenter.LogoutObserver.class);
+                MainPresenter.LogoutObserver observer = invocation.getArgument(1, MainPresenter.LogoutObserver.class);
                 observer.handleSuccess();
                 return null;
             }
@@ -49,42 +48,20 @@ public class MainPresenterUnitTest {
         Mockito.doAnswer(answer).when(mockUserService).logoutUser(Mockito.any(), Mockito.any());
         mainPresenterSpy.logoutUser();
 
-        Mockito.verify(mockView).displayMessage("Logging Out...");
+        //Mockito.verify(mockView).displayMessage("Logging Out...");
+        Mockito.verify(mockView).postLogoutUser();
         Mockito.verify(mockCache).clearCache();
 
         //Mockito.verify(mockView).clearInfoMessage();
         Mockito.verify(mockView).postLogoutUser();
     }
 
-    // TODO: FIX DUPLICATE CODE
-    /*
-
-    Extract these on 51 minutes
-
-     Mockito.verify(mockCache, Mockito.times(0)).clearCache();
-
-        // TODO: fix this 40 minutes in the video
-        Mockito.verify(mockView).clearInfoMessage();
-        // TOOD: Minute 46
-        Mockito.verify(mockView).displayErrorMessage("failed to logout: something bad happened");
-
-
-        Mockito.doAnswer(answer).when(mockUserService).logoutUser(Mockito.any(), Mockito.any());
-        mainPresenterSpy.logoutUser();
-
-
-        Make a answer class / template method 53.
-
-
-        THEN: Do this with the post status feature
-
-     */
     @Test
     public void testLogout_logoutFailed() {
         Answer<Void> answer = new Answer<>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                MainPresenter.LogoutObserver observer = invocation.getArgument(0, MainPresenter.LogoutObserver.class);
+                MainPresenter.LogoutObserver observer = invocation.getArgument(1, MainPresenter.LogoutObserver.class);
                 observer.displayErrorMessage("something bad happened");
                 return null;
             }
@@ -93,13 +70,9 @@ public class MainPresenterUnitTest {
         Mockito.doAnswer(answer).when(mockUserService).logoutUser(Mockito.any(), Mockito.any());
         mainPresenterSpy.logoutUser();
 
-        Mockito.verify(mockView).displayMessage("Logging Out...");
         Mockito.verify(mockCache, Mockito.times(0)).clearCache();
 
-        // TODO: fix this 40 minutes in the video
-        // Mockito.verify(mockView).clearInfoMessage();
-        // TOOD: Minute 46
-        Mockito.verify(mockView).displayMessage("failed to logout: something bad happened");
+        Mockito.verify(mockView).displayMessage("Failed to logout: something bad happened");
     }
 
     @Test
@@ -107,7 +80,7 @@ public class MainPresenterUnitTest {
         Answer<Void> answer = new Answer<>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                MainPresenter.LogoutObserver observer = invocation.getArgument(0, MainPresenter.LogoutObserver.class);
+                MainPresenter.LogoutObserver observer = invocation.getArgument(1, MainPresenter.LogoutObserver.class);
                 observer.displayException(new Exception("My Exception"));
                 return null;
             }
@@ -116,10 +89,9 @@ public class MainPresenterUnitTest {
         Mockito.doAnswer(answer).when(mockUserService).logoutUser(Mockito.any(), Mockito.any());
         mainPresenterSpy.logoutUser();
 
-        Mockito.verify(mockView).displayMessage("Logging Out...");
         Mockito.verify(mockCache, Mockito.times(0)).clearCache();
 
         //Mockito.verify(mockView).clearInfoMessage();
-        Mockito.verify(mockView).displayMessage("failed to logout because of exception: My Exception");
+        Mockito.verify(mockView).displayMessage("Failed to logout because of exception: My Exception");
     }
 }
