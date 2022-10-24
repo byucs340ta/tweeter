@@ -50,4 +50,8 @@ public class Cache {
     public void setCurrUserAuthToken(AuthToken currUserAuthToken) {
         this.currUserAuthToken = currUserAuthToken;
     }
+
+    public static void setInstance(Cache instance) {
+        Cache.instance = instance;
+    }
 }

@@ -12,6 +12,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
 
+    // TODO: Move these to the basePresenter class and prepare them to be mocked.
     private FollowService followService;
     private StatusService statusService;
 
@@ -35,7 +36,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
     // MARK - Methods
 
     public void logoutUser() {
-        userService.logoutUser(Cache.getInstance().getCurrUserAuthToken(), new GetLogoutObserver());
+        getUserService().logoutUser(Cache.getInstance().getCurrUserAuthToken(), new GetLogoutObserver());
         //Clear user data (cached data).
         Cache.getInstance().clearCache();
     }
