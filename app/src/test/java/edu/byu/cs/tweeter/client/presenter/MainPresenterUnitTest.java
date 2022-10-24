@@ -40,8 +40,7 @@ public class MainPresenterUnitTest {
         Answer<Void> answer = new Answer<>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                // TODO: Fix this 35 minutes or so in the video!
-                UserService.GetLogoutObserver observer = invocation.getArguments(0, UserService.GetLogoutObserever.class);
+                MainPresenter.LogoutObserver observer = invocation.getArgument(0, MainPresenter.LogoutObserver.class);
                 observer.handleSuccess();
                 return null;
             }
@@ -53,8 +52,7 @@ public class MainPresenterUnitTest {
         Mockito.verify(mockView).displayMessage("Logging Out...");
         Mockito.verify(mockCache).clearCache();
 
-        // TODO: fix this 40 minutes in the video
-        Mockito.verify(mockView).clearInfoMessage();
+        //Mockito.verify(mockView).clearInfoMessage();
         Mockito.verify(mockView).postLogoutUser();
     }
 
@@ -86,9 +84,8 @@ public class MainPresenterUnitTest {
         Answer<Void> answer = new Answer<>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                // TODO: Fix this 35 minutes or so in the video!
-                UserService.GetLogoutObserver observer = invocation.getArguments(0, UserService.GetLogoutObserever.class);
-                observer.handleFailure("something bad happened");
+                MainPresenter.LogoutObserver observer = invocation.getArgument(0, MainPresenter.LogoutObserver.class);
+                observer.displayErrorMessage("something bad happened");
                 return null;
             }
         };
@@ -100,9 +97,9 @@ public class MainPresenterUnitTest {
         Mockito.verify(mockCache, Mockito.times(0)).clearCache();
 
         // TODO: fix this 40 minutes in the video
-        Mockito.verify(mockView).clearInfoMessage();
+        // Mockito.verify(mockView).clearInfoMessage();
         // TOOD: Minute 46
-        Mockito.verify(mockView).displayErrorMessage("failed to logout: something bad happened");
+        Mockito.verify(mockView).displayMessage("failed to logout: something bad happened");
     }
 
     @Test
@@ -110,9 +107,8 @@ public class MainPresenterUnitTest {
         Answer<Void> answer = new Answer<>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                // TODO: Fix this 35 minutes or so in the video!
-                UserService.GetLogoutObserver observer = invocation.getArguments(0, UserService.GetLogoutObserever.class);
-                observer.handleException(new Exception("My Exception"));
+                MainPresenter.LogoutObserver observer = invocation.getArgument(0, MainPresenter.LogoutObserver.class);
+                observer.displayException(new Exception("My Exception"));
                 return null;
             }
         };
@@ -123,10 +119,7 @@ public class MainPresenterUnitTest {
         Mockito.verify(mockView).displayMessage("Logging Out...");
         Mockito.verify(mockCache, Mockito.times(0)).clearCache();
 
-        // TODO: fix this 40 minutes in the video
-        Mockito.verify(mockView).clearInfoMessage();
-        // TOOD: Minute 46
-        Mockito.verify(mockView).displayErrorMessage("failed to logout because of exception: My Exception");
+        //Mockito.verify(mockView).clearInfoMessage();
+        Mockito.verify(mockView).displayMessage("failed to logout because of exception: My Exception");
     }
-
 }

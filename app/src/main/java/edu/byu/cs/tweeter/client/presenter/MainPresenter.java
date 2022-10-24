@@ -5,6 +5,7 @@ import java.text.ParseException;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.CountNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.IsFollowerObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
@@ -36,7 +37,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
     // MARK - Methods
 
     public void logoutUser() {
-        getUserService().logoutUser(Cache.getInstance().getCurrUserAuthToken(), new GetLogoutObserver());
+        getUserService().logoutUser(Cache.getInstance().getCurrUserAuthToken(), new LogoutObserver());
         //Clear user data (cached data).
         Cache.getInstance().clearCache();
     }
@@ -126,12 +127,15 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
         }
     }
 
-    private class GetLogoutObserver extends BaseObserver implements SimpleNotificationObserver {
-        public GetLogoutObserver() {
+    // MARK - Inner Classes
+    public class LogoutObserver extends BaseObserver implements SimpleNotificationObserver {
+        public LogoutObserver() {
             super("logout");
         }
         @Override
         public void handleSuccess() {
+            Cache.getInstance().clearCache();
+            // view.clearInfoMessage();
             view.postLogoutUser();
         }
     }

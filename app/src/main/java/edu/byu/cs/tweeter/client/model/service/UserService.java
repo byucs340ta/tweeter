@@ -21,6 +21,7 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.A
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.GetUserObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
+import edu.byu.cs.tweeter.client.presenter.BasePresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 
 public class UserService {
