@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.ServiceObserver;
 
@@ -7,12 +9,16 @@ public abstract class BasePresenter<T extends BasePresenter.View> {
 
     protected T view;
     protected UserService userService;
+    private FollowService followService;
+    private StatusService statusService;
 
     public BasePresenter(T view) {
         this.view = view;
 
         // removed in mockito video example
         this.userService = getUserService();
+        this.followService = getFollowService();
+        this.statusService = getStatusService();
     }
 
     protected UserService getUserService() {
@@ -20,6 +26,20 @@ public abstract class BasePresenter<T extends BasePresenter.View> {
             userService = new UserService();
         }
         return userService;
+    }
+
+    protected FollowService getFollowService() {
+        if(followService == null) {
+            followService = new FollowService();
+        }
+        return followService;
+    }
+
+    protected StatusService getStatusService() {
+        if (statusService == null) {
+            statusService = new StatusService();
+        }
+        return statusService;
     }
 
     public interface View {

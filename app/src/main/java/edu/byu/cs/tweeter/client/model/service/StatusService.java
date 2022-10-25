@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.BackgroundTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetStoryTask;
@@ -35,7 +36,7 @@ public class StatusService {
         BackgroundTaskUtils.runTask(getStoryTask);
     }
 
-    public void postStatus(String post, User currUser, SimpleNotificationObserver postStatusObserver) throws ParseException {
+    public void postStatus(String post, User currUser, SimpleNotificationObserver postStatusObserver) {
         Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
         PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
                 newStatus, new SimpleNotificationHandler(postStatusObserver));
@@ -44,12 +45,18 @@ public class StatusService {
 
     // MARK: - Helper Methods
 
-    private String getFormattedDateTime() throws ParseException {
+    private String getFormattedDateTime() {
         SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
 
-        return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
-
+        try {
+            return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
+        } catch (ParseException e) {
+            System.out.println("Cannot get date/time");
+            //return statusFormat.format(userFormat("2000-02-06 12:12:12"));
+            // this might be a bad idea?
+            return "2000-02-06 12:12:12";
+        }
     }
 
     private List<String> parseURLs(String post) {

@@ -3,19 +3,12 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.text.ParseException;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.model.service.FollowService;
-import edu.byu.cs.tweeter.client.model.service.StatusService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.CountNotificationObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.IsFollowerObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.observer.SimpleNotificationObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
-
-    // TODO: Move these to the basePresenter class and prepare them to be mocked.
-    private FollowService followService;
-    private StatusService statusService;
 
     // MARK - Interface Methods
     public interface MainView extends BasePresenter.View {
@@ -30,10 +23,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
     // MARK - Class Constructor
     public MainPresenter(MainView view) {
         super(view);
-        followService = new FollowService();
-        statusService = new StatusService();
     }
-
     // MARK - Methods
 
     public void logoutUser() {
@@ -41,25 +31,25 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
     }
 
     public void getFollowCounts(User selectedUser) {
-        followService.getFollowCounts(Cache.getInstance().getCurrUserAuthToken(), selectedUser,
+        getFollowService().getFollowCounts(Cache.getInstance().getCurrUserAuthToken(), selectedUser,
                 new GetFollowersCountObserver(), new GetFollowingCountObserver());
     }
 
     public void checkFollowRelationship(User selectedUser) {
-        followService.checkFollowRelationship(Cache.getInstance().getCurrUserAuthToken(),
+        getFollowService().checkFollowRelationship(Cache.getInstance().getCurrUserAuthToken(),
                 Cache.getInstance().getCurrUser(), selectedUser, new GetIsFollowerObserver());
     }
 
     public void startFollowing(User selectedUser) {
-        followService.followUser(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetFollowObserver());
+        getFollowService().followUser(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetFollowObserver());
     }
 
     public void unfollowUser(User selectedUser) {
-        followService.unfollowUser(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetUnfollowObserver());
+        getFollowService().unfollowUser(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new GetUnfollowObserver());
     }
 
-    public void postStatus(String post) throws ParseException {
-        statusService.postStatus(post, Cache.getInstance().getCurrUser(), new PostStatusObserver());
+    public void postStatus(String post) {
+        getStatusService().postStatus(post, Cache.getInstance().getCurrUser(), new PostStatusObserver());
     }
 
     // Mark - Inner Classes
@@ -115,7 +105,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
         }
     }
 
-    private class PostStatusObserver extends BaseObserver implements SimpleNotificationObserver {
+    protected class PostStatusObserver extends BaseObserver implements SimpleNotificationObserver {
         public PostStatusObserver() {
             super("post status");
         }
@@ -126,7 +116,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> {
     }
 
     // MARK - Inner Classes
-    public class LogoutObserver extends BaseObserver implements SimpleNotificationObserver {
+    protected class LogoutObserver extends BaseObserver implements SimpleNotificationObserver {
         public LogoutObserver() {
             super("logout");
         }
