@@ -7,7 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.R;
 
 /**
  * The first activity that appears when the app is run.
