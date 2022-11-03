@@ -107,11 +107,12 @@ public class FeedFragment extends Fragment implements ScrollableView<Status> {
 
     @Override
     public void setLoadingStatus(boolean value) {
-        if (value) {
-            feedRecyclerViewAdapter.addLoadingFooter();
-        }
-        else {
-            feedRecyclerViewAdapter.removeLoadingFooter();
+        if (feedRecyclerViewAdapter != null) {
+            if (value) {
+                feedRecyclerViewAdapter.addLoadingFooter();
+            } else {
+                feedRecyclerViewAdapter.removeLoadingFooter();
+            }
         }
     }
 

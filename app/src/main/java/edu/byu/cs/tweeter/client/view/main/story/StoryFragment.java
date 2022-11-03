@@ -111,8 +111,7 @@ public class StoryFragment extends Fragment implements ScrollableView<Status> {
     public void setLoadingStatus(boolean value) {
         if (value) {
             storyRecyclerViewAdapter.addLoadingFooter();
-        }
-        else {
+        } else {
             storyRecyclerViewAdapter.removeLoadingFooter();
         }
     }

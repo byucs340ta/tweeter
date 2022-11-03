@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 rootProject.name='Tweeter'
 include ':app'
 include ':shared'
+include 'server'
+
