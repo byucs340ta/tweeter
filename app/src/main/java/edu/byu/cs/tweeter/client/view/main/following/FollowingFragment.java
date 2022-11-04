@@ -283,7 +283,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
         private void removeLoadingFooter() {
             removeItem(users.get(users.size() - 1));
         }
-
     }
 
     /**

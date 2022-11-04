@@ -1,7 +1,6 @@
 package edu.byu.cs.tweeter.client.view.main.feed;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -192,7 +192,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
                     @Override
                     public void updateDrawState(@NotNull TextPaint ds) {
                         super.updateDrawState(ds);
-                        ds.setColor(getResources().getColor(R.color.colorAccent));
+                        ds.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                         ds.setUnderlineText(false);
                     }
                 }, startIndex, (startIndex + mention.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -341,7 +341,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
         private void removeLoadingFooter() {
             removeItem(feed.get(feed.size() - 1));
         }
-
     }
 
     /**
@@ -384,11 +383,10 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(() -> {
-                            feedRecyclerViewAdapter.loadMoreItems();
+                        feedRecyclerViewAdapter.loadMoreItems();
                     }, 0);
                 }
             }
         }
     }
-
 }

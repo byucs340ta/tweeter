@@ -24,7 +24,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class LoginFragment extends Fragment implements AuthenticatePresenter.AuthenticateView {
     private static final String LOG_TAG = "LoginFragment";
 
-    private Toast loginInToast;
+    private Toast loginToast;
     private EditText alias;
     private EditText password;
     private TextView errorView;

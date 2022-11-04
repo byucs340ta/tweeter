@@ -290,9 +290,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
         private void removeLoadingFooter() {
             removeItem(users.get(users.size() - 1));
         }
-
-
-
     }
 
     /**
@@ -341,5 +338,4 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
             }
         }
     }
-
 }
