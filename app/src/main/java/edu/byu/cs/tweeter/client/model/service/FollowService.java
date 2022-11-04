@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.FollowTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersTask;
@@ -39,8 +40,8 @@ public class FollowService extends Service {
         void handleFollowUserFailure(String message);
         void handleFollowUserThrewException(Exception ex);
     }
-    public void followUser(AuthToken token, User user, FollowUserObserver observer) {
-        FollowTask followTask = new FollowTask(token, user, new FollowHandler(observer));
+    public void followUser(AuthToken token, User targetUser, User user, FollowUserObserver observer) {
+        FollowTask followTask = new FollowTask(token, targetUser, user, new FollowHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(followTask);
     }
@@ -70,7 +71,7 @@ public class FollowService extends Service {
         void handleUnfollowUserThrewException(Exception ex);
     }
     public void unfollowUser(AuthToken token, User user, UnfollowUserObserver observer) {
-        UnfollowTask unfollowTask = new UnfollowTask(token, user, new UnfollowHandler(observer));
+        UnfollowTask unfollowTask = new UnfollowTask(token, user, Cache.getInstance().getCurrUser(), new UnfollowHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(unfollowTask);
     }

@@ -85,13 +85,14 @@ public class StoryFragment extends Fragment implements ScrollableView<Status> {
         AuthToken token = Cache.getInstance().getCurrUserAuthToken();
 
         presenter = new StoryPresenter(this);
+        storyRecyclerViewAdapter = new StoryRecyclerViewAdapter();
 
         RecyclerView storyRecyclerView = view.findViewById(R.id.storyRecyclerView);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
         storyRecyclerView.setLayoutManager(layoutManager);
 
-        storyRecyclerViewAdapter = new StoryRecyclerViewAdapter();
+
         storyRecyclerView.setAdapter(storyRecyclerViewAdapter);
 
         storyRecyclerView.addOnScrollListener(new StoryRecyclerViewPaginationScrollListener(layoutManager));
@@ -111,8 +112,7 @@ public class StoryFragment extends Fragment implements ScrollableView<Status> {
     public void setLoadingStatus(boolean value) {
         if (value) {
             storyRecyclerViewAdapter.addLoadingFooter();
-        }
-        else {
+        } else {
             storyRecyclerViewAdapter.removeLoadingFooter();
         }
     }
@@ -225,7 +225,7 @@ public class StoryFragment extends Fragment implements ScrollableView<Status> {
          * Creates an instance and loads the first page of story data.
          */
         StoryRecyclerViewAdapter() {
-            presenter.loadMoreItems(user);
+
         }
 
         /**

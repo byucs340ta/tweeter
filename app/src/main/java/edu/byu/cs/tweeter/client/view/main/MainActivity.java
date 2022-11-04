@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         try {
             Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), presenter.getFormattedDateTime(), presenter.parseURLs(post), presenter.parseMentions(post));
             PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-                    newStatus, new PostStatusHandler());
+                    newStatus, Cache.getInstance().getCurrUser(), new PostStatusHandler());
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(statusTask);
         } catch (Exception ex) {

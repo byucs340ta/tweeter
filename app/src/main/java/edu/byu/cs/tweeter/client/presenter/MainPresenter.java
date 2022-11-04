@@ -154,7 +154,7 @@ public class MainPresenter implements AccountService.LogoutObserver, FollowServi
             view.displayMessage("Unfollowing " + user.getName() + "...");
         }
         else {
-            new FollowService().followUser(token, user, this);
+            new FollowService().followUser(token, Cache.getInstance().getCurrUser(), user, this);
             view.displayMessage("Following " + user.getName() + "...");
         }
     }

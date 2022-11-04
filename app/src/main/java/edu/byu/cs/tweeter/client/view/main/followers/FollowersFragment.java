@@ -179,7 +179,6 @@ public class FollowersFragment extends Fragment implements ScrollableView<User> 
          * Creates an instance and loads the first page of following data.
          */
         FollowersRecyclerViewAdapter() {
-            presenter.loadMoreItems(user);
         }
 
         /**
