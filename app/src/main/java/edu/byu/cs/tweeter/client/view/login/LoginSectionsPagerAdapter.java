@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.R;
 
 /**
  * Used by LoginActivity to implement the "login" and "register" tabs.
