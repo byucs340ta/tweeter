@@ -9,6 +9,7 @@ import edu.byu.cs.tweeter.model.net.response.FollowListResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.SuccessResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
+import edu.byu.cs.tweeter.server.dao.UserDAO;
 
 import java.util.Random;
 
@@ -32,7 +33,7 @@ public class FollowService {
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
-        return getFollowingDAO().getFollowees(request);
+        return getFollowingDAO().getFollowees(request.getAuthToken().getAlias(), request.getTargetUser());
     }
 
     public FollowListResponse getFollowers(FollowListRequest request) {
@@ -41,28 +42,30 @@ public class FollowService {
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
-        return getFollowingDAO().getFollowers(request);
+        return getFollowingDAO().getFollowers(request.getAuthToken().getAlias(), request.getTargetUser());
     }
 
     public SuccessResponse followUser(FollowUserRequest request) {
         if (request.getFollowee() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a followee");
         }
-        return getFollowingDAO().followUser(request);
+        getFollowingDAO().followUser(request.getFollowee(), request.getTargetUser());
+        return new SuccessResponse(true);
     }
 
     public SuccessResponse unfollowUser(FollowUserRequest request) {
         if (request.getFollowee() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a followee");
         }
-        return getFollowingDAO().followUser(request);
+        getFollowingDAO().followUser(request.getFollowee(), request.getTargetUser());
+        return new SuccessResponse(true);
     }
 
     public FollowCountResponse getFollowerCount(FollowCountRequest request) {
         if (request.getTargetUser() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a targetUser");
         }
-        int count = getFollowingDAO().getFollowerCount(request.getTargetUser());
+        int count = getUserDAO().getFollowerCount(request.getTargetUser().getAlias());
         return new FollowCountResponse(count);
     }
 
@@ -70,7 +73,7 @@ public class FollowService {
         if (request.getTargetUser() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a targetUser");
         }
-        int count = getFollowingDAO().getFolloweeCount(request.getTargetUser());
+        int count = getUserDAO().getFolloweeCount(request.getTargetUser().getAlias());
         return new FollowCountResponse(count);
     }
 
@@ -94,5 +97,8 @@ public class FollowService {
      */
     FollowDAO getFollowingDAO() {
         return new FollowDAO();
+    }
+    UserDAO getUserDAO() {
+        return new UserDAO();
     }
 }

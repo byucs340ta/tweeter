@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.model.net.response;
 import java.util.List;
 import java.util.Objects;
 
+import edu.byu.cs.tweeter.model.domain.Follower;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowListRequest;
 
@@ -11,7 +12,7 @@ import edu.byu.cs.tweeter.model.net.request.FollowListRequest;
  */
 public class FollowListResponse extends PagedResponse {
 
-    private List<User> followList;
+    private List<Follower> followList;
 
     /**
      * Creates a response indicating that the corresponding request was unsuccessful. Sets the
@@ -29,7 +30,7 @@ public class FollowListResponse extends PagedResponse {
      * @param followList the followees to be included in the result.
      * @param hasMorePages an indicator of whether more data is available for the request.
      */
-    public FollowListResponse(List<User> followList, boolean hasMorePages) {
+    public FollowListResponse(List<Follower> followList, boolean hasMorePages) {
         super(true, hasMorePages);
         this.followList = followList;
     }
@@ -39,7 +40,7 @@ public class FollowListResponse extends PagedResponse {
      *
      * @return the followees.
      */
-    public List<User> getFollowList() {
+    public List<Follower> getFollowList() {
         return followList;
     }
 
