@@ -4,16 +4,17 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    namespace 'edu.byu.cs.tweeter'
+    compileSdk 31
     defaultConfig {
 
+        testInstrumentationRunnerArguments runnerBuilder: 'de.mannodermaus.junit5.AndroidJUnit5Builder'
         applicationId "edu.byu.cs.tweeter"
         minSdkVersion 30
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
     }
     buildTypes {
         release {
