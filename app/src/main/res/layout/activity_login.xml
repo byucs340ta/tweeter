@@ -26,7 +26,7 @@
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 app:srcCompat="@drawable/twitter"
-                android:tint="@color/white"
+                app:tint="@color/white"
                 android:contentDescription="@string/userImageContentDescription" />
 
         </RelativeLayout>
