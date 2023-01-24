@@ -141,7 +141,7 @@ public class FeedFragment extends Fragment {
             Picasso.get().load(status.getUser().getImageUrl()).into(userImage);
             userAlias.setText(status.getUser().getAlias());
             userName.setText(status.getUser().getName());
-            datetime.setText(status.getDate());
+            datetime.setText(status.getFormattedDate());
 
             // @mentions and urls clickable
             SpannableString spannableString = new SpannableString(status.getPost());
@@ -349,7 +349,7 @@ public class FeedFragment extends Fragment {
          * loading footer view) at the bottom of the list.
          */
         private void addLoadingFooter() {
-            addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<String>() {{
+            addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), System.currentTimeMillis(), new ArrayList<String>() {{
                 add("https://youtube.com");
             }}, new ArrayList<String>() {{
                 add("@Dude1");

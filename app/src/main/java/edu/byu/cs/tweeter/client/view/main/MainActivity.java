@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         postingToast.show();
 
         try {
-            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
+            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), System.currentTimeMillis(), parseURLs(post), parseMentions(post));
             PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
                     newStatus, new PostStatusHandler());
             ExecutorService executor = Executors.newSingleThreadExecutor();
