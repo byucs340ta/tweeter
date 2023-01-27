@@ -5,16 +5,16 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFollowingPresenter {
+public class GetFollowersPresenter {
     private static final int PAGE_SIZE = 10;
 
     private View view;
     private FollowService followService;
-    private User lastFollowee;
+    private User lastFollower;
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public GetFollowingPresenter(View view) {
+    public GetFollowersPresenter(View view) {
         this.view = view;
         followService = new FollowService();
     }
@@ -26,10 +26,10 @@ public class GetFollowingPresenter {
     }
 
     public void loadMoreItems(User user) {
-        if (!isLoading) { // This guard is important for avoiding a race condition in the scrolling code.
+        if (!isLoading) {
             isLoading = true;
             view.setLoadingFooter(true);
-            followService.loadMoreItems(user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
+            followService.loadMoreItems(user, PAGE_SIZE, lastFollower, new GetFollowersObserver());
         }
     }
 
@@ -45,7 +45,7 @@ public class GetFollowingPresenter {
         return isLoading;
     }
 
-    private class GetFollowingObserver implements FollowService.Observer {
+    private class GetFollowersObserver implements FollowService.Observer {
         @Override
         public void displayMessage(String message) {
             isLoading = false;
@@ -57,7 +57,7 @@ public class GetFollowingPresenter {
         public void addFollowees(List<User> followees, boolean hasMorePages) {
             isLoading = false;
             view.setLoadingFooter(false);
-            lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
+            lastFollower = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
             setHasMorePages(hasMorePages);
             view.addMoreItems(followees);
         }

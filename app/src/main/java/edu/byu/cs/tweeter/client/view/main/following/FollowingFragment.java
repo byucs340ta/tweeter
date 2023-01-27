@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,19 +38,13 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Implements the "Following" tab.
  */
 public class FollowingFragment extends Fragment implements GetFollowingPresenter.View {
-
     private static final String LOG_TAG = "FollowingFragment";
     private static final String USER_KEY = "UserKey";
-
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-    private static final int PAGE_SIZE = 10;
-
     private User user;
-
     private FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
-
     private GetFollowingPresenter presenter;
 
     /**
@@ -74,6 +69,7 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_following, container, false);
 
+        //noinspection ConstantConditions
         user = (User) getArguments().getSerializable(USER_KEY);
 
         RecyclerView followingRecyclerView = view.findViewById(R.id.followingRecyclerView);
@@ -88,7 +84,6 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
 
         presenter = new GetFollowingPresenter(this);
         presenter.loadMoreItems(user);
-
 
         return view;
     }
@@ -116,7 +111,6 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
      * The ViewHolder for the RecyclerView that displays the Following data.
      */
     private class FollowingHolder extends RecyclerView.ViewHolder {
-
         private final ImageView userImage;
         private final TextView userAlias;
         private final TextView userName;
@@ -152,17 +146,17 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
          * @param user the user.
          */
         void bindUser(User user) {
+            if (user == null) Log.e(LOG_TAG, "user is null!");
+
             userAlias.setText(user.getAlias());
             userName.setText(user.getName());
             Picasso.get().load(user.getImageUrl()).into(userImage);
         }
 
-        // TODO: move this to a presenter
         /**
          * Message handler (i.e., observer) for GetUserTask.
          */
         private class GetUserHandler extends Handler {
-
             public GetUserHandler() {
                 super(Looper.getMainLooper());
             }
@@ -184,14 +178,13 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
                     Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
-        }
+        } // TODO: move this to a presenter
     }
 
     /**
      * The adapter for the RecyclerView that displays the Following data.
      */
     private class FollowingRecyclerViewAdapter extends RecyclerView.Adapter<FollowingHolder> {
-
         private final List<User> users = new ArrayList<>();
 
         /**
@@ -245,7 +238,6 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
 
             if (viewType == LOADING_DATA_VIEW) {
                 view = layoutInflater.inflate(R.layout.loading_row, parent, false);
-
             } else {
                 view = layoutInflater.inflate(R.layout.user_row, parent, false);
             }
@@ -320,7 +312,6 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
      * available data.
      */
     private class FollowRecyclerViewPaginationScrollListener extends RecyclerView.OnScrollListener {
-
         private final LinearLayoutManager layoutManager;
 
         /**
@@ -361,5 +352,4 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
             }
         }
     }
-
 }

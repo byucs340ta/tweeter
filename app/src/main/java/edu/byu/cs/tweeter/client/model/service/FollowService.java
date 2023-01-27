@@ -15,7 +15,6 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService {
-
     public interface Observer {
         void displayMessage(String message);
         void addFollowees(List<User> followees, boolean hasMorePages);
