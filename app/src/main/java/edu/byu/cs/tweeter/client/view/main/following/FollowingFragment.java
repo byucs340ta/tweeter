@@ -27,16 +27,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.R;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.presenter.GetFollowingPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the "Following" tab.
  */
-public class FollowingFragment extends Fragment {
+public class FollowingFragment extends Fragment implements GetFollowingPresenter.View {
 
     private static final String LOG_TAG = "FollowingFragment";
     private static final String USER_KEY = "UserKey";
@@ -49,6 +49,8 @@ public class FollowingFragment extends Fragment {
     private User user;
 
     private FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
+
+    private GetFollowingPresenter presenter;
 
     /**
      * Creates an instance of the fragment and places the target user in an arguments
@@ -84,7 +86,30 @@ public class FollowingFragment extends Fragment {
 
         followingRecyclerView.addOnScrollListener(new FollowRecyclerViewPaginationScrollListener(layoutManager));
 
+        presenter = new GetFollowingPresenter(this);
+        presenter.loadMoreItems(user);
+
+
         return view;
+    }
+
+    @Override
+    public void setLoadingFooter(boolean isLoading) {
+        if (isLoading) {
+            followingRecyclerViewAdapter.addLoadingFooter();
+        } else {
+            followingRecyclerViewAdapter.removeLoadingFooter();
+        }
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void addMoreItems(List<User> followees) {
+        followingRecyclerViewAdapter.addItems(followees);
     }
 
     /**
@@ -111,6 +136,7 @@ public class FollowingFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // TODO: move this to a presenter
                     GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
                             userAlias.getText().toString(), new GetUserHandler());
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -131,6 +157,7 @@ public class FollowingFragment extends Fragment {
             Picasso.get().load(user.getImageUrl()).into(userImage);
         }
 
+        // TODO: move this to a presenter
         /**
          * Message handler (i.e., observer) for GetUserTask.
          */
@@ -166,18 +193,6 @@ public class FollowingFragment extends Fragment {
     private class FollowingRecyclerViewAdapter extends RecyclerView.Adapter<FollowingHolder> {
 
         private final List<User> users = new ArrayList<>();
-
-        private User lastFollowee;
-
-        private boolean hasMorePages;
-        private boolean isLoading = false;
-
-        /**
-         * Creates an instance and loads the first page of following data.
-         */
-        FollowingRecyclerViewAdapter() {
-            loadMoreItems();
-        }
 
         /**
          * Adds new users to the list from which the RecyclerView retrieves the users it displays
@@ -248,7 +263,7 @@ public class FollowingFragment extends Fragment {
          */
         @Override
         public void onBindViewHolder(@NonNull FollowingHolder followingHolder, int position) {
-            if (!isLoading) {
+            if (!presenter.isLoading()) {
                 followingHolder.bindUser(users.get(position));
             }
         }
@@ -272,7 +287,7 @@ public class FollowingFragment extends Fragment {
          */
         @Override
         public int getItemViewType(int position) {
-            return (position == users.size() - 1 && isLoading) ? LOADING_DATA_VIEW : ITEM_VIEW;
+            return (position == users.size() - 1 && presenter.isLoading()) ? LOADING_DATA_VIEW : ITEM_VIEW;
         }
 
         /**
@@ -280,15 +295,7 @@ public class FollowingFragment extends Fragment {
          * data.
          */
         void loadMoreItems() {
-            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-                isLoading = true;
-                addLoadingFooter();
-
-                GetFollowingTask getFollowingTask = new GetFollowingTask(Cache.getInstance().getCurrUserAuthToken(),
-                        user, PAGE_SIZE, lastFollowee, new GetFollowingHandler());
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(getFollowingTask);
-            }
+            presenter.loadMoreItems(user);
         }
 
         /**
@@ -305,39 +312,6 @@ public class FollowingFragment extends Fragment {
          */
         private void removeLoadingFooter() {
             removeItem(users.get(users.size() - 1));
-        }
-
-
-        /**
-         * Message handler (i.e., observer) for GetFollowingTask.
-         */
-        private class GetFollowingHandler extends Handler {
-
-            public GetFollowingHandler() {
-                super(Looper.getMainLooper());
-            }
-
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                isLoading = false;
-                removeLoadingFooter();
-
-                boolean success = msg.getData().getBoolean(GetFollowingTask.SUCCESS_KEY);
-                if (success) {
-                    List<User> followees = (List<User>) msg.getData().getSerializable(GetFollowingTask.FOLLOWEES_KEY);
-                    hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
-
-                    lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
-
-                    followingRecyclerViewAdapter.addItems(followees);
-                } else if (msg.getData().containsKey(GetFollowingTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetFollowingTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get following: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetFollowingTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetFollowingTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get following because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
         }
     }
 
@@ -375,7 +349,7 @@ public class FollowingFragment extends Fragment {
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            if (!followingRecyclerViewAdapter.isLoading && followingRecyclerViewAdapter.hasMorePages) {
+            if (!presenter.isLoading() && presenter.hasMorePages()) {
                 if ((visibleItemCount + firstVisibleItemPosition) >=
                         totalItemCount && firstVisibleItemPosition >= 0) {
                     // Run this code later on the UI thread
