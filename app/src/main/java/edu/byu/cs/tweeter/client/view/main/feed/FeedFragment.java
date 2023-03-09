@@ -40,6 +40,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.util.Timestamp;
 
 /**
  * Implements the "Feed" tab.
@@ -141,7 +142,7 @@ public class FeedFragment extends Fragment {
             Picasso.get().load(status.getUser().getImageUrl()).into(userImage);
             userAlias.setText(status.getUser().getAlias());
             userName.setText(status.getUser().getName());
-            datetime.setText(status.getFormattedDate());
+            datetime.setText(Timestamp.getFormattedDate(status.getTimestamp()));
 
             // @mentions and urls clickable
             SpannableString spannableString = new SpannableString(status.getPost());
