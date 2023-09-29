@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.backgroundTask;
+package edu.byu.cs.tweeter.client.model.services.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,11 +11,10 @@ import edu.byu.cs.tweeter.util.FakeData;
 import edu.byu.cs.tweeter.util.Pair;
 
 /**
- * Background task that logs in a user (i.e., starts a session).
+ * Background task that creates a new user account and logs in the new user (i.e., starts a session).
  */
-public class LoginTask implements Runnable {
-
-    private static final String LOG_TAG = "LoginTask";
+public class RegisterTask implements Runnable {
+    private static final String LOG_TAG = "RegisterTask";
 
     public static final String SUCCESS_KEY = "success";
     public static final String USER_KEY = "user";
@@ -23,6 +22,14 @@ public class LoginTask implements Runnable {
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
 
+    /**
+     * The user's first name.
+     */
+    private String firstName;
+    /**
+     * The user's last name.
+     */
+    private String lastName;
     /**
      * The user's username (or "alias" or "handle"). E.g., "@susan".
      */
@@ -32,25 +39,33 @@ public class LoginTask implements Runnable {
      */
     private String password;
     /**
+     * The base-64 encoded bytes of the user's profile image.
+     */
+    private String image;
+    /**
      * Message handler that will receive task results.
      */
     private Handler messageHandler;
 
-    public LoginTask(String username, String password, Handler messageHandler) {
+    public RegisterTask(String firstName, String lastName, String username, String password,
+                        String image, Handler messageHandler) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.username = username;
         this.password = password;
+        this.image = image;
         this.messageHandler = messageHandler;
     }
 
     @Override
     public void run() {
         try {
-            Pair<User, AuthToken> loginResult = doLogin();
+            Pair<User, AuthToken> registerResult = doRegister();
 
-            User loggedInUser = loginResult.getFirst();
-            AuthToken authToken = loginResult.getSecond();
+            User registeredUser = registerResult.getFirst();
+            AuthToken authToken = registerResult.getSecond();
 
-            sendSuccessMessage(loggedInUser, authToken);
+            sendSuccessMessage(registeredUser, authToken);
 
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
@@ -62,16 +77,16 @@ public class LoginTask implements Runnable {
         return FakeData.getInstance();
     }
 
-    private Pair<User, AuthToken> doLogin() {
-        User loggedInUser = getFakeData().getFirstUser();
+    private Pair<User, AuthToken> doRegister() {
+        User registeredUser = getFakeData().getFirstUser();
         AuthToken authToken = getFakeData().getAuthToken();
-        return new Pair<>(loggedInUser, authToken);
+        return new Pair<>(registeredUser, authToken);
     }
 
-    private void sendSuccessMessage(User loggedInUser, AuthToken authToken) {
+    private void sendSuccessMessage(User registeredUser, AuthToken authToken) {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, true);
-        msgBundle.putSerializable(USER_KEY, loggedInUser);
+        msgBundle.putSerializable(USER_KEY, registeredUser);
         msgBundle.putSerializable(AUTH_TOKEN_KEY, authToken);
 
         Message msg = Message.obtain();

@@ -1,13 +1,6 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.widget.Toast;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.model.services.UserService;
-import edu.byu.cs.tweeter.client.view.login.LoginFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -33,8 +26,6 @@ public class LoginPresenter implements UserService.LoginObserver {
         if (validateLogin(alias, password)) {
             view.hideErrorMessage();
 
-//        loginToast = Toast.makeText(getContext(), "Logging In...", Toast.LENGTH_LONG);
-//        loginToast.show();
             view.showInfoMessage("Logging In...");
 
             var userService = new UserService();

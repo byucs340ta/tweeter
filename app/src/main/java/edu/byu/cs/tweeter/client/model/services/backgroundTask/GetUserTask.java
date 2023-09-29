@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.backgroundTask;
+package edu.byu.cs.tweeter.client.model.services.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,42 +7,44 @@ import android.util.Log;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.util.FakeData;
 
 /**
- * Background task that establishes a following relationship between two users.
+ * Background task that returns the profile for a specified user.
  */
-public class FollowTask implements Runnable {
-    private static final String LOG_TAG = "FollowTask";
+public class GetUserTask implements Runnable {
+    private static final String LOG_TAG = "GetUserTask";
 
     public static final String SUCCESS_KEY = "success";
+    public static final String USER_KEY = "user";
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
 
     /**
      * Auth token for logged-in user.
-     * This user is the "follower" in the relationship.
      */
     private AuthToken authToken;
     /**
-     * The user that is being followed.
+     * Alias (or handle) for user whose profile is being retrieved.
      */
-    private User followee;
+    private String alias;
     /**
      * Message handler that will receive task results.
      */
     private Handler messageHandler;
 
-    public FollowTask(AuthToken authToken, User followee, Handler messageHandler) {
+    public GetUserTask(AuthToken authToken, String alias, Handler messageHandler) {
         this.authToken = authToken;
-        this.followee = followee;
+        this.alias = alias;
         this.messageHandler = messageHandler;
     }
 
     @Override
     public void run() {
         try {
+            User user = getUser();
 
-            sendSuccessMessage();
+            sendSuccessMessage(user);
 
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
@@ -50,9 +52,19 @@ public class FollowTask implements Runnable {
         }
     }
 
-    private void sendSuccessMessage() {
+    private FakeData getFakeData() {
+        return FakeData.getInstance();
+    }
+
+    private User getUser() {
+        User user = getFakeData().findUserByAlias(alias);
+        return user;
+    }
+
+    private void sendSuccessMessage(User user) {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, true);
+        msgBundle.putSerializable(USER_KEY, user);
 
         Message msg = Message.obtain();
         msg.setData(msgBundle);

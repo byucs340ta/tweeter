@@ -1,23 +1,20 @@
-package edu.byu.cs.tweeter.client.backgroundTask;
+package edu.byu.cs.tweeter.client.model.services.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import java.util.Random;
-
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.domain.Status;
 
 /**
- * Background task that determines if one user is following another.
+ * Background task that posts a new status sent by a user.
  */
-public class IsFollowerTask implements Runnable {
-    private static final String LOG_TAG = "IsFollowerTask";
+public class PostStatusTask implements Runnable {
+    private static final String LOG_TAG = "PostStatusTask";
 
     public static final String SUCCESS_KEY = "success";
-    public static final String IS_FOLLOWER_KEY = "is-follower";
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
 
@@ -26,22 +23,18 @@ public class IsFollowerTask implements Runnable {
      */
     private AuthToken authToken;
     /**
-     * The alleged follower.
+     * The new status being sent. Contains all properties of the status,
+     * including the identity of the user sending the status.
      */
-    private User follower;
-    /**
-     * The alleged followee.
-     */
-    private User followee;
+    private Status status;
     /**
      * Message handler that will receive task results.
      */
     private Handler messageHandler;
 
-    public IsFollowerTask(AuthToken authToken, User follower, User followee, Handler messageHandler) {
+    public PostStatusTask(AuthToken authToken, Status status, Handler messageHandler) {
         this.authToken = authToken;
-        this.follower = follower;
-        this.followee = followee;
+        this.status = status;
         this.messageHandler = messageHandler;
     }
 
@@ -49,7 +42,7 @@ public class IsFollowerTask implements Runnable {
     public void run() {
         try {
 
-            sendSuccessMessage(new Random().nextInt() > 0);
+            sendSuccessMessage();
 
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
@@ -57,10 +50,9 @@ public class IsFollowerTask implements Runnable {
         }
     }
 
-    private void sendSuccessMessage(boolean isFollower) {
+    private void sendSuccessMessage() {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, true);
-        msgBundle.putBoolean(IS_FOLLOWER_KEY, isFollower);
 
         Message msg = Message.obtain();
         msg.setData(msgBundle);
