@@ -40,8 +40,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-//    private static final int PAGE_SIZE = 10;
-
     private User user;
 
     private FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
@@ -82,6 +80,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
         followingRecyclerView.setAdapter(followingRecyclerViewAdapter);
 
         followingRecyclerView.addOnScrollListener(new FollowRecyclerViewPaginationScrollListener(layoutManager));
+        presenter.loadMoreItems();
 
         return view;
     }
@@ -171,7 +170,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
          * Creates an instance and loads the first page of following data.
          */
         FollowingRecyclerViewAdapter() {
-            presenter.loadMoreItems();
         }
 
         /**
