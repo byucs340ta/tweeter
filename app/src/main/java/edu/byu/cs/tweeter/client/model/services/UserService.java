@@ -59,11 +59,9 @@ public class UserService {
 
             } else if (msg.getData().containsKey(LoginTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(LoginTask.MESSAGE_KEY);
-//                Toast.makeText(getContext(), "Failed to login: " + message, Toast.LENGTH_LONG).show();
                 observer.logingFailed("Failed to login: " + message);
             } else if (msg.getData().containsKey(LoginTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(LoginTask.EXCEPTION_KEY);
-//                Toast.makeText(getContext(), "Failed to login because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                 observer.logingFailed("Failed to login because of exception: " + ex.getMessage());
             }
         }
