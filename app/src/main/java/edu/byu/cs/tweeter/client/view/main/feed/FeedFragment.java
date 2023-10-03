@@ -184,7 +184,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
 
                         String clickable = s.subSequence(start, end).toString();
 
-                        presenter.getUser(Cache.getInstance().getCurrUserAuthToken(), userAlias.getText().toString());
+                        presenter.getUser(Cache.getInstance().getCurrUserAuthToken(), clickable);
                     }
 
                     @Override
