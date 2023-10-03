@@ -32,20 +32,12 @@ public class FollowingPresenter implements UserService.GetUserObserver, FollowSe
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public void setLastFollowee(User lastFollowee) {
-        this.lastFollowee = lastFollowee;
-    }
-
-    public boolean getIsLoading() {
-        return isLoading;
-    }
-
     public boolean getHasMorePages() {
         return hasMorePages;
     }
 
-    public void setHasMorePages(boolean hasMorePages) {
-        this.hasMorePages = hasMorePages;
+    public boolean getIsLoading() {
+        return isLoading;
     }
 
     public FollowingPresenter(View view, User user) {
@@ -71,8 +63,8 @@ public class FollowingPresenter implements UserService.GetUserObserver, FollowSe
 
     @Override
     public void getFollowingSucceeded(List<User> followees, boolean hasMorePages, User lastFollowee) {
-        setLastFollowee(lastFollowee);
-        setHasMorePages(hasMorePages);
+        this.lastFollowee = lastFollowee;
+        this.hasMorePages = hasMorePages;
         isLoading = false;
         view.endingLoad();
         view.addItems(followees);

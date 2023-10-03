@@ -35,9 +35,9 @@ public class UserService {
         executor.execute(loginTask);
     }
 
-    private class LoginHandler extends Handler {
+    private static class LoginHandler extends Handler {
 
-        private LoginObserver observer;
+        private final LoginObserver observer;
 
         public LoginHandler(LoginObserver observer) {
             super(Looper.getMainLooper());
@@ -83,9 +83,9 @@ public class UserService {
     /**
      * Message handler (i.e., observer) for GetUserTask.
      */
-    private class GetUserHandler extends Handler {
+    private static class GetUserHandler extends Handler {
 
-        private GetUserObserver observer;
+        private final GetUserObserver observer;
         public GetUserHandler(GetUserObserver observer) {
             super(Looper.getMainLooper());
             this.observer = observer;
@@ -103,6 +103,7 @@ public class UserService {
                 observer.getUserFailed("Failed to get user's profile: " + message);
             } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
+                assert ex != null;
                 observer.getUserFailed("Failed to get user's profile because of exception: " + ex.getMessage());
             }
         }

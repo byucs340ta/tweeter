@@ -43,9 +43,9 @@ public class FollowService {
     }
 
 
-    private class GetFollowingHandler extends Handler {
+    private static class GetFollowingHandler extends Handler {
 
-        private GetFollowingObserver observer;
+        private final GetFollowingObserver observer;
 
         public GetFollowingHandler(GetFollowingObserver observer) {
             super(Looper.getMainLooper());
@@ -70,8 +70,8 @@ public class FollowService {
         }
     }
 
-    private class GetFollowersHandler extends Handler {
-        private GetFollowersObserver observer;
+    private static class GetFollowersHandler extends Handler {
+        private final GetFollowersObserver observer;
 
         public GetFollowersHandler(GetFollowersObserver observer) {
             super(Looper.getMainLooper());
@@ -87,6 +87,7 @@ public class FollowService {
                 List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.FOLLOWERS_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
 
+                assert followers != null;
                 User lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
 
                 observer.getFollowersSucceeded(followers, hasMorePages, lastFollower);
@@ -95,6 +96,7 @@ public class FollowService {
                 observer.getFollowersFailed("Failed to get followers: " + message);
             } else if (msg.getData().containsKey(GetFollowersTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowersTask.EXCEPTION_KEY);
+                assert ex != null;
                 observer.getFollowersFailed("Failed to get followers because of exception: " + ex.getMessage());
             }
         }
