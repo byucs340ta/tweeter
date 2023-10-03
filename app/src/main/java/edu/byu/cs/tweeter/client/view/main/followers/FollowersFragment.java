@@ -104,7 +104,9 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
 
     @Override
     public void openMainView(User user) {
-
+        Intent intent = new Intent(this.getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
     }
 
     @Override

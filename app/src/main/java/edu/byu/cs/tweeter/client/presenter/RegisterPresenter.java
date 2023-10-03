@@ -34,7 +34,7 @@ public class RegisterPresenter implements RegisterService.RegisterObserver {
         void openMainView(User user);
     }
 
-    private View view;
+    private final View view;
 
     public RegisterPresenter(View view) {
         this.view = view;
