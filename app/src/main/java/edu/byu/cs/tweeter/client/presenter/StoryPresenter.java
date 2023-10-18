@@ -50,8 +50,8 @@ public class StoryPresenter implements UserService.GetUserObserver, StoryService
         void addItems(List<Status> statuses);
     }
 
-    private View view;
-    private User user;
+    private final View view;
+    private final User user;
     private Status lastStatus;
     private boolean hasMorePages;
     private boolean isLoading = false;
