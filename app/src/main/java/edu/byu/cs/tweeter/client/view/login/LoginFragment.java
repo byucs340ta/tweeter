@@ -37,8 +37,7 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
      * @return the fragment.
      */
     public static LoginFragment newInstance() {
-        LoginFragment fragment = new LoginFragment();
-        return fragment;
+        return new LoginFragment();
     }
 
     @Override

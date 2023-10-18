@@ -39,27 +39,20 @@ public class RegisterPresenter implements RegisterService.RegisterObserver {
     public RegisterPresenter(View view) {
         this.view = view;
     }
-    public void register(String firstName, String lastName, String alias, String password, Bitmap image) {
-        if (!validateRegistration(firstName, lastName, alias, password, image)) {
+    public void register(String firstName, String lastName, String alias, String password, byte[] imageBytes) {
+        String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
+        if (!validateRegistration(firstName, lastName, alias, password, imageBytesBase64)) {
             return;
         }
         view.hideErrorMessage();
         view.showInfoMessage("Registering...");
-
-        // Convert image to byte array.
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-        byte[] imageBytes = bos.toByteArray();
-
-        // Intentionally, Use the java Base64 encoder so it is compatible with M4.
-        String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
         var registerService = new RegisterService();
         registerService.register(firstName, lastName, alias, password, imageBytesBase64, this);
     }
 
 
-    private boolean validateRegistration(String firstName, String lastName, String alias, String password, Bitmap imageToUpload) {
+    private boolean validateRegistration(String firstName, String lastName, String alias, String password, String imageToUpload) {
         view.hideErrorMessage();
         if (firstName.length() == 0) {
             view.showErrorMessage("First Name cannot be empty.");

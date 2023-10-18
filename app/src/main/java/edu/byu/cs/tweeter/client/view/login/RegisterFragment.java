@@ -52,7 +52,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
     private TextView errorView;
     private Toast registeringToast;
 
-    private RegisterPresenter presenter = new RegisterPresenter(this);
+    private final RegisterPresenter presenter = new RegisterPresenter(this);
 
     /**
      * Creates an instance of the fragment and places the user and auth token in an arguments
@@ -61,8 +61,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
      * @return the fragment.
      */
     public static RegisterFragment newInstance() {
-        RegisterFragment fragment = new RegisterFragment();
-        return fragment;
+        return new RegisterFragment();
     }
 
     @Override
@@ -93,8 +92,11 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
                 // Register and move to MainActivity.
                 try {
                     Bitmap image = ((BitmapDrawable) imageToUpload.getDrawable()).getBitmap();
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    image.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                    byte[] imageBytes = bos.toByteArray();
                     presenter.register(firstName.getText().toString(), lastName.getText().toString(),
-                            alias.getText().toString(), password.getText().toString(), image);
+                            alias.getText().toString(), password.getText().toString(), imageBytes);
                 } catch (Exception e) {
                     errorView.setText(e.getMessage());
                 }
