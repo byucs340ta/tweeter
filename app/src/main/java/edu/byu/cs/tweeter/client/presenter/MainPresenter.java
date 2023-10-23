@@ -27,13 +27,13 @@ public class MainPresenter extends AuthenticatedPresenter implements LogoutObser
 
     @Override
     public void handleFailure(String message) {
-        view.showErrorMessage(message);
+        view.showErrorMessage("Failed to " + this.errorMessage + ":" + message);
         view.followButtonSetEnabled();
     }
 
     @Override
     public void handleException(Exception exception) {
-        view.showErrorMessage(exception.getMessage());
+        view.showErrorMessage("Failed to post status because of exception" + this.errorMessage + ":" +exception.getMessage());
         view.followButtonSetEnabled();
     }
 
@@ -75,31 +75,37 @@ public class MainPresenter extends AuthenticatedPresenter implements LogoutObser
     }
     public void unfollow(User selectedUser) {
         var followService = new FollowService();
+        this.errorMessage = "unfollow";
         followService.unfollow(selectedUser, this);
         view.showInfoMessage("Removing " + selectedUser.getName() + "...");
     }
 
     public void follow(User selectedUser) {
         var followService = new FollowService();
+        this.errorMessage = "follow";
         followService.follow(selectedUser, this);
         view.showInfoMessage("Adding " + selectedUser.getName() + "...");
     }
     public void updateSelectedUserFollowingAndFollowers() {
         var followService = new FollowService();
+        this.errorMessage = "update following and followers count";
         followService.updateFollowingAndFollowersCount(user, this);
     }
 
     public void isFollower() {
         var followService = new FollowService();
+        this.errorMessage = "determine following relationship";
         followService.isFollower(user, this);
     }
     public void logout() {
         var logoutService = new UserService();
+        this.errorMessage = "logout";
         logoutService.logout(this);
     }
 //
     public void postStatus(String post) {
         view.showInfoMessage("Posting Status...");
+        this.errorMessage = "post status";
         var postService = new StatusService();
         postService.postStatus(post, this);
     }

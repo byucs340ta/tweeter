@@ -13,7 +13,7 @@ public abstract class Presenter {
     }
 
     protected View view;
-    protected String errorMessage;
+    protected String errorMessage = "something";
     public Presenter(View view) {
         this.view = view;
     }

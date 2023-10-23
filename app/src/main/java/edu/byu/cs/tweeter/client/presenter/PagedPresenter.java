@@ -53,6 +53,7 @@ public abstract class PagedPresenter<T> extends AuthenticatedPresenter implement
 
     public void getUser(String alias) {
         var userService = new UserService();
+        this.errorMessage = "user";
         userService.getUser(alias, this);
         view.showInfoMessage("Geting user's profile...");
     }

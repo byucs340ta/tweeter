@@ -8,6 +8,7 @@ public class FeedPresenter extends PagedPresenter<Status> {
     @Override
     protected void getItems() {
         StatusService service = new StatusService();
+        this.errorMessage = "feed";
         service.getFeed(user, PAGE_SIZE, lastItem, this);
     }
 
@@ -15,7 +16,6 @@ public class FeedPresenter extends PagedPresenter<Status> {
 
     public FeedPresenter(FeedView view, User user) {
         super(view, user);
-        this.errorMessage = "feed";
     }
 
 }
