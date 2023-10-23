@@ -1,6 +1,6 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import edu.byu.cs.tweeter.client.model.services.newservices.UserService;
+import edu.byu.cs.tweeter.client.model.services.UserService;
 
 public class LoginPresenter extends AuthenticatePresenter {
     public LoginPresenter(View view) {

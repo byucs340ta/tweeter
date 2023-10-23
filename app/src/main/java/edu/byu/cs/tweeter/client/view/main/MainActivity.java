@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void onStatusPosted(String post) {
-        presenter.postStatus(post);
+        presenter.postStatus(post, Cache.getInstance().getCurrUser(), System.currentTimeMillis());
     }
 
     public void updateFollowButton(boolean removed) {

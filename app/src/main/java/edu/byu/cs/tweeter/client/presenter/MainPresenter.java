@@ -1,13 +1,18 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.FollowObserver;
 import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.GetFollowingAndFollowersCountObserver;
 import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.IsFollowerObserver;
 import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.LogoutObserver;
 import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.PostObserver;
-import edu.byu.cs.tweeter.client.model.services.newservices.FollowService;
-import edu.byu.cs.tweeter.client.model.services.newservices.StatusService;
-import edu.byu.cs.tweeter.client.model.services.newservices.UserService;
+import edu.byu.cs.tweeter.client.model.services.FollowService;
+import edu.byu.cs.tweeter.client.model.services.StatusService;
+import edu.byu.cs.tweeter.client.model.services.UserService;
+import edu.byu.cs.tweeter.client.utils.StatusUtil;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter extends AuthenticatedPresenter implements LogoutObserver, FollowObserver, IsFollowerObserver, PostObserver, GetFollowingAndFollowersCountObserver {
@@ -27,13 +32,13 @@ public class MainPresenter extends AuthenticatedPresenter implements LogoutObser
 
     @Override
     public void handleFailure(String message) {
-        view.showErrorMessage("Failed to " + this.errorMessage + ":" + message);
+        view.showErrorMessage("Failed to " + this.errorMessage + ": " + message);
         view.followButtonSetEnabled();
     }
 
     @Override
     public void handleException(Exception exception) {
-        view.showErrorMessage("Failed to post status because of exception" + this.errorMessage + ":" +exception.getMessage());
+        view.showErrorMessage("Failed to " + this.errorMessage + " because of exception: " + exception.getMessage());
         view.followButtonSetEnabled();
     }
 
@@ -103,10 +108,15 @@ public class MainPresenter extends AuthenticatedPresenter implements LogoutObser
         logoutService.logout(this);
     }
 //
-    public void postStatus(String post) {
+    public void postStatus(String post, User user, long time) {
         view.showInfoMessage("Posting Status...");
         this.errorMessage = "post status";
-        var postService = new StatusService();
-        postService.postStatus(post, this);
+        Status status = new Status(post, user, time, StatusUtil.parseURLs(post), StatusUtil.parseMentions(post));
+        var service = createStatusService();
+        service.postStatus(status, this);
+    }
+
+    public StatusService createStatusService() {
+        return new StatusService();
     }
 }

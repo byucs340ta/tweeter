@@ -2,7 +2,7 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.Base64;
 
-import edu.byu.cs.tweeter.client.model.services.newservices.UserService;
+import edu.byu.cs.tweeter.client.model.services.UserService;
 
 public class RegisterPresenter extends AuthenticatePresenter {
     public RegisterPresenter(View view) {

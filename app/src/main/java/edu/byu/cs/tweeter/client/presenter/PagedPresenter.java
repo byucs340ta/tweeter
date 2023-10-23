@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.GetUserObserver;
 import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.PagedObserver;
-import edu.byu.cs.tweeter.client.model.services.newservices.UserService;
+import edu.byu.cs.tweeter.client.model.services.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public abstract class PagedPresenter<T> extends AuthenticatedPresenter implements PagedObserver<T>, GetUserObserver { // T is going to be Status or User and S is going to be a Service

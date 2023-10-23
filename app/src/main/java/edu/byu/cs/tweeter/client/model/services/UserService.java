@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.model.services.newservices;
+package edu.byu.cs.tweeter.client.model.services;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.services.backgroundTask.BackgroundTaskUtils;
