@@ -38,7 +38,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Followers" tab.
  */
-public class FollowersFragment extends Fragment implements FollowersPresenter.View {
+public class FollowersFragment extends Fragment implements FollowersPresenter.FollowersView {
 
     private static final String LOG_TAG = "FollowersFragment";
     private static final String USER_KEY = "UserKey";
@@ -98,24 +98,34 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
     }
 
     @Override
+    public void hideInfoMessage() {
+
+    }
+
+    @Override
     public void showErrorMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void openMainView(User user) {
+    public void hideErrorMessage() {
+
+    }
+
+    @Override
+    public void openView(User user) {
         Intent intent = new Intent(this.getContext(), MainActivity.class);
         intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
         startActivity(intent);
     }
 
     @Override
-    public void startingLoad() {
+    public void startLoadingBottom() {
         followersRecyclerViewAdapter.addLoadingFooter();
     }
 
     @Override
-    public void endingLoad() {
+    public void endLoadingBottom() {
         followersRecyclerViewAdapter.removeLoadingFooter();
     }
 
@@ -148,7 +158,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    presenter.getUser(Cache.getInstance().getCurrUserAuthToken(), userAlias.getText().toString());
+                    presenter.getUser(userAlias.getText().toString());
                 }
             });
         }
@@ -254,7 +264,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
          */
         @Override
         public void onBindViewHolder(@NonNull FollowersHolder followingHolder, int position) {
-            if (!presenter.isLoading()) {
+            if (!presenter.getIsLoading()) {
                 followingHolder.bindUser(users.get(position));
             }
         }
@@ -278,7 +288,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
          */
         @Override
         public int getItemViewType(int position) {
-            return (position == users.size() - 1 && presenter.isLoading()) ? LOADING_DATA_VIEW : ITEM_VIEW;
+            return (position == users.size() - 1 && presenter.getIsLoading()) ? LOADING_DATA_VIEW : ITEM_VIEW;
         }
 
 
@@ -335,7 +345,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            if (!presenter.isLoading() && presenter.getHasMorePages()) {
+            if (!presenter.getIsLoading() && presenter.getHasMorePages()) {
                 if ((visibleItemCount + firstVisibleItemPosition) >=
                         totalItemCount && firstVisibleItemPosition >= 0) {
                     // Run this code later on the UI thread

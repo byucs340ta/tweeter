@@ -1,21 +1,46 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import edu.byu.cs.tweeter.client.model.services.FollowService;
-import edu.byu.cs.tweeter.client.model.services.PostService;
-import edu.byu.cs.tweeter.client.model.services.UserService;
+import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.FollowObserver;
+import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.GetFollowingAndFollowersCountObserver;
+import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.IsFollowerObserver;
+import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.LogoutObserver;
+import edu.byu.cs.tweeter.client.model.services.backgroundTask.observer.PostObserver;
+import edu.byu.cs.tweeter.client.model.services.newservices.FollowService;
+import edu.byu.cs.tweeter.client.model.services.newservices.StatusService;
+import edu.byu.cs.tweeter.client.model.services.newservices.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements FollowService.UnfollowObserver, FollowService.FollowObserver, FollowService.GetFollowersCountObserver, FollowService.GetFollowingCountObserver, FollowService.IsFollowerObserver, UserService.LogoutObserver, PostService.PostObserver {
+public class MainPresenter extends AuthenticatedPresenter implements LogoutObserver, FollowObserver, IsFollowerObserver, PostObserver, GetFollowingAndFollowersCountObserver {
+    public interface View extends AuthenticatedPresenter.View {
+        void loginActivity();
+        void updateFollowButton(boolean removed);
+        void followButtonSetEnabled();
+        void isFollower(boolean isFollower);
+        void setFollowersCount(int followersCount);
+        void setFollowingCount(int followingCount);
+    }
+    protected View view;
+    public MainPresenter(View view, User user) {
+        super(view, user);
+        this.view = view;
+    }
+
     @Override
-    public void unfollowSucceeded() {
-        this.updateSelectedUserFollowingAndFollowers();
-        view.updateFollowButton(true);
+    public void handleFailure(String message) {
+        view.showErrorMessage(message);
         view.followButtonSetEnabled();
     }
 
     @Override
-    public void unfollowFailed(String message) {
-        view.showErrorMessage(message);
+    public void handleException(Exception exception) {
+        view.showErrorMessage(exception.getMessage());
+        view.followButtonSetEnabled();
+    }
+
+    @Override
+    public void unfollowSucceeded() {
+        this.updateSelectedUserFollowingAndFollowers();
+        view.updateFollowButton(true);
         view.followButtonSetEnabled();
     }
 
@@ -27,83 +52,27 @@ public class MainPresenter implements FollowService.UnfollowObserver, FollowServ
     }
 
     @Override
-    public void followFailed(String message) {
-        view.showErrorMessage(message);
-        view.followButtonSetEnabled();
-    }
-
-    @Override
-    public void getFollowersCountSucceeded(int count) {
-        view.setFollowerCount(count);
-    }
-
-    @Override
-    public void getFollowersCountFailed(String message) {
-        view.showErrorMessage(message);
-    }
-
-    @Override
-    public void getFollowingCountSucceeded(int count) {
-        view.setFollowingCount(count);
-    }
-
-    @Override
-    public void getFollowingCountFailed(String message) {
-        view.showErrorMessage(message);
-    }
-
-
-    @Override
     public void isFollowerSucceeded(boolean isFollower) {
         view.isFollower(isFollower);
-    }
-
-    @Override
-    public void isFollowerFailed(String message) {
-        view.showErrorMessage(message);
     }
 
     @Override
     public void logoutSucceeded() {
         view.loginActivity();
     }
-
-    @Override
-    public void logoutFailed(String message) {
-        view.showErrorMessage(message);
-    }
-
     @Override
     public void postSucceeded() {
         view.showInfoMessage("Successfully Posted!");
     }
+    @Override
+    public void getFollowersCountSucceeded(int followersCount) {
+        view.setFollowersCount(followersCount);
+    }
 
     @Override
-    public void postFailed(String message) {
-        view.showErrorMessage(message);
+    public void getFollowingCountSucceeded(int followingCount) {
+        view.setFollowingCount(followingCount);
     }
-
-    public interface View {
-        void showInfoMessage(String message);
-        void hideInfoMessage();
-        void showErrorMessage(String message);
-        void hideErrorMessage();
-
-        void openMainView(User user);
-        void updateFollowButton(boolean removed);
-        void followButtonSetEnabled();
-        void isFollower(boolean isFollower);
-        void loginActivity();
-        void setFollowerCount(int count);
-        void setFollowingCount(int count);
-    }
-    private final View view;
-    private final User selectedUser;
-    public MainPresenter(View view, User selectedUser) {
-        this.view = view;
-        this.selectedUser = selectedUser;
-    }
-
     public void unfollow(User selectedUser) {
         var followService = new FollowService();
         followService.unfollow(selectedUser, this);
@@ -115,25 +84,23 @@ public class MainPresenter implements FollowService.UnfollowObserver, FollowServ
         followService.follow(selectedUser, this);
         view.showInfoMessage("Adding " + selectedUser.getName() + "...");
     }
-
     public void updateSelectedUserFollowingAndFollowers() {
         var followService = new FollowService();
-        followService.updateSelectedUserFollowingAndFollowers(selectedUser, this, this);
+        followService.updateFollowingAndFollowersCount(user, this);
     }
 
     public void isFollower() {
         var followService = new FollowService();
-        followService.isFollower(selectedUser, this);
+        followService.isFollower(user, this);
     }
-
     public void logout() {
-        var userService = new UserService();
-        userService.logout(this);
+        var logoutService = new UserService();
+        logoutService.logout(this);
     }
-
+//
     public void postStatus(String post) {
         view.showInfoMessage("Posting Status...");
-        var postService = new PostService();
+        var postService = new StatusService();
         postService.postStatus(post, this);
     }
 }

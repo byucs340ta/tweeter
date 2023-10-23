@@ -32,7 +32,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Following" tab.
  */
-public class FollowingFragment extends Fragment implements FollowingPresenter.View {
+public class FollowingFragment extends Fragment implements FollowingPresenter.FollowingView {
 
     private static final String LOG_TAG = "FollowingFragment";
     private static final String USER_KEY = "UserKey";
@@ -91,24 +91,34 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
     }
 
     @Override
+    public void hideInfoMessage() {
+
+    }
+
+    @Override
     public void showErrorMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void openMainView(User user) {
+    public void hideErrorMessage() {
+
+    }
+
+    @Override
+    public void openView(User user) {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
         startActivity(intent);
     }
 
     @Override
-    public void startingLoad() {
+    public void startLoadingBottom() {
         followingRecyclerViewAdapter.addLoadingFooter();
     }
 
     @Override
-    public void endingLoad() {
+    public void endLoadingBottom() {
         followingRecyclerViewAdapter.removeLoadingFooter();
     }
 
@@ -141,7 +151,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    presenter.getUser(Cache.getInstance().getCurrUserAuthToken(), userAlias.getText().toString());
+                    presenter.getUser(userAlias.getText().toString());
                 }
             });
         }

@@ -41,7 +41,7 @@ import edu.byu.cs.tweeter.util.Timestamp;
 /**
  * Implements the "Feed" tab.
  */
-public class FeedFragment extends Fragment implements FeedPresenter.View {
+public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
     private static final String LOG_TAG = "FeedFragment";
     private static final String USER_KEY = "UserKey";
 
@@ -99,24 +99,34 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
     }
 
     @Override
+    public void hideInfoMessage() {
+
+    }
+
+    @Override
     public void showErrorMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void openMainView(User user) {
+    public void hideErrorMessage() {
+
+    }
+
+    @Override
+    public void openView(User user) {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
         startActivity(intent);
     }
 
     @Override
-    public void startingLoad() {
+    public void startLoadingBottom() {
         feedRecyclerViewAdapter.addLoadingFooter();
     }
 
     @Override
-    public void endingLoad() {
+    public void endLoadingBottom() {
         feedRecyclerViewAdapter.removeLoadingFooter();
     }
 
@@ -153,7 +163,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    presenter.getUser(Cache.getInstance().getCurrUserAuthToken(), userAlias.getText().toString());
+                    presenter.getUser(userAlias.getText().toString());
                 }
             });
         }
@@ -184,7 +194,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
 
                         String clickable = s.subSequence(start, end).toString();
 
-                        presenter.getUser(Cache.getInstance().getCurrUserAuthToken(), clickable);
+                        presenter.getUser(clickable);
                     }
 
                     @Override
